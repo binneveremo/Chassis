@@ -1,0 +1,8 @@
+{
+    "files.associations": {
+        "adc.h": "c",
+        "cmath": "c",
+        "velocity_plan.h": "c",
+        "kalman.h": "c"
+    }
+}
