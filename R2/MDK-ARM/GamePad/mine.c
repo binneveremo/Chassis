@@ -35,7 +35,10 @@ void GamePad_Data_Cla(void){
 	else if((sudo == 1) && (GamePad_Data.key[14] == 1))
 		flow_begin, flow.type = back_flow;
 #undef sudo
-	
+	if(((GamePad_Data.witch[8] == 1) || (GamePad_Data.key[21] == 1)) && (chassis.Control_Status == Auto_Control))
+		Back_GamePadControl();
+
+	//手柄控制相关标志位
 	chassis.flagof.gamepad.standard = GamePad_Data.witch[1];
 	chassis.flagof.gamepad.noheader = !chassis.flagof.gamepad.standard;
 	chassis.flagof.gamepad.inverse = GamePad_Data.witch[0];
@@ -60,8 +63,6 @@ void GamePad_Data_Cla(void){
  		Tell_Yao_Xuan("lift");
 	if(GamePad_Data.key[15] == 1)
  		Tell_Yao_Xuan("jump");
-	if(GamePad_Data.key[19] == 1)
- 		Tell_Yao_Xuan("stick");
 	//更改Debug界面
 	DebugPage_Change(GamePadKey_FallingCheck(4));
 	//无线串口
