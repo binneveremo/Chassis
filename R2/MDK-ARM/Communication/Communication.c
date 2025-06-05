@@ -24,8 +24,10 @@ void Tell_Yao_Xuan(char *message){
       FDCAN_Send(&Com_Can,poledown_id_send,"STD",NULL,"FD",0,"OFF");
 		else if(strcmp(message, "dribble") == 0)
       FDCAN_Send(&Com_Can,dribble_id_send,"STD",NULL,"FD",0,"OFF");
-    else if(strcmp(message, "lift") == 0) 
+    else if(strcmp(message, "lift") == 0) {
       FDCAN_Send(&Com_Can,lift_id_send,"STD",NULL,"FD",0,"OFF");
+			interact.defend_status = (interact.defend_status == predunk)?interact.defend_status:predunk;
+		}
 		else if(strcmp(message, "jump") == 0){ 
 			interact.defend_status = (interact.defend_status == predunk)?interact.defend_status:predunk;
       FDCAN_Send(&Com_Can,jump_id_send,"STD",NULL,"FD",0,"OFF");
