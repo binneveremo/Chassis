@@ -21,8 +21,8 @@ extern char RGB_Switch;
 struct panel_t{
 	enum{
 		init_msg,
-		gamepad_msg,
-		wrong_msg,
+		press_msg,
+		flow_msg,
 	}display;
 	
 

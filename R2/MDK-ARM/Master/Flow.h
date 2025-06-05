@@ -14,6 +14,7 @@ struct Flow {
 		dribble_flow,
 		dunk_flow,
 		back_flow,
+		skill_flow,
 	}type;
 };
 extern struct Flow flow;
@@ -62,8 +63,9 @@ struct skill_t {
 		clear,
 	}status;
 	struct {
-		int shoot_advanced_dis;
-		int catch_advanced_dis;
+		int shoot_advanced_dis[7];
+		int catch_advanced_dis[7];
+		int lock_dis;
 	}param;
 	struct {
 		struct Point point[7];

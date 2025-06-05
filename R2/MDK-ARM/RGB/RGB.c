@@ -84,18 +84,20 @@ void RGB_Color_All(int color,int bright){
 void RGB_OutPut(void)
 {
 	HAL_TIM_PWM_Stop_DMA(&ws2812_tim, ws2812_channel); 
-	HAL_TIM_PWM_Start_DMA(&ws2812_tim, ws2812_channel, (unsigned int *)send_buff, sizeof(send_buff) / sizeof(short)); 	
+	HAL_TIM_PWM_Start_DMA(&ws2812_tim, ws2812_channel, (unsigned int *)send_buff, LED_NUM*3*8+1); 	
 }
 void SwitchRGBShowMsg(void){
-	//复位相关
-	if((GamePad_Data.key[1] == 1) || (GamePad_Data.key[5] == 1) || (GamePad_Data.key[3] == 1))
-		panel.display = gamepad_msg;
-	//通信相关(防守)
-	else if((GamePad_Data.key[0] == 1) || (GamePad_Data.key[2] == 1) || (GamePad_Data.key[4] == 1) || (GamePad_Data.key[6] == 1))
-		panel.display = gamepad_msg;
-	//通信相关(跳跃)
-	else if((GamePad_Data.key[15] == 1) || (GamePad_Data.key[16] == 1) || (GamePad_Data.key[17] == 1) || (GamePad_Data.key[18] == 1) || (GamePad_Data.key[19] == 1))
-		panel.display = gamepad_msg;
+	char Check_Key[] = {2,6}; 
+	for(unsigned char i = 0;i < sizeof(Check_Key);i++){
+		if(GamePad_Data.key[Check_Key[i]] == 1) {
+			panel.display = press_msg;
+			return;
+		}
+	}
+	if(chassis.Control_Status == Auto_Control)
+		panel.display = flow_msg;
+	else 
+		panel.display = init_msg;
 }
 int Faded_Color(int colora,int colorb,float a){
 	float percent = a / 100;
@@ -104,22 +106,29 @@ int Faded_Color(int colora,int colorb,float a){
 	unsigned char B = (unsigned char)(((float)(colora>>0x00)*percent) + ((float)(colorb>>0x00)*(1 - percent)));
 	return (int)(R << 0x10) + (G << 0x08) + (B << 0x00);
 }
-char bright = 12;
-char Check_Reset(void){
-	char cnt;
+void Check_Reset(void){
+	char bright = 12;
 	if(yis506.reset_flag == 1) 					
-		cnt++,RGB_Line_Cal(0,Faded_Color(Green,White,60),bright);
+		RGB_Line_Cal(0,Faded_Color(Green,White,60),bright);
 	if(odometer.reset_flag == 1) 					
-		cnt++,RGB_Line_Cal(1,Faded_Color(Green,White,80),bright);
+		RGB_Line_Cal(1,Faded_Color(Green,White,80),bright);
 	if(vision.position.online_flag == 1) 					
-		cnt++,RGB_Line_Cal(2,Faded_Color(Green,White,80),bright);
+		RGB_Line_Cal(2,Faded_Color(Green,White,80),bright);
 	if(vision.basketlock.online_flag == 1) 			
-		cnt++,RGB_Line_Cal(3,Faded_Color(Green,White,100),bright);
+		RGB_Line_Cal(3,Faded_Color(Green,White,100),bright);
 	if(send.R1_Exchange.get_dataflag == 1)					
-		cnt++,RGB_Line_Cal(4,Faded_Color(Green,White,100),bright);
-	return cnt;
+		RGB_Line_Cal(4,Faded_Color(Green,White,100),bright);
 }
-
+void RGB_Wave(int color){
+	static int cnt;
+	char bright[5] = {5,7,9,11,13};
+	cnt++;
+	RGB_Line_Cal(0,color,bright[(cnt) % 5]);
+	RGB_Line_Cal(1,color,bright[(cnt + 1) % 5]);
+	RGB_Line_Cal(2,color,bright[(cnt + 2) % 5]);
+	RGB_Line_Cal(3,color,bright[(cnt + 3) % 5]);
+	RGB_Line_Cal(4,color,bright[(cnt + 4) % 5]);
+}
 void RGB_Show_Msg(void){
 	//清空显示
 	RGB_Clear_Cal();
@@ -128,12 +137,25 @@ void RGB_Show_Msg(void){
 		case init_msg:
 			Check_Reset();
 		break;
-		case gamepad_msg:
+		case press_msg:
 			RGB_Color_All(Purple,30);
 			panel.display = init_msg;
 		break;
-		case wrong_msg:
-			
+		case flow_msg:
+			switch(flow.type){
+				case dribble_flow:
+					RGB_Wave(0xFF0000);
+				break;
+				case dunk_flow:
+					RGB_Wave(0x00FF00);
+				break;
+				case back_flow:
+					RGB_Wave(0x0000FF);
+				break;
+				case skill_flow:
+					RGB_Wave(0x00FFFF);
+				break;
+			}
 		break;
 	}
 	RGB_OutPut();

@@ -13,10 +13,6 @@ struct Point home_point = {
   .y = -600,
   .r = 0
 };
-/* @brief 扣篮流程 
-0.跑点初始化
-1.到点
-/                */
 struct dunk_t dunk;
 void Dunk_Flow(void){
 	switch(dunk.state){
@@ -49,7 +45,7 @@ void Dunk_Flow(void){
 		break;
 		case jump:
 			Self_Lock_Out("BasketFlow");
-			Tell_Yao_Xuan("predunk");                                                                                 
+			Tell_Yao_Xuan("lift");                                                                                 
 			dunk.state = end;
 		break;
 		case end:
@@ -85,16 +81,44 @@ void Dribble_Flow(void){
 		dribble.flagof.end = (HAL_GetTick() - dribble.time.begin > dribble.time.end) ? true : false;
 }
 /////////技能挑战赛流程
-struct skill_t skill;
+struct skill_t skill = {
+	.target.point[0] = {.x = 0,.y = 0,.r = 0},
+	.target.point[1] = {.x = 0,.y = 0,.r = 0},
+	.target.point[2] = {.x = 0,.y = 0,.r = 0},
+	.target.point[3] = {.x = 0,.y = 0,.r = 0},
+	.target.point[4] = {.x = 0,.y = 0,.r = 0},
+	.target.point[5] = {.x = 0,.y = 0,.r = 0},
+	.target.point[6] = {.x = 0,.y = 0,.r = 0},
+	
+	.param.catch_advanced_dis[0] = 50,
+	.param.catch_advanced_dis[1] = 50,
+	.param.catch_advanced_dis[2] = 50,
+	.param.catch_advanced_dis[3] = 50,
+	.param.catch_advanced_dis[4] = 50,
+	.param.catch_advanced_dis[5] = 50,
+	.param.catch_advanced_dis[6] = 50,
+
+	.param.shoot_advanced_dis[0] = 50,
+	.param.shoot_advanced_dis[1] = 50,
+	.param.shoot_advanced_dis[2] = 50,
+	.param.shoot_advanced_dis[3] = 50,
+	.param.shoot_advanced_dis[4] = 50,
+	.param.shoot_advanced_dis[5] = 50,
+	.param.shoot_advanced_dis[6] = 50,
+
+	.param.lock_dis = 50,
+};
 void Skill_Flow(void){
 	static char last_success_times;
 	switch(skill.status){
 		case begin:
 			Set_Target_Point(skill.target.point[skill.success_time]);
-			if((Point_Distance(site.now,site.target) < skill.param.shoot_advanced_dis) && (flow.flagof.R1_Shooted == false) && (skill.flagof.shoot_requested == false))
+			if((Point_Distance(site.now,site.target) < skill.param.shoot_advanced_dis[skill.success_time]) && (flow.flagof.R1_Shooted == false) && (skill.flagof.shoot_requested == false))
 				skill.flagof.shoot_requested = true,Send_MessageToR1("request");
-			if((Point_Distance(site.now,site.target) < skill.param.catch_advanced_dis) && (skill.flagof.net_catched == false))
+			if((Point_Distance(site.now,site.target) < skill.param.catch_advanced_dis[skill.success_time]) && (skill.flagof.net_catched == false))
 				skill.flagof.net_catched = true,Tell_Yao_Xuan("catch");
+			if(Point_Distance(site.now,site.target) < skill.param.lock_dis)
+				Self_Lock_Out("SkillFlow");
 			if(last_success_times != skill.success_time)
 				last_success_times = skill.success_time,skill.status = clear;
 		break;
@@ -108,6 +132,8 @@ void Skill_Flow(void){
 
 /// @brief 返回手柄控制
 void Back_GamePadControl(void){
+	Clear(dunk.state);
+	
 	Clear(dribble.flagof);
 	Clear(dunk.flagof);
 	Clear(back.flagof);
@@ -124,6 +150,9 @@ void Auto_Flow(void){
 		break;
 		case back_flow:
 			Back_Flow();
+		break;
+		case skill_flow:
+			Skill_Flow();
 		break;
 	}
 #define Rocker_Move ((hypot(GamePad_Data.rocker[0],GamePad_Data.rocker[1]) > 30) || (hypot(GamePad_Data.rocker[2],GamePad_Data.rocker[3]) > 30))
