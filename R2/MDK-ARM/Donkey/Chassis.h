@@ -133,6 +133,8 @@ struct correct_angle_t{
 	float outlimit;
 };
 #define Set_Target_Point(x) memcpy(&site.target, &x, sizeof(x))
+
+
 #define TurnMotor_OffsetAngleInit() {\
 	chassis.motor.turn[front_wheel].offset_angle  = front_offset;		\
 	chassis.motor.turn[right_wheel].offset_angle  = right_offset;		\

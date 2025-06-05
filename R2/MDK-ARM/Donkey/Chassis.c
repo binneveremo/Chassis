@@ -17,7 +17,7 @@ void VectorWheel_SetAngle(void)
 {
 	// Motor_Control_byFDCN(id,力矩, 速度 , 位置, 模式 , 使能, p, d, )
 	Motor_Control_byFDCN(front_turn_send_id, 2.5, 30, chassis.motor.turn[front_wheel].target_angle + chassis.motor.turn[front_wheel].offset_angle, 2, 1, chassis.motor.turn[front_wheel].param.p, chassis.motor.turn[front_wheel].param.d, &hfdcan1);
-	Motor_Control_byFDCN(left_turn_send_id, 2.5, 30, chassis.motor.turn[left_wheel].target_angle + chassis.motor.turn[left_wheel].offset_angle, 2, 1, chassis.motor.turn[left_wheel].param.p, chassis.motor.turn[left_wheel].param.d, &hfdcan1);
+	Motor_Control_byFDCN(left_turn_send_id, 2.5, 30,  chassis.motor.turn[left_wheel].target_angle + chassis.motor.turn[left_wheel].offset_angle, 2, 1, chassis.motor.turn[left_wheel].param.p, chassis.motor.turn[left_wheel].param.d, &hfdcan1);
 	Motor_Control_byFDCN(right_turn_send_id, 2.5, 30, chassis.motor.turn[right_wheel].target_angle + chassis.motor.turn[right_wheel].offset_angle, 2, 1, chassis.motor.turn[right_wheel].param.p, chassis.motor.turn[right_wheel].param.d, &hfdcan1);
 	Motor_Control_byFDCN(behind_turn_send_id, 2.5, 30, chassis.motor.turn[behind_wheel].target_angle + chassis.motor.turn[behind_wheel].offset_angle, 2, 1, chassis.motor.turn[behind_wheel].param.p, chassis.motor.turn[behind_wheel].param.d, &hfdcan1);
 }

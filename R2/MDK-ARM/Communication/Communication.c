@@ -35,8 +35,6 @@ void Tell_Yao_Xuan(char *message){
 }
 
 void Car_State_Decode(int id,unsigned char * data){
-	if(id == receiveball_id_recv)
-		flow.flagof.received = true;
 	if(id == stickball_id_recv)
 		flow.flagof.stick_ball = true;
 }

@@ -107,16 +107,6 @@ int Faded_Color(int colora,int colorb,float a){
 char bright = 12;
 char Check_Reset(void){
 	char cnt;
-//	if(yis506.reset_flag == 1) 					
-//		cnt++,RGB_Line_Cal(0,Green,bright );
-//	if(odometer.reset_flag == 1) 					
-//		cnt++,RGB_Line_Cal(1,Blue,bright );
-//	if(vision.position.online_flag == 1) 					
-//		cnt++,RGB_Line_Cal(2,Purple,bright );
-//	if(vision.basketlock.online_flag == 1) 			
-//		cnt++,RGB_Line_Cal(3,Blue,bright );
-//	if(send.R1_Exchange.get_dataflag == 1)					
-//		cnt++,RGB_Line_Cal(4,Green,bright)
 	if(yis506.reset_flag == 1) 					
 		cnt++,RGB_Line_Cal(0,Faded_Color(Green,White,60),bright);
 	if(odometer.reset_flag == 1) 					
@@ -133,25 +123,20 @@ char Check_Reset(void){
 void RGB_Show_Msg(void){
 	//清空显示
 	RGB_Clear_Cal();
-	
-	
 	SwitchRGBShowMsg();
-	
 	switch(panel.display){
 		case init_msg:
 			Check_Reset();
-			RGB_OutPut();
 		break;
 		case gamepad_msg:
 			RGB_Color_All(Purple,30);
-			RGB_OutPut();
-			osDelay(100);
 			panel.display = init_msg;
 		break;
 		case wrong_msg:
 			
 		break;
 	}
+	RGB_OutPut();
 }
 
 

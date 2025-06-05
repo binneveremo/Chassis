@@ -45,8 +45,7 @@ void communication(void const * argument)
   {
 		Vision_Basket_Decode();
 		GamePad_Data_Cla();
-	  Send_PositionToR1();		
-		RGB_Show_Msg();
+	  Send_MessageToR1("position");		
 		osDelay(20);
 	}
 }
@@ -63,7 +62,6 @@ void location(void const * argument)
 		//编码器速度计与陀螺仪及速度计的融合
 		Enc_VXVY_Fuse_With_Gyro_AXAY(2);
 		//雷达与编码器的重定位融合
-		//为车车选择坐标系
     Location_Type_Choose();
 		//插帧得到篮筐和当前坐标的相关信息
 		BasketPositionCal_AccordingVision(2);
@@ -77,9 +75,10 @@ void Detect(void const * argument)
 {
   for(;;)
   {
+		RGB_Show_Msg();
 		LossConnect_Check();
 		Can_Detect();
-    osDelay(300);
+    osDelay(200);
   }
 }
 ////////////////////////////////////////////////////////////璇老师的进程//////////////////////////////

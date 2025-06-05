@@ -16,32 +16,35 @@ struct Point home_point = {
 /* @brief 扣篮流程 
 0.跑点初始化
 1.到点
-
-
-
-
 /                */
 struct dunk_t dunk;
 void Dunk_Flow(void){
 	switch(dunk.state){
-		case get_basket_point:
+		case init:
 			BasketPoint_Init();
-			Tell_Yao_Xuan("fold");
+			dunk.state = goto_dunkpoint;
+		case goto_dunkpoint:
 			BasketPositionLock();
-			dunk.state = (basketpositionlock.flagof.lock_flag == 1)?turn_ready:dunk.state;
+			Tell_Yao_Xuan("fold");
+			dunk.state = (basketpositionlock.flagof.lock_flag == 1)?turnmotor_ready:dunk.state;
 		break;
-		case turn_ready:
-			if(TurnMotor_InTurnPosition() == true) dunk.state = receiving;
+		case turnmotor_ready:
+			if(TurnMotor_InTurnPosition() == true) dunk.state = wait_shoot;
 		break;
-		case receiving:
+		case wait_shoot:
 			Tell_Yao_Xuan("catch");
 #if Opposite_R1
+		
 			Chassis_Velocity_Out(0,0,Correct_Angle(send.R1_Exchange.pos.r + 180));
 #endif
-		dunk.state = (flow.flagof.received == 1)?oppositebasket:dunk.state;
+		dunk.state = (flow.flagof.R1_Shooted == true)?oppositebasket:dunk.state;
 		break;
 		case oppositebasket:
+#if Opposite_R1
 			Chassis_Velocity_Out(0,0,BasketAngleLock());
+#else 
+		Self_Lock_Out("BasketFlow");
+#endif
 			dunk.state = (fabs(basketanglelock.progress.error) < 1.5)?jump:dunk.state;
 		break;
 		case jump:
@@ -80,7 +83,28 @@ void Dribble_Flow(void){
 		Self_Lock_Out("WaitDribble");
 		Tell_Yao_Xuan(((HAL_GetTick() - dribble.time.begin < dribble.time.wait + 400)&&(HAL_GetTick() - dribble.time.begin > dribble.time.wait))?"fold":((HAL_GetTick() - dribble.time.begin > dribble.time.wait + 1000)?"moving":"catch"));
 		dribble.flagof.end = (HAL_GetTick() - dribble.time.begin > dribble.time.end) ? true : false;
+}
+/////////技能挑战赛流程
+struct skill_t skill;
+void Skill_Flow(void){
+	static char last_success_times;
+	switch(skill.status){
+		case begin:
+			Set_Target_Point(skill.target.point[skill.success_time]);
+			if((Point_Distance(site.now,site.target) < skill.param.shoot_advanced_dis) && (flow.flagof.R1_Shooted == false) && (skill.flagof.shoot_requested == false))
+				skill.flagof.shoot_requested = true,Send_MessageToR1("request");
+			if((Point_Distance(site.now,site.target) < skill.param.catch_advanced_dis) && (skill.flagof.net_catched == false))
+				skill.flagof.net_catched = true,Tell_Yao_Xuan("catch");
+			if(last_success_times != skill.success_time)
+				last_success_times = skill.success_time,skill.status = clear;
+		break;
+		case clear:
+			Tell_Yao_Xuan("defend");
+			Clear(skill.flagof);
+			skill.status = begin;
+		break;
 	}
+}
 
 /// @brief 返回手柄控制
 void Back_GamePadControl(void){
@@ -102,8 +126,10 @@ void Auto_Flow(void){
 			Back_Flow();
 		break;
 	}
-	if((dribble.flagof.end == true) || (dunk.flagof.end == true) || (back.flagof.end == true))
+#define Rocker_Move ((hypot(GamePad_Data.rocker[0],GamePad_Data.rocker[1]) > 30) || (hypot(GamePad_Data.rocker[2],GamePad_Data.rocker[3]) > 30))
+	if((dribble.flagof.end == true) || (dunk.flagof.end == true) || (back.flagof.end == true) || (Rocker_Move == true))
 		Back_GamePadControl();
+#undef Rocker_Move
 }
 void ControlStatus_Detect(void){
 

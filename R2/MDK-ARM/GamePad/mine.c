@@ -37,7 +37,6 @@ void GamePad_Data_Cla(void){
 #undef sudo
 	if(((GamePad_Data.witch[8] == 1) || (GamePad_Data.key[21] == 1)) && (chassis.Control_Status == Auto_Control))
 		Back_GamePadControl();
-
 	//手柄控制相关标志位
 	chassis.flagof.gamepad.standard = GamePad_Data.witch[1];
 	chassis.flagof.gamepad.noheader = !chassis.flagof.gamepad.standard;

@@ -22,8 +22,6 @@ void Can_Detect(void){
 	}
 }
 void LossConnect_Check(void){
-	static int cnt;
-	cnt = Limit(cnt+1,0,11);
 	memset(&Wrong_Code,NONE,sizeof(Wrong_Code));
 	
 	Wrong_Code.ho7213 |=  (!chassis.motor.turn[front_wheel].online_flag << 0);
@@ -55,10 +53,10 @@ void LossConnect_Check(void){
 	yis506.online_flag = false;
 	odometer.xenc_online = false;
 	odometer.yenc_online = false;
-	if(cnt == 10){
-		vision.position.online_flag = false;
-		vision.basketlock.online_flag = false;
-	}
+	
+	vision.position.online_flag = false;
+	vision.basketlock.online_flag = false;
+	send.R1_Exchange.get_dataflag = false;
 }
 
 

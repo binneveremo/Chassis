@@ -6,22 +6,15 @@
 
 struct Flow {
 	struct {
-		char end;
-		char received;
-		char jumped;
-		char defend_send;
-		char jump_send;
-		char back;
-		char dribble;
 		char stick_ball;
+		char R1_Shooted;
 	}flagof;
 	enum
 	{
 		dribble_flow,
 		dunk_flow,
 		back_flow,
-	}
-	type;
+	}type;
 };
 extern struct Flow flow;
 struct dribble_t {
@@ -46,9 +39,10 @@ struct dunk_t {
 		char end;
 	}flagof;
 	enum{
-		get_basket_point,
-		turn_ready,
-		receiving,
+		init,
+		goto_dunkpoint,
+		turnmotor_ready,
+		wait_shoot,
 		oppositebasket,
 		jump,
 		end
@@ -61,6 +55,26 @@ struct back_t{
 	}flagof;
 };
 extern struct back_t back;
+
+struct skill_t {
+	enum{
+		begin,
+		clear,
+	}status;
+	struct {
+		int shoot_advanced_dis;
+		int catch_advanced_dis;
+	}param;
+	struct {
+		struct Point point[7];
+	}target;
+	struct{
+		char shoot_requested;
+		char net_catched;
+	}flagof;
+	char success_time;
+};
+
 
 void ControlStatus_Detect(void);
 void Back_GamePadControl(void);

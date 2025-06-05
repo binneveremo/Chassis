@@ -136,7 +136,7 @@ void Mng_RxData(uint8_t *pdata, uint16_t data_length, uint8_t reply_mode)
 			debugData_pkg.debug_data[0] = Char2float("PROG");
 			debugData_pkg.debug_data[1] = basketpositionlock.process.error;
 			debugData_pkg.debug_data[2] = basketanglelock.progress.error;
-			debugData_pkg.debug_data[3] = flow.flagof.received;
+			//debugData_pkg.debug_data[3] = flow.flagof.received;
 			//debugData_pkg.debug_data[4] = flow.state;
 			break;
 		case 4:

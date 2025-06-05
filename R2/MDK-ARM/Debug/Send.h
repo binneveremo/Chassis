@@ -22,14 +22,14 @@ struct Send{
 		unsigned char send[R1_Data_Num];
 		unsigned char receive[R1_Data_Num];
 		struct Point pos;
-		bool get_dataflag; 
 		struct Point net;
+		bool get_dataflag; 
 	}R1_Exchange;
 	uint8_uint32_float_union convert;
 };
 extern struct Send send;
 void Wireless_init(void);
-void Send_PositionToR1(void);
+void Send_MessageToR1(char * message);
 void R1ExchangeData_Decode(UART_HandleTypeDef *huart);
 
 void Send_Float_Data(char num);

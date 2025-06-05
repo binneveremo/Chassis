@@ -43,9 +43,10 @@ void R1ExchangeData_Decode(UART_HandleTypeDef *huart){
 		send.R1_Exchange.pos.x = send.convert.float_data[0] * 1000;
 		send.R1_Exchange.pos.y = send.convert.float_data[1] * 1000;
 		send.R1_Exchange.pos.r = rad2ang(atan2f(send.R1_Exchange.pos.y - site.now.y,send.R1_Exchange.pos.x - site.now.x)) + 180;
+		flow.flagof.R1_Shooted = (send.R1_Exchange.receive[9] == 1)?true:flow.flagof.R1_Shooted;
 	}
 }
-void Send_PositionToR1(void){
+void Send_MessageToR1(char * message){
 	send.R1_Exchange.send[0] = 0xAA;
 #ifdef Carbon_Car
 	send.R1_Exchange.net.x = vision.field.carcenter_field.x + 80 * cos(ang2rad(site.now.r));
@@ -57,10 +58,14 @@ void Send_PositionToR1(void){
 	send.convert.float_data[0] = send.R1_Exchange.net.x;
 	send.convert.float_data[1] = send.R1_Exchange.net.y;
 	memcpy(&send.R1_Exchange.send[1],send.convert.uint8_data,8);
-	send.R1_Exchange.send[9] = chassis.lock.flag;
+	if(strcmp(message,"request") == 0)
+		send.R1_Exchange.send[9] = 2;
+	else
+		send.R1_Exchange.send[9] = chassis.lock.flag;
 	HAL_UART_Transmit(&R1_Exchange_Usart, send.R1_Exchange.send, sizeof(send.R1_Exchange.send), HAL_MAX_DELAY);
-
 }
+
+
 void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t size)
 {
 	R1ExchangeData_Decode(huart);
