@@ -84,7 +84,7 @@ void RGB_Color_All(int color,int bright){
 void RGB_OutPut(void)
 {
 	HAL_TIM_PWM_Stop_DMA(&ws2812_tim, ws2812_channel); 
-	HAL_TIM_PWM_Start_DMA(&ws2812_tim, ws2812_channel, (unsigned int *)send_buff, LED_NUM*3*8+1); 	
+	HAL_TIM_PWM_Start_DMA(&ws2812_tim, ws2812_channel, (unsigned int *)send_buff, (LED_NUM+1)*3*8); 	
 }
 void SwitchRGBShowMsg(void){
 	char Check_Key[] = {2,6}; 

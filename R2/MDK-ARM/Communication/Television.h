@@ -33,6 +33,7 @@ struct Vision{
 	
 	struct {
 		struct Point carcenter_field;
+		struct Point carcenter_fieldinterp;
 	}field;
 	struct {
 		float height;

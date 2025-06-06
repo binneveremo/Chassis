@@ -31,18 +31,6 @@ void Vision_Basket_Decode(void)
 	vision.field.carcenter_field.y = vision.vfield.carzero_vfield.y * cos(r) - vision.vfield.carzero_vfield.x * sin(r) - 386;
 	vision.field.carcenter_field.r = vision.vfield.carzero_vfield.r;
 	
-//	vision.field.carcenter_field.x = vision.convert.float_data[0] * 1000 - 126.69 * (sin(2 * PI * 0.16 * ang2rad(vision.vfield.ladar_vfield.r)));
-//	vision.field.carcenter_field.y = vision.convert.float_data[1] * 1000 - 124.75 * (sin(2 * PI * 0.16 * ang2rad(vision.vfield.ladar_vfield.r)));
-//	vision.field.carcenter_field.r = vision.convert.float_data[3] * rad2ang(1);
-	
-//	vision.vfield.carzero_vfield.x = vision.vfield.ladar_vfield.x - 126.69 * (sin(2 * PI * 0.16 * ang2rad(vision.vfield.ladar_vfield.r) + 1.29));
-//	vision.vfield.carzero_vfield.y = vision.vfield.ladar_vfield.y - 124.75 * (sin(2 * PI * 0.16 * ang2rad(vision.vfield.ladar_vfield.r) - 0.25));
-//	vision.vfield.carzero_vfield.r = vision.vfield.ladar_vfield.r;
-	
-//	float r = ang2rad(ladar2siteangleoffset);
-//	vision.field.carcenter_field.x = vision.vfield.carzero_vfield.x * cos(r) + vision.vfield.carzero_vfield.y * sin(r) + 390;
-//	vision.field.carcenter_field.y = vision.vfield.carzero_vfield.y * cos(r) - vision.vfield.carzero_vfield.x * sin(r) - 386;
-//	vision.field.carcenter_field.r = vision.vfield.carzero_vfield.r;
 }
 void Get_Vision_Data(int header, unsigned char *data){
 	switch (header)
@@ -80,7 +68,6 @@ void Send_Velocity_Vision(void)
 #define position_kalman_encinterp false
 #define position_liner_encinterp true
 
-
 struct EKF ladarx_interp = {
 	.q = 0.7,
 	.r = 1.8,
@@ -112,6 +99,9 @@ void LadarPosInterpolation(int dt)
 	vision.vfield.carzero_vfieldinterp.x = vision.vfield.carzero_vfield.x + dx;
 	vision.vfield.carzero_vfieldinterp.y = vision.vfield.carzero_vfield.y + dy;
 	vision.vfield.carzero_vfieldinterp.r = NormalizeAng_Single(vision.vfield.carzero_vfield.r + dr);
+	
+	vision.field.carcenter_fieldinterp.x = vision.field.carcenter_field.x + dx * 0.5;
+	vision.field.carcenter_fieldinterp.y = vision.field.carcenter_field.y + dy * 0.5;
 #elif position_kalman_encinterp
 	vision.vfield.car_vfieldinterp.x = EKF_Filter(&ladarx_interp, vision.basket.car_vfield.x, basketlock.parameter.siteinterp_gain * basketlock.parameter.siteinterp_gain * dt * site.field.vx_enc);
 	vision.vfield.car_vfieldinterp.y = EKF_Filter(&ladary_interp, vision.basket.car_vfield.y, basketlock.parameter.siteinterp_gain * basketlock.parameter.siteinterp_gain * dt * site.field.vy_enc);
@@ -226,7 +216,18 @@ void Vision_Reset() {
 
 
 
-
+//	vision.field.carcenter_field.x = vision.convert.float_data[0] * 1000 - 126.69 * (sin(2 * PI * 0.16 * ang2rad(vision.vfield.ladar_vfield.r)));
+//	vision.field.carcenter_field.y = vision.convert.float_data[1] * 1000 - 124.75 * (sin(2 * PI * 0.16 * ang2rad(vision.vfield.ladar_vfield.r)));
+//	vision.field.carcenter_field.r = vision.convert.float_data[3] * rad2ang(1);
+	
+//	vision.vfield.carzero_vfield.x = vision.vfield.ladar_vfield.x - 126.69 * (sin(2 * PI * 0.16 * ang2rad(vision.vfield.ladar_vfield.r) + 1.29));
+//	vision.vfield.carzero_vfield.y = vision.vfield.ladar_vfield.y - 124.75 * (sin(2 * PI * 0.16 * ang2rad(vision.vfield.ladar_vfield.r) - 0.25));
+//	vision.vfield.carzero_vfield.r = vision.vfield.ladar_vfield.r;
+	
+//	float r = ang2rad(ladar2siteangleoffset);
+//	vision.field.carcenter_field.x = vision.vfield.carzero_vfield.x * cos(r) + vision.vfield.carzero_vfield.y * sin(r) + 390;
+//	vision.field.carcenter_field.y = vision.vfield.carzero_vfield.y * cos(r) - vision.vfield.carzero_vfield.x * sin(r) - 386;
+//	vision.field.carcenter_field.r = vision.vfield.carzero_vfield.r;
 
 
 

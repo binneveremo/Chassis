@@ -5,7 +5,7 @@
 #define dribble_id_send 0xCB
 #define lift_id_send 0xCC
 #define jump_id_send 0xCD
-
+#define stick_id_send 0xCE
 
 void Tell_Yao_Xuan(char *message){
 	  ////////////防守指令//////////////////
@@ -32,11 +32,15 @@ void Tell_Yao_Xuan(char *message){
 			interact.defend_status = (interact.defend_status == predunk)?interact.defend_status:predunk;
       FDCAN_Send(&Com_Can,jump_id_send,"STD",NULL,"FD",0,"OFF");
 		}
+		else if(strcmp(message, "stick") == 0)
+			FDCAN_Send(&Com_Can,stick_id_send,"STD",NULL,"FD",0,"OFF");
 }
 
 void Car_State_Decode(int id,unsigned char * data){
 	if(id == stickball_id_recv)
 		flow.flagof.stick_ball = true;
+//	if(id == staffdown_id_recv)
+//		flow.flagof.staffdown = true;
 }
 
 

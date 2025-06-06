@@ -11,7 +11,7 @@ struct Flow {
 	}flagof;
 	enum
 	{
-		dribble_flow,
+		dribble_flow = 1,
 		dunk_flow,
 		back_flow,
 		skill_flow,
@@ -73,10 +73,11 @@ struct skill_t {
 	struct{
 		char shoot_requested;
 		char net_catched;
+		char end;
+		char success_time;
 	}flagof;
-	char success_time;
 };
-
+extern struct skill_t skill;
 
 void ControlStatus_Detect(void);
 void Back_GamePadControl(void);

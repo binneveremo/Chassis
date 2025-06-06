@@ -7,6 +7,7 @@
 #include "Interact.h"
 
 #define stickball_id_recv 0xB2
+#define staffdown_id_recv 0xB3
                     
 
 void Tell_Yao_Xuan(char *message);

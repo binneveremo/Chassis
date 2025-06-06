@@ -34,11 +34,15 @@ void GamePad_Data_Cla(void){
 		flow_begin, flow.type = dunk_flow;
 	else if((sudo == 1) && (GamePad_Data.key[14] == 1))
 		flow_begin, flow.type = back_flow;
+	else if((sudo == 1) && (GamePad_Data.key[8] == 1) && (GamePad_Data.witch[6] == 1))
+		flow_begin, flow.type = skill_flow;
 #undef sudo
-	if(((GamePad_Data.witch[8] == 1) || (GamePad_Data.key[21] == 1)) && (chassis.Control_Status == Auto_Control))
+	if((chassis.Control_Status == Auto_Control) && (flow.type == skill_flow) && (GamePadKey_FallingCheck(20) == 1))
+		skill.flagof.success_time++;
+	if(((GamePad_Data.key[21] == 1)) && (chassis.Control_Status == Auto_Control))
 		Back_GamePadControl();
 	//手柄控制相关标志位
-	chassis.flagof.gamepad.standard = GamePad_Data.witch[1];
+	chassis.flagof.gamepad.standard = GamePad_Data.witch[3];
 	chassis.flagof.gamepad.noheader = !chassis.flagof.gamepad.standard;
 	chassis.flagof.gamepad.inverse = GamePad_Data.witch[0];
 	chassis.flagof.gamepad.accel  = GamePad_Data.key[21];
@@ -62,6 +66,8 @@ void GamePad_Data_Cla(void){
  		Tell_Yao_Xuan("lift");
 	if(GamePad_Data.key[15] == 1)
  		Tell_Yao_Xuan("jump");
+	if(GamePad_Data.key[19] == 1)
+ 		Tell_Yao_Xuan("stick");
 	//更改Debug界面
 	DebugPage_Change(GamePadKey_FallingCheck(4));
 	//无线串口
@@ -80,7 +86,7 @@ void GamePad_Data_Cla(void){
 	if(GamePadKey_FallingCheck(2) == 1) 
 		Vision_Reset();
 	if(GamePadKey_FallingCheck(0) == 1) 
-		Vision_Flag_Clear();
+		Clear(skill.flagof.success_time);
 	//清空码盘
 	if((GamePad_Data.key[6] == 1) && (GamePad_Data.key[21] == 1))
  		Odometer_Clear("default"),Gyro_Reset();

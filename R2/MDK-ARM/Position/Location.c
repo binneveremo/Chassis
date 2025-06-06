@@ -17,10 +17,8 @@ struct EKF ekf_y = {
 };
 //
 void Location_Type_Choose(void){
-	site.now.x = vision.field.carcenter_field.x + 400;
-	site.now.y = vision.field.carcenter_field.y - 375;
-//	site.now.x = site.field.x_enc;
-//	site.now.y = site.field.y_enc;
+	site.now.x = vision.field.carcenter_fieldinterp.x;
+	site.now.y = vision.field.carcenter_fieldinterp.y;
 	site.now.r = site.gyro.r;
 }
 ///////////////////////////////////////////////////////码盘与陀螺仪速度融合计算///////////////////////////////////////////////////////////////
@@ -59,40 +57,7 @@ struct EKF odo_ladar_kalman_y = {
 
 //////////////////////////////////////////////////////////////////////////////////雷达与马盘的数据融合/////////////////////////////////////////////////////////////////////
 void Ladar_With_Odometer_Kalman(float dt){
-	//给结构体赋值
-//	if(ladar.get_flag == 1){
-//		ladar.get_flag = 0;
-//		ladar.dx = 0;
-//		ladar.dy = 0;
-//	}
-//	else if(ladar.get_flag == 0){
-//		ladar.dx += site.enc_pos.row_vx * dt ;
-//		ladar.dy += site.enc_pos.row_vy * dt ;
-//	}
-//	ladar.fuse_x = ladar.x + ladar.dx;
-//	ladar.fuse_y = ladar.y + ladar.dy;
-//	site.ladar_pos.row_x = ladar.x;
-//	site.ladar_pos.row_y = ladar.y;
-//	site.ladar_pos.with_odo_x = EKF_Filter(&odo_ladar_kalman_x,ladar.fuse_x,site.gyro_pos.with_odo_vx * dt);;
-//	site.ladar_pos.with_odo_y = EKF_Filter(&odo_ladar_kalman_y,ladar.fuse_y,site.gyro_pos.with_odo_vy * dt);
-//}
-//void Ladar_With_Odometer_Relocation(float dt){
-//	if(ladar.get_flag == 1){
-//		ladar.get_flag = 0;
-//		ladar.dx = 0;
-//		ladar.dy = 0;
-//	}
-//	else if(ladar.get_flag == 0){
-//		ladar.dx += site.enc_pos.row_vx * dt * 1.00;
-//		ladar.dy += site.enc_pos.row_vy * dt * 1.00;
-//	}
-//	ladar.fuse_x = ladar.x + ladar.dx;
-//	ladar.fuse_y = ladar.y + ladar.dy;
-//	
-//	site.ladar_pos.row_x = ladar.x;
-//	site.ladar_pos.row_y = ladar.y;
-//	site.ladar_pos.with_odo_x = ladar.fuse_x;
-//	site.ladar_pos.with_odo_y = ladar.fuse_y;
+
 }	
 
 

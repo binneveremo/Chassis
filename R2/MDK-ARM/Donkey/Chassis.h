@@ -68,25 +68,26 @@
 
 struct Spot_t
 {
-	float p;
-	float i;
-	float istart;
-	float iend;
-	float ilimit;
-	float outlimit;
-	float gain;
-	
-	float itotal_x;
-	float itotal_y;
-	float outx;
-	float outy;
-	///////新加的测试参数
-	float total_dis;
-	float brake_ilimit;
-	float brake_outlimit;
-	float brake_distance;
-	float brake_gain;
-	float brake_percent;
+	struct {
+		float p;
+		float i;
+		float istart;
+		float iend;
+		float ilimit;
+		float outlimit;
+		float brake_mindis;
+		float brake_gain;
+		float brake_percent;
+	}param;
+	struct {
+		float total_dis;
+		float brake_distance;
+		float gain;
+		float itotal_x;
+		float itotal_y;
+		float outx;
+		float outy;
+	}process;
 };
 struct Chassis{
 	enum{
@@ -167,7 +168,7 @@ void GamePad_Velocity_Control(void);
 void Self_Lock_Auto(void);
 void Self_Lock_Out(char * lock_reason);
 
-void Position_With_Mark_PID_Run(void);
+void Position_With_Mark_PID_Run(char * type);
 bool TurnMotor_InTurnPosition(void);
 #endif
 

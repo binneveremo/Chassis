@@ -114,7 +114,7 @@ bool TurnMotor_InTurnPosition(void)
 }
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////跑点相关///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////三种跑法：1.位置PID 2.速度PID 3.位置PID+速度PID////////////////////////////////////////////////////////////////////////////////////
-struct correct_angle_t correct_angle = {.p = 90, .d = 0.03, .i = 0.6, .ilimit = 900, .istart = 1, .iend = 10, .outlimit = 3000, .accel_gain = 1.4, .velocity_gain = 0.4,};
+struct correct_angle_t correct_angle = {.p = 35, .d = 0.03, .i = 0.6, .ilimit = 900, .istart = 1, .iend = 10, .outlimit = 6000, .accel_gain = 1.4, .velocity_gain = 0.2,};
 float Correct_Angle(float target)
 {
 	float error = NormalizeAng_Single(target - site.now.r);
@@ -125,55 +125,59 @@ float Correct_Angle(float target)
 	gain = (fabs(error) < correct_angle.istart) ? Limit(fabs(error / correct_angle.istart), 0.5, 1) : 1;
 	correct_angle.itotal *= gain;
 	correct_angle.itotal = ((fabs(error) > correct_angle.istart) && (fabs(error) < correct_angle.iend)) ? Limit(correct_angle.itotal + correct_angle.i * error, -correct_angle.ilimit, correct_angle.ilimit) : correct_angle.itotal;
-	out = Limit(gain * p + correct_angle.itotal, -correct_angle.outlimit, correct_angle.outlimit);
+	out = Limit(gain * p + correct_angle.itotal - correct_angle.d*site.gyro.omiga, -correct_angle.outlimit, correct_angle.outlimit);
 	return out;
 }
 
 /////////////////////////////////////////4.位置闭环单向PID
-struct Spot_t spot = {	.p = 3,	.i = 2,	.istart = 6,	.iend = 400,	.ilimit = 1000,	.outlimit = 10000,	.brake_distance = 460,	.brake_percent = 0.2,	.brake_gain = 0.05,	.brake_outlimit = 900,	.brake_ilimit = 1000,};
+struct Spot_t spot_far = {	.param.p = 3,	.param.i = 2,	.param.istart = 6,	.param.iend = 400,	.param.ilimit = 1000,	.param.outlimit = 16000,	.process.brake_distance = 600,	.param.brake_percent = 0.3,	.param.brake_gain = 0.05, .param.brake_mindis = 600};
+struct Spot_t spot_near = {	.param.p = 15,.param.i = 2,	.param.istart = 200,.param.iend = 1000,	.param.ilimit = 2000,	.param.outlimit = 18000,	.process.brake_distance = 600,	.param.brake_percent = 0.77,	.param.brake_gain = 0.05, .param.brake_mindis = 300};
 //////////////////////跑点的速度限制       根据最大速度最大速度 10000  那么就会限制刹车距离为 spot.brake_percent * 10000
-void Position_With_Mark_PID_Run(void)
-{
+void Position_With_Mark_PID_Run(char * type){
+	static struct Spot_t spot; 
+	if(strcmp(type,"far") == 0)
+		Copy(spot.param,spot_far);
+	else 
+		Copy(spot.param,spot_near);
 	static struct Point last;
 	if (Point_Distance(last, site.target) > 100)
 	{
-		spot.total_dis = Point_Distance(site.target, site.now);
-		spot.brake_distance = Limit(spot.brake_percent * spot.total_dis, 300, spot.outlimit * spot.brake_percent);
+		spot.process.total_dis = Point_Distance(site.target, site.now);
+		spot.process.brake_distance = Limit(spot.param.brake_percent * spot.process.total_dis, spot.param.brake_mindis, spot.param.outlimit * spot.param.brake_percent);
 		memcpy(&last, &site.target, sizeof(last));
 	}
 	float xerror = site.target.x - site.now.x;
 	float yerror = site.target.y - site.now.y;
 	float rerror = site.target.r - site.now.r;
 
-	spot.gain = (hypot(xerror, yerror) > spot.brake_distance) ? 1 : spot.brake_gain;
-	float outlimit = spot.outlimit;
-	float ilimit = spot.ilimit;
+	spot.process.gain = (hypot(xerror, yerror) > spot.process.brake_distance) ? 1 : spot.param.brake_gain;
+	float outlimit = spot.param.outlimit;
+	float ilimit = spot.param.ilimit;
 
-	float xp = spot.p * xerror;
-	float xi = ((fabs(xerror) < spot.iend) && (fabs(xerror) > spot.istart)) ? spot.i * xerror : 0;
-	spot.itotal_x = (fabs(xerror) < spot.istart) ? 0 : Limit(spot.itotal_x + xi, -ilimit, ilimit);
-	spot.outx = spot.gain * xp + spot.itotal_x;
+	float xp = spot.param.p * xerror;
+	float xi = ((fabs(xerror) < spot.param.iend) && (fabs(xerror) > spot.param.istart)) ? spot.param.i * xerror : 0;
+	spot.process.itotal_x = (fabs(xerror) < spot.param.istart) ? 0 : Limit(spot.process.itotal_x + xi, -ilimit, ilimit);
+	spot.process.outx = spot.process.gain * xp + spot.process.itotal_x;
 
-	float yp = spot.p * yerror;
-	float yi = ((fabs(yerror) < spot.iend) && (fabs(yerror) > spot.istart)) ? spot.i * yerror : 0;
-	spot.itotal_y = (fabs(yerror) < spot.istart) ? 0 : Limit(spot.itotal_y + yi, -ilimit, ilimit);
-	spot.outy = spot.gain * yp + spot.itotal_y;
+	float yp = spot.param.p * yerror;
+	float yi = ((fabs(yerror) < spot.param.iend) && (fabs(yerror) > spot.param.istart)) ? spot.param.i * yerror : 0;
+	spot.process.itotal_y = (fabs(yerror) < spot.param.istart) ? 0 : Limit(spot.process.itotal_y + yi, -ilimit, ilimit);
+	spot.process.outy = spot.process.gain * yp + spot.process.itotal_y;
 
 	// 请记住 第一项为front left 角速度
-	float vnow = Limit(hypot(spot.outx, spot.outy), -outlimit, outlimit);
+	float vnow = Limit(hypot(spot.process.outx, spot.process.outy), -outlimit, outlimit);
 	float angle = atan2f(yerror, xerror) - ang2rad(site.now.r);
 
 	Chassis_Velocity_Out(vnow * sin(angle), vnow * cos(angle), Correct_Angle(site.target.r));
 }
 
-void Self_Lock_Out(char *lock_reason)
-{
-	for (int i = 0; i < VESC_NUM; i++)
-		chassis.motor.drive[i].rpm = 0;
+void Self_Lock_Out(char *lock_reason){
 	Min_Angle_Cal(&chassis.motor.turn[front_wheel], &chassis.motor.drive[front_wheel], 0);
 	Min_Angle_Cal(&chassis.motor.turn[left_wheel], &chassis.motor.drive[left_wheel], -83);
 	Min_Angle_Cal(&chassis.motor.turn[right_wheel], &chassis.motor.drive[right_wheel], 83);
 	Min_Angle_Cal(&chassis.motor.turn[behind_wheel], &chassis.motor.drive[behind_wheel], 0);
+	for (int i = 0; i < VESC_NUM; i++)
+		chassis.motor.drive[i].rpm = 0;
 	if (strcmp(chassis.lock.reason, lock_reason))
 		memcpy(chassis.lock.reason, lock_reason, strlen(lock_reason));
 }
@@ -191,7 +195,7 @@ void Self_Lock_Auto(void)
 			break;
 	}
 	chassis.lock.flag = (chassis.lock.reason[NONE] != NONE) ? true : false;
-	if (GamepadLostConnection)
+	if(GamepadLostConnection)
 		Self_Lock_Out("GamePadLoss");
 }
 /////////////////////////////////////////////////////////////////////////////////////转向电机解算//////////////////////////////////////////////////////////////////////////

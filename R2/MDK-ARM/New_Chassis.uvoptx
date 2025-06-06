@@ -42,7 +42,7 @@
         <HexOffset>0</HexOffset>
       </OPTHX>
       <OPTLEX>
-        <PageWidth>79</PageWidth>
+        <PageWidth>80</PageWidth>
         <PageLength>66</PageLength>
         <TabStop>8</TabStop>
         <ListingPath></ListingPath>
@@ -309,6 +309,16 @@
           <count>29</count>
           <WinNumber>1</WinNumber>
           <ItemText>dunk</ItemText>
+        </Ww>
+        <Ww>
+          <count>30</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>spot_near</ItemText>
+        </Ww>
+        <Ww>
+          <count>31</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>skill</ItemText>
         </Ww>
       </WatchWindow1>
       <WatchWindow2>
@@ -878,7 +888,7 @@
 
   <Group>
     <GroupName>Drivers/CMSIS</GroupName>
-    <tvExp>0</tvExp>
+    <tvExp>1</tvExp>
     <tvExpOptDlg>0</tvExpOptDlg>
     <cbSel>0</cbSel>
     <RteFlg>0</RteFlg>

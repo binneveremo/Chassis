@@ -302,17 +302,13 @@ void HO7213_Decode_for_CE(uint8_t *RxData)
 	HO7213.ID = HO7213_RXData[0];
 }
 /*FDCAN模式下数据解码(普通和扩展模式下的回传数据均为16字节，解码函数相同)*/
-float HO7213_Decode_for_FDC(uint8_t *RxData)
+float HO7213_Decode_for_FDC(unsigned char *RxData)
 {
 	memcpy(HO7213_RXData, RxData, 16);
 	if ((HO7213_RXData[0] >> 7) == 0)
-	{
 		HO7213.Position = (long double)(((int64_t)0x000000 << 40) + ((int64_t)HO7213_RXData[0] << 32) + ((int64_t)HO7213_RXData[1] << 24) + ((int64_t)HO7213_RXData[2] << 16) + ((int64_t)HO7213_RXData[3] << 8) + ((int64_t)HO7213_RXData[4])) / (1 << 20) * 360;
-	}
 	else if ((HO7213_RXData[0] >> 7) == 1)
-	{
 		HO7213.Position = (long double)(((int64_t)0xFFFFFF << 40) + ((int64_t)HO7213_RXData[0] << 32) + ((int64_t)HO7213_RXData[1] << 24) + ((int64_t)HO7213_RXData[2] << 16) + ((int64_t)HO7213_RXData[3] << 8) + ((int64_t)HO7213_RXData[4])) / (1 << 20) * 360;
-	}
 	HO7213.Speed = (((float)(((int32_t)HO7213_RXData[5] << 24) + ((int32_t)HO7213_RXData[6] << 16) + ((int32_t)HO7213_RXData[7] << 8) + (int32_t)HO7213_RXData[8]) / (1 << 23)) * 1000 * 60 / Motor_Pole_Pair) * (2 * pi / 60);
 	HO7213.Torque = (int16_t)((HO7213_RXData[9] << 8) + HO7213_RXData[10]) / 32768.f * 100 * Tqe_Constant;
 	HO7213.Mode = HO7213_RXData[11];
