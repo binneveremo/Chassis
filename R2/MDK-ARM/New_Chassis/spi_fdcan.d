@@ -1,4 +1,4 @@
-new_chassis/spi_fdcan.o: SPI_FDCAN\SPI_FDCAN.c SPI_FDCAN\SPI_FDCAN.h \
+./new_chassis/spi_fdcan.o: SPI_FDCAN\SPI_FDCAN.c SPI_FDCAN\SPI_FDCAN.h \
   SPI_FDCAN\drv_spi.h ..\Core\Inc\spi.h ..\Core\Inc\main.h \
   ..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal.h \
   ..\Core\Inc\stm32h7xx_hal_conf.h \

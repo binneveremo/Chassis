@@ -1,4 +1,4 @@
-new_chassis/fastmathfunctions.o: \
+./new_chassis/fastmathfunctions.o: \
   D:\Project_APP\Keil\Keil_Data\ARM\CMSIS-DSP\1.16.2\Source\FastMathFunctions\FastMathFunctions.c \
   D:\Project_APP\Keil\Keil_Data\ARM\CMSIS-DSP\1.16.2\Source\FastMathFunctions\arm_cos_f32.c \
   D:\Project_APP\Keil\Keil_Data\ARM\CMSIS-DSP\1.16.2\Include\dsp\fast_math_functions.h \

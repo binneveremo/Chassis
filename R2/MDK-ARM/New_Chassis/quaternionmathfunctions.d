@@ -1,4 +1,4 @@
-new_chassis/quaternionmathfunctions.o: \
+./new_chassis/quaternionmathfunctions.o: \
   D:\Project_APP\Keil\Keil_Data\ARM\CMSIS-DSP\1.16.2\Source\QuaternionMathFunctions\QuaternionMathFunctions.c \
   D:\Project_APP\Keil\Keil_Data\ARM\CMSIS-DSP\1.16.2\Source\QuaternionMathFunctions\arm_quaternion_norm_f32.c \
   D:\Project_APP\Keil\Keil_Data\ARM\CMSIS-DSP\1.16.2\Include\dsp\quaternion_math_functions.h \

@@ -1,4 +1,4 @@
-new_chassis/television.o: Communication\Television.c \
+./new_chassis/television.o: Communication\Television.c \
   Communication\Television.h Position\Location.h Global\Global.h \
   Donkey\Chassis.h Communication\Communication.h Can\Can_Bsp.h \
   SPI_FDCAN\SPI_FDCAN.h SPI_FDCAN\drv_spi.h ..\Core\Inc\spi.h \

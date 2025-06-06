@@ -1,1 +1,1 @@
-new_chassis/global.o: Global\Global.c Global\Global.h
+./new_chassis/global.o: Global\Global.c Global\Global.h

@@ -1,4 +1,4 @@
-new_chassis/matrixfunctionsf16.o: \
+./new_chassis/matrixfunctionsf16.o: \
   D:\Project_APP\Keil\Keil_Data\ARM\CMSIS-DSP\1.16.2\Source\MatrixFunctions\MatrixFunctionsF16.c \
   D:\Project_APP\Keil\Keil_Data\ARM\CMSIS-DSP\1.16.2\Source\MatrixFunctions\arm_mat_add_f16.c \
   D:\Project_APP\Keil\Keil_Data\ARM\CMSIS-DSP\1.16.2\Include\dsp\matrix_functions_f16.h \

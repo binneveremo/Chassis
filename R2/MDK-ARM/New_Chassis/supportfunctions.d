@@ -1,4 +1,4 @@
-new_chassis/supportfunctions.o: \
+./new_chassis/supportfunctions.o: \
   D:\Project_APP\Keil\Keil_Data\ARM\CMSIS-DSP\1.16.2\Source\SupportFunctions\SupportFunctions.c \
   D:\Project_APP\Keil\Keil_Data\ARM\CMSIS-DSP\1.16.2\Source\SupportFunctions\arm_barycenter_f32.c \
   D:\Project_APP\Keil\Keil_Data\ARM\CMSIS-DSP\1.16.2\Include\dsp\support_functions.h \

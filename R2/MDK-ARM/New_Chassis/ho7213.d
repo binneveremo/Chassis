@@ -1,5 +1,6 @@
-new_chassis/ho7213.o: Donkey\HO7213.c Donkey\HO7213.h ..\Core\Inc\fdcan.h \
-  ..\Core\Inc\main.h ..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal.h \
+./new_chassis/ho7213.o: Donkey\HO7213.c Donkey\HO7213.h \
+  ..\Core\Inc\fdcan.h ..\Core\Inc\main.h \
+  ..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal.h \
   ..\Core\Inc\stm32h7xx_hal_conf.h \
   ..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal_rcc.h \
   ..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal_def.h \

@@ -1,4 +1,4 @@
-new_chassis/guard.o: Guard\Guard.c Guard\Guard.h Position\Location.h \
+./new_chassis/guard.o: Guard\Guard.c Guard\Guard.h Position\Location.h \
   Global\Global.h Donkey\Chassis.h Communication\Communication.h \
   Can\Can_Bsp.h SPI_FDCAN\SPI_FDCAN.h SPI_FDCAN\drv_spi.h \
   ..\Core\Inc\spi.h ..\Core\Inc\main.h \

@@ -1,8 +1,8 @@
-new_chassis/send.o: Debug\Send.c Debug\Send.h Communication\Television.h \
-  Position\Location.h Global\Global.h Donkey\Chassis.h \
-  Communication\Communication.h Can\Can_Bsp.h SPI_FDCAN\SPI_FDCAN.h \
-  SPI_FDCAN\drv_spi.h ..\Core\Inc\spi.h ..\Core\Inc\main.h \
-  ..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal.h \
+./new_chassis/send.o: Debug\Send.c Debug\Send.h \
+  Communication\Television.h Position\Location.h Global\Global.h \
+  Donkey\Chassis.h Communication\Communication.h Can\Can_Bsp.h \
+  SPI_FDCAN\SPI_FDCAN.h SPI_FDCAN\drv_spi.h ..\Core\Inc\spi.h \
+  ..\Core\Inc\main.h ..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal.h \
   ..\Core\Inc\stm32h7xx_hal_conf.h \
   ..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal_rcc.h \
   ..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal_def.h \

@@ -1,4 +1,4 @@
-new_chassis/communication.o: Communication\Communication.c \
+./new_chassis/communication.o: Communication\Communication.c \
   Communication\Communication.h Position\Location.h Global\Global.h \
   Can\Can_Bsp.h SPI_FDCAN\SPI_FDCAN.h SPI_FDCAN\drv_spi.h \
   ..\Core\Inc\spi.h ..\Core\Inc\main.h \

@@ -1,4 +1,4 @@
-new_chassis/windowfunctions.o: \
+./new_chassis/windowfunctions.o: \
   D:\Project_APP\Keil\Keil_Data\ARM\CMSIS-DSP\1.16.2\Source\WindowFunctions\WindowFunctions.c \
   D:\Project_APP\Keil\Keil_Data\ARM\CMSIS-DSP\1.16.2\Source\WindowFunctions\arm_welch_f32.c \
   D:\Project_APP\Keil\Keil_Data\ARM\CMSIS-DSP\1.16.2\Include\dsp\window_functions.h \

@@ -1,4 +1,4 @@
-new_chassis/stm32h7xx_hal_fdcan.o: \
+./new_chassis/stm32h7xx_hal_fdcan.o: \
   ..\Drivers\STM32H7xx_HAL_Driver\Src\stm32h7xx_hal_fdcan.c \
   ..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal.h \
   ..\Core\Inc\stm32h7xx_hal_conf.h \

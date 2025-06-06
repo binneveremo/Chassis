@@ -1,4 +1,4 @@
-new_chassis/transformfunctions.o: \
+./new_chassis/transformfunctions.o: \
   D:\Project_APP\Keil\Keil_Data\ARM\CMSIS-DSP\1.16.2\Source\TransformFunctions\TransformFunctions.c \
   D:\Project_APP\Keil\Keil_Data\ARM\CMSIS-DSP\1.16.2\Source\TransformFunctions\arm_bitreversal.c \
   D:\Project_APP\Keil\Keil_Data\ARM\CMSIS-DSP\1.16.2\Include\dsp\transform_functions.h \

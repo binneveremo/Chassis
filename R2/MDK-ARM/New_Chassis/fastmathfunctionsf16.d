@@ -1,4 +1,4 @@
-new_chassis/fastmathfunctionsf16.o: \
+./new_chassis/fastmathfunctionsf16.o: \
   D:\Project_APP\Keil\Keil_Data\ARM\CMSIS-DSP\1.16.2\Source\FastMathFunctions\FastMathFunctionsF16.c \
   D:\Project_APP\Keil\Keil_Data\ARM\CMSIS-DSP\1.16.2\Source\FastMathFunctions\arm_vexp_f16.c \
   D:\Project_APP\Keil\Keil_Data\ARM\CMSIS-DSP\1.16.2\Include\dsp\fast_math_functions_f16.h \

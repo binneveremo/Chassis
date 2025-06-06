@@ -1,4 +1,4 @@
-new_chassis/stm32h7xx_hal_gpio.o: \
+./new_chassis/stm32h7xx_hal_gpio.o: \
   ..\Drivers\STM32H7xx_HAL_Driver\Src\stm32h7xx_hal_gpio.c \
   ..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal.h \
   ..\Core\Inc\stm32h7xx_hal_conf.h \

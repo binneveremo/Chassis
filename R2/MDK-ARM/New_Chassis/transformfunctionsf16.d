@@ -1,4 +1,4 @@
-new_chassis/transformfunctionsf16.o: \
+./new_chassis/transformfunctionsf16.o: \
   D:\Project_APP\Keil\Keil_Data\ARM\CMSIS-DSP\1.16.2\Source\TransformFunctions\TransformFunctionsF16.c \
   D:\Project_APP\Keil\Keil_Data\ARM\CMSIS-DSP\1.16.2\Source\TransformFunctions\arm_cfft_f16.c \
   D:\Project_APP\Keil\Keil_Data\ARM\CMSIS-DSP\1.16.2\Include\dsp\transform_functions_f16.h \

@@ -1,4 +1,4 @@
-new_chassis/commontables.o: \
+./new_chassis/commontables.o: \
   D:\Project_APP\Keil\Keil_Data\ARM\CMSIS-DSP\1.16.2\Source\CommonTables\CommonTables.c \
   D:\Project_APP\Keil\Keil_Data\ARM\CMSIS-DSP\1.16.2\Source\CommonTables\arm_common_tables.c \
   D:\Project_APP\Keil\Keil_Data\ARM\CMSIS-DSP\1.16.2\Include\arm_math_types.h \

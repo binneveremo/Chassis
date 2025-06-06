@@ -1,4 +1,4 @@
-new_chassis/statisticsfunctions.o: \
+./new_chassis/statisticsfunctions.o: \
   D:\Project_APP\Keil\Keil_Data\ARM\CMSIS-DSP\1.16.2\Source\StatisticsFunctions\StatisticsFunctions.c \
   D:\Project_APP\Keil\Keil_Data\ARM\CMSIS-DSP\1.16.2\Source\StatisticsFunctions\arm_entropy_f32.c \
   D:\Project_APP\Keil\Keil_Data\ARM\CMSIS-DSP\1.16.2\Include\dsp\statistics_functions.h \

@@ -1,4 +1,4 @@
-new_chassis/tasks.o: ..\Middlewares\Third_Party\FreeRTOS\Source\tasks.c \
+./new_chassis/tasks.o: ..\Middlewares\Third_Party\FreeRTOS\Source\tasks.c \
   ..\Middlewares\Third_Party\FreeRTOS\Source\include\FreeRTOS.h \
   ..\Core\Inc\FreeRTOSConfig.h \
   ..\Middlewares\Third_Party\FreeRTOS\Source\include\projdefs.h \

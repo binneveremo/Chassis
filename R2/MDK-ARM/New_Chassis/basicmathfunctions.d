@@ -1,4 +1,4 @@
-new_chassis/basicmathfunctions.o: \
+./new_chassis/basicmathfunctions.o: \
   D:\Project_APP\Keil\Keil_Data\ARM\CMSIS-DSP\1.16.2\Source\BasicMathFunctions\BasicMathFunctions.c \
   D:\Project_APP\Keil\Keil_Data\ARM\CMSIS-DSP\1.16.2\Source\BasicMathFunctions\arm_abs_f32.c \
   D:\Project_APP\Keil\Keil_Data\ARM\CMSIS-DSP\1.16.2\Include\dsp\basic_math_functions.h \

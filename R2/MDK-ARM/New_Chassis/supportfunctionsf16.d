@@ -1,4 +1,4 @@
-new_chassis/supportfunctionsf16.o: \
+./new_chassis/supportfunctionsf16.o: \
   D:\Project_APP\Keil\Keil_Data\ARM\CMSIS-DSP\1.16.2\Source\SupportFunctions\SupportFunctionsF16.c \
   D:\Project_APP\Keil\Keil_Data\ARM\CMSIS-DSP\1.16.2\Source\SupportFunctions\arm_copy_f16.c \
   D:\Project_APP\Keil\Keil_Data\ARM\CMSIS-DSP\1.16.2\Include\dsp\support_functions_f16.h \

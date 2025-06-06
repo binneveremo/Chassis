@@ -1,4 +1,4 @@
-new_chassis/stream_buffer.o: \
+./new_chassis/stream_buffer.o: \
   ..\Middlewares\Third_Party\FreeRTOS\Source\stream_buffer.c \
   ..\Middlewares\Third_Party\FreeRTOS\Source\include\FreeRTOS.h \
   ..\Core\Inc\FreeRTOSConfig.h \

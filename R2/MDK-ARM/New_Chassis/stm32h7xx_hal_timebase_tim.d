@@ -1,4 +1,4 @@
-new_chassis/stm32h7xx_hal_timebase_tim.o: \
+./new_chassis/stm32h7xx_hal_timebase_tim.o: \
   ..\Core\Src\stm32h7xx_hal_timebase_tim.c \
   ..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal.h \
   ..\Core\Inc\stm32h7xx_hal_conf.h \

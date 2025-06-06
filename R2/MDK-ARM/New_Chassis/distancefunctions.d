@@ -1,4 +1,4 @@
-new_chassis/distancefunctions.o: \
+./new_chassis/distancefunctions.o: \
   D:\Project_APP\Keil\Keil_Data\ARM\CMSIS-DSP\1.16.2\Source\DistanceFunctions\DistanceFunctions.c \
   D:\Project_APP\Keil\Keil_Data\ARM\CMSIS-DSP\1.16.2\Source\DistanceFunctions\arm_boolean_distance.c \
   D:\Project_APP\Keil\Keil_Data\ARM\CMSIS-DSP\1.16.2\Include\dsp\distance_functions.h \

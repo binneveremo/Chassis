@@ -1,4 +1,4 @@
-new_chassis/commontablesf16.o: \
+./new_chassis/commontablesf16.o: \
   D:\Project_APP\Keil\Keil_Data\ARM\CMSIS-DSP\1.16.2\Source\CommonTables\CommonTablesF16.c \
   D:\Project_APP\Keil\Keil_Data\ARM\CMSIS-DSP\1.16.2\Source\CommonTables\arm_common_tables_f16.c \
   D:\Project_APP\Keil\Keil_Data\ARM\CMSIS-DSP\1.16.2\Include\arm_math_types_f16.h \

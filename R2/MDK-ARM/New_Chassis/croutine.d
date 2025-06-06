@@ -1,4 +1,4 @@
-new_chassis/croutine.o: \
+./new_chassis/croutine.o: \
   ..\Middlewares\Third_Party\FreeRTOS\Source\croutine.c \
   ..\Middlewares\Third_Party\FreeRTOS\Source\include\FreeRTOS.h \
   ..\Core\Inc\FreeRTOSConfig.h \

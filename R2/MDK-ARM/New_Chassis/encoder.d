@@ -1,4 +1,4 @@
-new_chassis/encoder.o: Position\Encoder.c Can\Can_Bsp.h \
+./new_chassis/encoder.o: Position\Encoder.c Can\Can_Bsp.h \
   SPI_FDCAN\SPI_FDCAN.h SPI_FDCAN\drv_spi.h ..\Core\Inc\spi.h \
   ..\Core\Inc\main.h ..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal.h \
   ..\Core\Inc\stm32h7xx_hal_conf.h \

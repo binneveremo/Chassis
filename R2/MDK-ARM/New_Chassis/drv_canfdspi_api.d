@@ -1,4 +1,4 @@
-new_chassis/drv_canfdspi_api.o: SPI_FDCAN\drv_canfdspi_api.c \
+./new_chassis/drv_canfdspi_api.o: SPI_FDCAN\drv_canfdspi_api.c \
   SPI_FDCAN\drv_canfdspi_api.h SPI_FDCAN\drv_canfdspi_defines.h \
   SPI_FDCAN\drv_canfdspi_register.h \
   ..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal.h \

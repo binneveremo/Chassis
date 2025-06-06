@@ -1,4 +1,4 @@
-new_chassis/statisticsfunctionsf16.o: \
+./new_chassis/statisticsfunctionsf16.o: \
   D:\Project_APP\Keil\Keil_Data\ARM\CMSIS-DSP\1.16.2\Source\StatisticsFunctions\StatisticsFunctionsF16.c \
   D:\Project_APP\Keil\Keil_Data\ARM\CMSIS-DSP\1.16.2\Source\StatisticsFunctions\arm_max_f16.c \
   D:\Project_APP\Keil\Keil_Data\ARM\CMSIS-DSP\1.16.2\Include\dsp\statistics_functions_f16.h \

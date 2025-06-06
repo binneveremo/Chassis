@@ -1,4 +1,4 @@
-new_chassis/bayesfunctionsf16.o: \
+./new_chassis/bayesfunctionsf16.o: \
   D:\Project_APP\Keil\Keil_Data\ARM\CMSIS-DSP\1.16.2\Source\BayesFunctions\BayesFunctionsF16.c \
   D:\Project_APP\Keil\Keil_Data\ARM\CMSIS-DSP\1.16.2\Source\BayesFunctions\arm_gaussian_naive_bayes_predict_f16.c \
   D:\Project_APP\Keil\Keil_Data\ARM\CMSIS-DSP\1.16.2\Include\dsp\bayes_functions_f16.h \
