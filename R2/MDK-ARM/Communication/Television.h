@@ -48,10 +48,8 @@ struct Vision{
 		//float ladar2siteangleoffset = -1.45; 
 #endif
 		float ladar2siteangleoffset;
-	
-	
 	}param;
-	
+	float offset_angle;
 	uint8_uint32_float_union convert;
 };
 

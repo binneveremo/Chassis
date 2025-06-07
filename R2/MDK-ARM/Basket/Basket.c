@@ -95,7 +95,7 @@ void BasketPoint_Init(void)
 	basketpositionlock.target.partial.x = basketpositionlock.target.global.x - vision.visual.carzero_visualinterp.x;
 	basketpositionlock.target.partial.y = basketpositionlock.target.global.y - vision.visual.carzero_visualinterp.y;
 	basketpositionlock.target.partial.r = basketpositionlock.target.global.r - vision.visual.carzero_visualinterp.r;
-	dunk.flagof.init = true;
+	dunk.flagof.init = true;                             
 }
 void BsaketPoint_SelfLockAuto(void)
 {

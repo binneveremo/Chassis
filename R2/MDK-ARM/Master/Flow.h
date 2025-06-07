@@ -30,6 +30,7 @@ struct dribble_t {
 		int wait;
 	}time;
 	struct {
+		char drrbbled;
 		char end;
 		char init;
 	}flagof;
@@ -66,7 +67,8 @@ struct skill_t {
 	struct {
 		int shoot_advanced_dis[7];
 		int catch_advanced_dis[7];
-		int lock_dis;
+		float lock_dis;
+		float lock_angle;
 	}param;
 	struct {
 		struct Point point[7];

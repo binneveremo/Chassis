@@ -1,4 +1,6 @@
 #include "Television.h"
+#include "Gyro.h"
+
 struct Vision vision = {.param.basket_xoffset = 130,.param.ladar2siteangleoffset = -2.4};
 #define OLD_COMMUNICATION false
 
@@ -27,9 +29,14 @@ void Vision_Basket_Decode(void){
 	memcpy(vision.convert.uint8_data, vision.basketlock.data, 20);
 	vision.visual.basket_visual.x = vision.convert.float_data[0] * 1000 + vision.param.basket_xoffset;
 	vision.visual.basket_visual.y = vision.convert.float_data[1] * 1000 + vision.param.basket_yoffset;
+	
 	vision.visual.ladar_visual.x = vision.convert.float_data[2] * 1000;
 	vision.visual.ladar_visual.y = vision.convert.float_data[3] * 1000;
 	vision.visual.ladar_visual.r = vision.convert.float_data[4] * rad2ang(1);
+	
+	vision.visual.carzero_visual.x = vision.visual.ladar_visual.x - 126.69 * (sin(2 * PI * 0.16 * ang2rad(vision.visual.ladar_visual.r) + 1.29) - sin(1.29));
+	vision.visual.carzero_visual.y = vision.visual.ladar_visual.y - 124.75 * (sin(2 * PI * 0.16 * ang2rad(vision.visual.ladar_visual.r) - 0.25) + sin(0.25));
+	vision.visual.carzero_visual.r = vision.visual.ladar_visual.r;
 	
 	memcpy(vision.convert.uint8_data, vision.position.data,24);
 	vision.field.carcenter_field.r = vision.convert.float_data[3] * rad2ang(1);
@@ -52,6 +59,8 @@ void Get_Vision_Data(int header, unsigned char *data){
 		break;
 	case online_id:
 		vision.position.online_flag = true;
+	//memcpy(&vision.offset_angle,data,sizeof(float));
+	//yis506.euler.yaw_offset = yis506.euler.yaw - vision.offset_angle;
 	default:
 		break;
 	}

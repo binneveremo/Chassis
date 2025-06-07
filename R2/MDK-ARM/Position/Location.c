@@ -5,6 +5,7 @@
 #include "Global.h"
 #include "Kalman.h"
 #include "math.h"
+#include "Flow.h"
 
 struct Site site;
 struct EKF ekf_x = {
@@ -17,8 +18,7 @@ struct EKF ekf_y = {
 };
 //
 void Location_Type_Choose(void){
-	site.now.x = vision.field.carcenter_fieldinterp.x;
-	site.now.y = vision.field.carcenter_fieldinterp.y;
+	Copy(site.now,vision.field.carcenter_fieldinterp);
 	site.now.r = site.gyro.r;
 }
 ///////////////////////////////////////////////////////码盘与陀螺仪速度融合计算///////////////////////////////////////////////////////////////

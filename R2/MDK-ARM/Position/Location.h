@@ -47,7 +47,6 @@ enum Location_Type{
 
 extern struct Site site;
 
-
 void Location_Type_Choose(void);
 void DT35_Fuse_With_Odometer(float dt);
 

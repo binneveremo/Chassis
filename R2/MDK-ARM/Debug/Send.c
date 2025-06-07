@@ -50,13 +50,13 @@ void Send_MessageToR1(void){
 #define net_offset 80
 	send.R1_Exchange.send[0] = 0xAA;
 	if((chassis.Control_Status == Auto_Control) && (flow.type == skill_flow)){
-		send.R1_Exchange.net.x = SkillFlow_R2PositionToR1(vision.field.carcenter_field).x + net_offset * cos(ang2rad(site.now.r));
-		send.R1_Exchange.net.y = SkillFlow_R2PositionToR1(vision.field.carcenter_field).x + net_offset * sin(ang2rad(site.now.r));
+		send.R1_Exchange.net.x = vision.field.carcenter_field.x + net_offset * cos(ang2rad(site.now.r));
+		send.R1_Exchange.net.y = vision.field.carcenter_field.y + net_offset * sin(ang2rad(site.now.r));
 		send.R1_Exchange.send[9] = (send.R1_Exchange.request_flag == true)?2:1;
 	}
 	else{
 		send.R1_Exchange.net.x = vision.field.carcenter_field.x + net_offset * cos(ang2rad(site.now.r));
-		send.R1_Exchange.net.y = vision.field.carcenter_field.x + net_offset * sin(ang2rad(site.now.r));
+		send.R1_Exchange.net.y = vision.field.carcenter_field.y + net_offset * sin(ang2rad(site.now.r));
 		send.R1_Exchange.send[9] = chassis.lock.flag;
 	}
 	send.convert.float_data[0] = send.R1_Exchange.net.x;
