@@ -46,23 +46,24 @@ void R1ExchangeData_Decode(UART_HandleTypeDef *huart){
 		flow.flagof.R1_Shooted = (send.R1_Exchange.receive[9] == 1)?true:flow.flagof.R1_Shooted;
 	}
 }
-void Send_MessageToR1(char * message){
+void Send_MessageToR1(void){
+#define net_offset 80
 	send.R1_Exchange.send[0] = 0xAA;
-#ifdef Carbon_Car
-	send.R1_Exchange.net.x = vision.field.carcenter_field.x + 80 * cos(ang2rad(site.now.r));
-	send.R1_Exchange.net.y = vision.field.carcenter_field.y + 80 * sin(ang2rad(site.now.r));
-#else 
-	float net_x = vision.basket.car_vfield.x  + 400;
-	float net_y = vision.basket.car_vfield.y  - 375;
-#endif
+	if((chassis.Control_Status == Auto_Control) && (flow.type == skill_flow)){
+		send.R1_Exchange.net.x = SkillFlow_R2PositionToR1(vision.field.carcenter_field).x + net_offset * cos(ang2rad(site.now.r));
+		send.R1_Exchange.net.y = SkillFlow_R2PositionToR1(vision.field.carcenter_field).x + net_offset * sin(ang2rad(site.now.r));
+		send.R1_Exchange.send[9] = (send.R1_Exchange.request_flag == true)?2:1;
+	}
+	else{
+		send.R1_Exchange.net.x = vision.field.carcenter_field.x + net_offset * cos(ang2rad(site.now.r));
+		send.R1_Exchange.net.y = vision.field.carcenter_field.x + net_offset * sin(ang2rad(site.now.r));
+		send.R1_Exchange.send[9] = chassis.lock.flag;
+	}
 	send.convert.float_data[0] = send.R1_Exchange.net.x;
 	send.convert.float_data[1] = send.R1_Exchange.net.y;
 	memcpy(&send.R1_Exchange.send[1],send.convert.uint8_data,8);
-	if(strcmp(message,"request") == 0)
-		send.R1_Exchange.send[9] = 2;
-	else
-		send.R1_Exchange.send[9] = chassis.lock.flag;
-	HAL_UART_Transmit(&R1_Exchange_Usart, send.R1_Exchange.send, sizeof(send.R1_Exchange.send), HAL_MAX_DELAY);
+#undef net_offset
+		HAL_UART_Transmit(&R1_Exchange_Usart, send.R1_Exchange.send, sizeof(send.R1_Exchange.send), HAL_MAX_DELAY);
 }
 
 

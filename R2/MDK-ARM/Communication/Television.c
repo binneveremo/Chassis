@@ -2,7 +2,7 @@
 struct Vision vision;
 
 
-float basket_xoffset = 130;
+float basket_xoffset = 0;
 float basket_yoffset = 0;
 //从厕所半场出发
 //float ladar2siteangleoffset = -1.45; 
@@ -11,6 +11,7 @@ float ladar2siteangleoffset = -2.4;
 
 void Vision_Basket_Decode(void)
 {
+#if OLD_COMMUNICATION
 	memcpy(vision.convert.uint8_data, vision.basketlock.data, 20);
 	vision.vfield.basket_vfield.x = vision.convert.float_data[0] * 1000 + basket_xoffset;
 	vision.vfield.basket_vfield.y = vision.convert.float_data[1] * 1000 + basket_yoffset;
@@ -30,6 +31,21 @@ void Vision_Basket_Decode(void)
 	vision.field.carcenter_field.x = vision.vfield.carzero_vfield.x * cos(r) + vision.vfield.carzero_vfield.y * sin(r) + 390;
 	vision.field.carcenter_field.y = vision.vfield.carzero_vfield.y * cos(r) - vision.vfield.carzero_vfield.x * sin(r) - 386;
 	vision.field.carcenter_field.r = vision.vfield.carzero_vfield.r;
+#else
+	memcpy(vision.convert.uint8_data, vision.basketlock.data, 20);
+	vision.vfield.basket_vfield.x = vision.convert.float_data[0] * 1000 + basket_xoffset;
+	vision.vfield.basket_vfield.y = vision.convert.float_data[1] * 1000 + basket_yoffset;
+
+	vision.vfield.ladar_vfield.x = vision.convert.float_data[2] * 1000;
+	vision.vfield.ladar_vfield.y = vision.convert.float_data[3] * 1000;
+	vision.vfield.ladar_vfield.r = vision.convert.float_data[4] * rad2ang(1);
+	
+	
+	memcpy(vision.convert.uint8_data, vision.position.data, 20);
+	vision.field.carcenter_field.r = vision.convert.float_data[3] * rad2ang(1);
+	vision.field.carcenter_field.x = vision.convert.float_data[0] * 1000 - 126.69 * (sin(2 * PI * 0.16 * ang2rad(vision.field.carcenter_field.r) + 1.29) - sin(1.29));
+	vision.field.carcenter_field.y = vision.convert.float_data[1] * 1000 - 124.75 * (sin(2 * PI * 0.16 * ang2rad(vision.field.carcenter_field.r) - 0.25) + sin(0.25));
+#endif
 	
 }
 void Get_Vision_Data(int header, unsigned char *data){

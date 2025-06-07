@@ -182,20 +182,19 @@ void Self_Lock_Out(char *lock_reason){
 		memcpy(chassis.lock.reason, lock_reason, strlen(lock_reason));
 }
 // 自动自锁函数
-void Self_Lock_Auto(void){
+void Self_Lock_Auto(void)
+{
 	memset(chassis.lock.reason, (char)NULL, sizeof(chassis.lock.reason));
 	char flag = ((fabs((float)GamePad_Data.rocker[0]) <= 1) && (fabs((float)GamePad_Data.rocker[1]) <= 1) && (fabs(GamePad_Data.rocker[2]) <= 5)) ? 1 : 0;
 	switch (chassis.Control_Status)
 	{
 		case GamePad_Control:
 			if(flag)	Self_Lock_Out("GamePadZero");
-		break;//卢彬伟是电控组最帅的人，牢曾算个屁
+			break;
 		default:
 			break;
 	}
 	chassis.lock.flag = (chassis.lock.reason[NONE] != NONE) ? true : false;
-	if(GamePad_Data.witch[5] == 1)
-		Self_Lock_Out("SafeMode");
 	if(GamepadLostConnection)
 		Self_Lock_Out("GamePadLoss");
 }

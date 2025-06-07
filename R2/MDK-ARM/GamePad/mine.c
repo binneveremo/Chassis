@@ -38,7 +38,7 @@ void GamePad_Data_Cla(void){
 		flow_begin, flow.type = skill_flow;
 #undef sudo
 	if((chassis.Control_Status == Auto_Control) && (flow.type == skill_flow) && (GamePadKey_FallingCheck(20) == 1))
-		skill.flagof.success_time++;
+		skill.success_time++;
 	if(((GamePad_Data.key[21] == 1)) && (chassis.Control_Status == Auto_Control))
 		Back_GamePadControl();
 	//手柄控制相关标志位
@@ -86,7 +86,7 @@ void GamePad_Data_Cla(void){
 	if(GamePadKey_FallingCheck(2) == 1) 
 		Vision_Reset();
 	if(GamePadKey_FallingCheck(0) == 1) 
-		Clear(skill.flagof.success_time);
+		Zero(skill.success_time);
 	//清空码盘
 	if((GamePad_Data.key[6] == 1) && (GamePad_Data.key[21] == 1))
  		Odometer_Clear("default"),Gyro_Reset();

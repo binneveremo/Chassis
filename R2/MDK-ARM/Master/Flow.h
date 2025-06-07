@@ -25,6 +25,7 @@ struct dribble_t {
 	}parameter;
 	struct {
 		int begin;
+		int now;
 		int end;
 		int wait;
 	}time;
@@ -71,18 +72,17 @@ struct skill_t {
 		struct Point point[7];
 	}target;
 	struct{
-		char shoot_requested;
 		char net_catched;
 		char end;
-		char success_time;
 	}flagof;
+	char success_time;
 };
 extern struct skill_t skill;
 
 void ControlStatus_Detect(void);
 void Back_GamePadControl(void);
 void Auto_Flow(void);
-
+struct Point SkillFlow_R2PositionToR1(struct Point point);
 
 #endif
 

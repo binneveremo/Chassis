@@ -32,7 +32,7 @@
 #define Normalize_Liner(a,b,c)  ((Limit(fabs(c),a,b)-a)/(b -a))
 #define Normalize_Pow(a,b,c,p)  pow(((Limit(fabs(c),a,b)-a)/(b -a)),p)
 #define Copy(a,b)   memcpy(&a,&b,sizeof(a))
-
+#define Zero(x)     {x = NONE;}
 
 struct Point {
 	float x;
