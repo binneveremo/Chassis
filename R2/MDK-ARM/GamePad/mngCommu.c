@@ -123,13 +123,13 @@ void Mng_RxData(uint8_t *pdata, uint16_t data_length, uint8_t reply_mode)
 			debugData_pkg.debug_data[1] = vision.field.carcenter_field.x;
 			debugData_pkg.debug_data[2] = vision.field.carcenter_field.y;
 			debugData_pkg.debug_data[3] = vision.field.carcenter_field.r;
-			debugData_pkg.debug_data[4] = vision.vfield.height;
+			debugData_pkg.debug_data[4] = vision.field.height;
 			break;
 		case 2:
 			debugData_pkg.debug_data[0] = Char2float("BASK");
 			debugData_pkg.debug_data[1] = vision.basketlock.online_flag * 6.66;
-			debugData_pkg.debug_data[2] = vision.vfield.basket_vfield.x;
-			debugData_pkg.debug_data[3] = vision.vfield.basket_vfield.y;
+			debugData_pkg.debug_data[2] = vision.visual.basket_visual.x;
+			debugData_pkg.debug_data[3] = vision.visual.basket_visual.y;
 			debugData_pkg.debug_data[4] = 0;
 			break;
 		case 3:

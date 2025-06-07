@@ -7,9 +7,39 @@
 三个坐标系：
 car车体 
 site场地
-basket篮筐坐标系
+field 场地坐标系
+vision 视觉场地坐标系
 
-vx_gyro 与 vy_gyro并不是完全依靠陀螺仪积分出来的速度 而是码盘加陀螺仪的加速度进行卡尔曼滤波之后得到的 
+
+
+非常混乱的的定位
+1.锁篮筐定位 vision.vfield.car_zerovfieldinterp
+	自身定位解算过程:
+		1.雷达坐标系解算到车体中心 加上偏置
+		2.根据码盘进行插帧
+2.篮筐定位 vision.vfield.basket
+
+2.场地坐标的定位
+vision.field.carcenter_field
+有2D雷达的时候
+	得到的视觉定位中心化:加入偏置
+没有2D雷达的时候
+	得到的视觉定位 加入旋转偏置
+	
+	
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

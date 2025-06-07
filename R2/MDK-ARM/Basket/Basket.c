@@ -48,8 +48,8 @@ struct Point self_basket_point = {
 void BasketPositionCal_AccordingVision(float dt)
 {
 	// 2ms计算一次 包括篮筐相对于自身坐标的获取 以及对定位进行插帧
-	basketlock.position.ladar2basketx = vision.vfield.basket_vfield.x - vision.vfield.carzero_vfieldinterp.x;
-	basketlock.position.ladar2baskety = vision.vfield.basket_vfield.y - vision.vfield.carzero_vfieldinterp.y;
+	basketlock.position.ladar2basketx = vision.visual.basket_visual.x - vision.visual.carzero_visualinterp.x;
+	basketlock.position.ladar2baskety = vision.visual.basket_visual.y - vision.visual.carzero_visualinterp.y;
 	basketlock.position.ladar2basketangle = atan2f(basketlock.position.ladar2baskety, basketlock.position.ladar2basketx);
 	basketlock.position.ladar2basketdis = hypot(basketlock.position.ladar2basketx, basketlock.position.ladar2baskety);
 }
@@ -57,7 +57,7 @@ void BasketPositionCal_AccordingVision(float dt)
 float BasketAngleLock(void)
 {
 #if GLOBAL_BASKETLOCK_ANGLE
-	basketanglelock.progress.error = basketpositionlock.target.global.r - vision.vfield.carzero_vfieldinterp.r;
+	basketanglelock.progress.error = basketpositionlock.target.global.r - vision.visual.carzero_visualinterp.r;
 #elif PARTIAL_BASKETLOCK_ANGLE
 	basketanglelock.progress.error = basketpositionlock.target.partial.r - basketpositionlock.now.partial.r;
 #endif
@@ -78,23 +78,23 @@ void BasketPoint_Init(void)
 	if(dunk.flagof.init == true)
 		return;
 	basketpositionlock.target.global.r = Limit(rad2ang(atan2f(basketlock.position.ladar2baskety, basketlock.position.ladar2basketx)), -basketlock.parameter.limitzoneanglimit, basketlock.parameter.limitzoneanglimit);
-	basketpositionlock.target.global.x = vision.vfield.basket_vfield.x - basketlock.parameter.basketdis * cos(ang2rad(basketpositionlock.target.global.r));
-	basketpositionlock.target.global.y = vision.vfield.basket_vfield.y - basketlock.parameter.basketdis * sin(ang2rad(basketpositionlock.target.global.r));
+	basketpositionlock.target.global.x = vision.visual.basket_visual.x - basketlock.parameter.basketdis * cos(ang2rad(basketpositionlock.target.global.r));
+	basketpositionlock.target.global.y = vision.visual.basket_visual.y - basketlock.parameter.basketdis * sin(ang2rad(basketpositionlock.target.global.r));
 	basketpositionlock.target.global.r += basketlock.parameter.anglebetween_ladarandpole;
 #if REPEAT
-	basketlock.position.basket_target_vfield.r += (basketlock.position.basket_target_vfield.r > 0) ? basketlock.parameter.anglebetween_ladarandpole : -basketlock.parameter.anglebetween_ladarandpole;
-	char repeat = (basketlock.position.basket_target_vfield.x > vision.basket.basket_vfield.x) ? 1 : 0;
-	basketlock.parameter.anglebetween_ladarandpole : basketlock.position.basket_target_vfield.x = (repeat == 1) ? vision.basket.basket_vfield.x + basketlock.parameter.basketdis * cos(basketlock.position.ladar2basketangle) : basketlock.position.basket_target_vfield.x;
-	basketlock.position.basket_target_vfield.r = (repeat == 1) ? NormalizeAng_Single(180 - rad2ang(basketlock.position.ladar2basketangle) - basketlock.parameter.anglebetween_ladarandpole) : basketlock.position.basket_target_vfield.r;
+	basketlock.position.basket_target_visual.r += (basketlock.position.basket_target_visual.r > 0) ? basketlock.parameter.anglebetween_ladarandpole : -basketlock.parameter.anglebetween_ladarandpole;
+	char repeat = (basketlock.position.basket_target_visual.x > vision.basket.basket_visual.x) ? 1 : 0;
+	basketlock.parameter.anglebetween_ladarandpole : basketlock.position.basket_target_visual.x = (repeat == 1) ? vision.basket.basket_visual.x + basketlock.parameter.basketdis * cos(basketlock.position.ladar2basketangle) : basketlock.position.basket_target_visual.x;
+	basketlock.position.basket_target_visual.r = (repeat == 1) ? NormalizeAng_Single(180 - rad2ang(basketlock.position.ladar2basketangle) - basketlock.parameter.anglebetween_ladarandpole) : basketlock.position.basket_target_visual.r;
 #endif
 	Clear(basketpositionlock.process);
 	Clear(basketpositionlock.flagof);
 
 	// 切换到马盘坐标系
 	Clear(basketpositionlock.now.partial);
-	basketpositionlock.target.partial.x = basketpositionlock.target.global.x - vision.vfield.carzero_vfieldinterp.x;
-	basketpositionlock.target.partial.y = basketpositionlock.target.global.y - vision.vfield.carzero_vfieldinterp.y;
-	basketpositionlock.target.partial.r = basketpositionlock.target.global.r - vision.vfield.carzero_vfieldinterp.r;
+	basketpositionlock.target.partial.x = basketpositionlock.target.global.x - vision.visual.carzero_visualinterp.x;
+	basketpositionlock.target.partial.y = basketpositionlock.target.global.y - vision.visual.carzero_visualinterp.y;
+	basketpositionlock.target.partial.r = basketpositionlock.target.global.r - vision.visual.carzero_visualinterp.r;
 	dunk.flagof.init = true;
 }
 void BsaketPoint_SelfLockAuto(void)
@@ -125,8 +125,8 @@ void BsaketPoint_SelfLockAuto(void)
 void BasketPositionLock()
 {
 #if GLOBAL_BASKETLOCK_POSITION
-	float xerror = basketpositionlock.target.global.x - vision.vfield.carzero_vfieldinterp.x;
-	float yerror = basketpositionlock.target.global.y - vision.vfield.carzero_vfieldinterp.y;
+	float xerror = basketpositionlock.target.global.x - vision.visual.carzero_visualinterp.x;
+	float yerror = basketpositionlock.target.global.y - vision.visual.carzero_visualinterp.y;
 #elif PARTIAL_BASKETLOCK_POSITION
 	float xerror = basketpositionlock.target.partial.x - basketpositionlock.now.partial.x;
 	float yerror = basketpositionlock.target.partial.y - basketpositionlock.now.partial.y;
@@ -146,7 +146,7 @@ void BasketPositionLock()
 
 	// 请记住 第一项为front left 角速度
 	float vnow = Limit(hypot(basketpositionlock.process.outx, basketpositionlock.process.outy), -basketpositionlock.param.outlimit, basketpositionlock.param.outlimit);
-	float angle = atan2f(yerror, xerror) - ang2rad(vision.vfield.carzero_vfieldinterp.r);
+	float angle = atan2f(yerror, xerror) - ang2rad(vision.visual.carzero_visualinterp.r);
 
 	Chassis_Velocity_Out(vnow * sin(angle), vnow * cos(angle), BasketAngleLock());
 	BsaketPoint_SelfLockAuto();

@@ -192,6 +192,12 @@ bool CheckMoveTimeout(OverallState_t state)
     return false;
 }
 
+void CatchTimeCal()
+{
+	
+
+}
+
 // --- Error Handling Functions ---
 
 void HandleError(ErrorCode_t error_code) {
