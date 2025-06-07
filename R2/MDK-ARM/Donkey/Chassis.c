@@ -131,7 +131,7 @@ float Correct_Angle(float target)
 
 /////////////////////////////////////////4.位置闭环单向PID
 struct Spot_t spot_far = {	.param.p = 3,	.param.i = 2,	.param.istart = 6,	.param.iend = 400,	.param.ilimit = 1000,	.param.outlimit = 16000,	.process.brake_distance = 600,	.param.brake_percent = 0.3,	.param.brake_gain = 0.05, .param.brake_mindis = 600};
-struct Spot_t spot_near = {	.param.p = 15,.param.i = 2,	.param.istart = 200,.param.iend = 1000,	.param.ilimit = 2000,	.param.outlimit = 18000,	.process.brake_distance = 600,	.param.brake_percent = 0.77,	.param.brake_gain = 0.05, .param.brake_mindis = 300};
+struct Spot_t spot_near = {	.param.p = 11,.param.i = 2,	.param.istart = 200,.param.iend = 1000,	.param.ilimit = 2000,	.param.outlimit = 18000,	.process.brake_distance = 600,	.param.brake_percent = 0.77,	.param.brake_gain = 0.05, .param.brake_mindis = 300};
 //////////////////////跑点的速度限制       根据最大速度最大速度 10000  那么就会限制刹车距离为 spot.brake_percent * 10000
 void Position_With_Mark_PID_Run(char * type){
 	static struct Spot_t spot; 

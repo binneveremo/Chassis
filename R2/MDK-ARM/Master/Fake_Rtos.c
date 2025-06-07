@@ -46,7 +46,7 @@ void communication(void const * argument)
 		Vision_Basket_Decode();
 		GamePad_Data_Cla();
 	  Send_MessageToR1();		
-		osDelay(20);
+		osDelay(10);
 	}
 }
 void location(void const * argument)

@@ -115,8 +115,8 @@ void LadarPosInterpolation(int dt)
 	vision.visual.carzero_visualinterp.y = vision.visual.carzero_visual.y + dy;
 	vision.visual.carzero_visualinterp.r = NormalizeAng_Single(vision.visual.carzero_visual.r + dr);
 	
-	vision.field.carcenter_fieldinterp.x = vision.field.carcenter_field.x + dx * 0.5;
-	vision.field.carcenter_fieldinterp.y = vision.field.carcenter_field.y + dy * 0.5;
+	vision.field.carcenter_fieldinterp.x = vision.field.carcenter_field.x + dx;
+	vision.field.carcenter_fieldinterp.y = vision.field.carcenter_field.y + dy;
 #elif position_kalman_encinterp
 	vision.visual.car_visualinterp.x = EKF_Filter(&ladarx_interp, vision.basket.car_visual.x, basketlock.parameter.siteinterp_gain * basketlock.parameter.siteinterp_gain * dt * site.field.vx_enc);
 	vision.visual.car_visualinterp.y = EKF_Filter(&ladary_interp, vision.basket.car_visual.y, basketlock.parameter.siteinterp_gain * basketlock.parameter.siteinterp_gain * dt * site.field.vy_enc);
