@@ -195,6 +195,8 @@ void Self_Lock_Auto(void)
 			break;
 	}
 	chassis.lock.flag = (chassis.lock.reason[NONE] != NONE) ? true : false;
+	if(GamePad_Data.witch[5] == true)
+		Self_Lock_Out("SafeMode");
 	if(GamepadLostConnection)
 		Self_Lock_Out("GamePadLoss");
 }

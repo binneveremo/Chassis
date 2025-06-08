@@ -46,6 +46,11 @@ void communication(void const * argument)
 		Vision_Basket_Decode();
 		GamePad_Data_Cla();
 	  Send_MessageToR1();		
+//		Send_Put_Data(0,ang2rad(vision.field.carcenter_field.r));
+//		Send_Put_Data(1,vision.field.carcenter_field.x);
+//		Send_Put_Data(2,vision.field.carcenter_field.y);
+//		Send_Put_Data(3,vision.field.carcenter_field.y);
+//		Send_Float_Data(4);
 		osDelay(10);
 	}
 }

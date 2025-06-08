@@ -23,7 +23,7 @@ struct BasketPosition_Lock_t basketpositionlock = {
 	.param.outlimit = 6800,
 };
 struct Basket_Lock_t basketlock = {
-	.parameter.basketdis = 900,
+	.parameter.basketdis = 855,
 	.parameter.anglebetween_ladarandpole = 4,
 	.parameter.siteinterp_gain = 0.5,
 	.parameter.angleinterp_gain = 0.4,
@@ -39,7 +39,7 @@ struct Point self_basket_point = {
 	.y = -4000,
 	.r = 0};
 // 选择篮筐定位方式
-#define GLOBAL_BASKETLOCK_POSITION false
+#define GLOBAL_BASKETLOCK_POSITION true
 #define PARTIAL_BASKETLOCK_POSITION !GLOBAL_BASKETLOCK_POSITION
 
 #define GLOBAL_BASKETLOCK_ANGLE false
@@ -115,7 +115,7 @@ void BsaketPoint_SelfLockAuto(void)
 	dis_history[0] = disnow;
 	// 距离目标点变远
 	static int lock_times;
-#define futher_death_bond 80
+#define futher_death_bond 50
 #define death_bond 20
 	basketpositionlock.flagof.lock_flag = ((fabs(basketanglelock.progress.error) < 1.2) && (((lagernum >= check_num - 1) && (basketpositionlock.process.error < futher_death_bond)) || (basketpositionlock.process.error < death_bond))) ? 1 : basketpositionlock.flagof.lock_flag;
 

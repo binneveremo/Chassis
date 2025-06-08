@@ -37,7 +37,7 @@ void Tell_Yao_Xuan(char *message){
 }
 
 void Car_State_Decode(int id,unsigned char * data){
-	if(id == stickball_id_recv)
+	if((id == stickball_id_recv) && (chassis.Control_Status == Auto_Control))
 		flow.flagof.stick_ball = true;
 //	if(id == staffdown_id_recv)
 //		flow.flagof.staffdown = true;
