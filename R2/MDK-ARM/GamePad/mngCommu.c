@@ -120,9 +120,9 @@ void Mng_RxData(uint8_t *pdata, uint16_t data_length, uint8_t reply_mode)
 			break;
 		case 1:
 			debugData_pkg.debug_data[0] = Char2float("LADA");
-			debugData_pkg.debug_data[1] = vision.field.carcenter_field.x;
-			debugData_pkg.debug_data[2] = vision.field.carcenter_field.y;
-			debugData_pkg.debug_data[3] = vision.field.carcenter_field.r;
+			debugData_pkg.debug_data[1] = vision.visual.ladar_visual.x;
+			debugData_pkg.debug_data[2] = vision.visual.ladar_visual.y;
+			debugData_pkg.debug_data[3] = vision.visual.ladar_visual.r;
 			debugData_pkg.debug_data[4] = vision.field.height;
 			break;
 		case 2:

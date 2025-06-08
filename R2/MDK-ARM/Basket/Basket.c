@@ -23,7 +23,7 @@ struct BasketPosition_Lock_t basketpositionlock = {
 	.param.outlimit = 6800,
 };
 struct Basket_Lock_t basketlock = {
-	.parameter.basketdis = 855,
+	.parameter.basketdis = 825,
 	.parameter.anglebetween_ladarandpole = 4,
 	.parameter.siteinterp_gain = 0.5,
 	.parameter.angleinterp_gain = 0.4,

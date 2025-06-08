@@ -35,10 +35,13 @@ void Vision_Basket_Decode(void){
 //	vision.visual.ladar_visual.r = vision.convert.float_data[4] * rad2ang(1);
 	
 	memcpy(vision.convert.uint8_data, vision.position.data,16);
+	vision.visual.ladar_visual.x = vision.convert.float_data[0] * 1000;
+	vision.visual.ladar_visual.y = vision.convert.float_data[1] * 1000;
+	vision.visual.ladar_visual.r = vision.convert.float_data[3] * rad2ang(1);
 //	172.84, 频率: 0.16, 相位: 1.71, 偏移: 799.54
 	vision.field.carcenter_field.r = vision.convert.float_data[3] * rad2ang(1);
-	vision.field.carcenter_field.x = vision.convert.float_data[0] * 1000 - 172.84 * (sin(2 * PI * 0.16 * ang2rad(vision.field.carcenter_field.r) + 1.71));
-	vision.field.carcenter_field.y = vision.convert.float_data[1] * 1000 - 177.94 * (sin(2 * PI * 0.16 * ang2rad(vision.field.carcenter_field.r) + 0.18));
+	vision.field.carcenter_field.x = vision.convert.float_data[0] * 1000 - 172.84 * (sin(2 * PI * 0.16 * ang2rad(vision.visual.ladar_visual.r) + 1.71));
+	vision.field.carcenter_field.y = vision.convert.float_data[1] * 1000 - 177.94 * (sin(2 * PI * 0.16 * ang2rad(vision.visual.ladar_visual.r) + 0.18));
 	
 	vision.visual.carzero_visual.x = vision.convert.float_data[0] * 1000 - 172.84 * (sin(2 * PI * 0.16 * ang2rad(vision.field.carcenter_field.r) + 1.71) - sin(1.71));
 	vision.visual.carzero_visual.y = vision.convert.float_data[1] * 1000 - 177.94 * (sin(2 * PI * 0.16 * ang2rad(vision.field.carcenter_field.r) + 0.18) - sin(0.18));
