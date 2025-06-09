@@ -49,7 +49,11 @@ struct Vision{
 #endif
 		float ladar2siteangleoffset;
 	}param;
-	float offset_angle;
+	struct {
+		char gyro_offset_angle_init;
+	
+	}flagof;
+	int header;
 	uint8_uint32_float_union convert;
 };
 

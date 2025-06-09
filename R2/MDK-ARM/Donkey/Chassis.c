@@ -89,7 +89,12 @@ void GamePad_Velocity_Control(void)
 			rout = Correct_Angle(NONE);
 		break;
 	}
-	if(chassis.flagof.gamepad.noheader)
+	if(chassis.flagof.gamepad.shutdown){
+		float shutdown_angle = atan2f(site.car.vy_gyro,site.car.vx_gyro);
+		if(site.car.velocity_totalgyro > 1)	Chassis_Velocity_Out(cos(shutdown_angle),-sin(shutdown_angle),0);
+		else Self_Lock_Out("ShutDown");
+	}	
+	else if(chassis.flagof.gamepad.noheader)
 		Chassis_Velocity_Out(x * Rocker_GainT, y * Rocker_GainT, rout);
 	else 
 		Chassis_Velocity_Out(rocker_x * Rocker_GainT,rocker_y * Rocker_GainT, rout);

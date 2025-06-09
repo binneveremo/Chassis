@@ -2,24 +2,21 @@
 #include "Encoder.h"
 #include "string.h"
 #include "fdcan.h"
+
 #include "Gyro.h"
 
 char wrong_code[10];
 char * can_wrong_code = "CanTxFull";
 struct Wrong_Code_t Wrong_Code;
 void Can_Detect(void){
-	if(FDCAN1 ->TXFQS & 1 << 21){
-	 strcpy(wrong_code, can_wrong_code);
-	 MX_FDCAN1_Init();
-	}
-	if(FDCAN2 ->TXFQS & 1 << 21){
-	 strcpy(wrong_code, can_wrong_code);
-	 MX_FDCAN2_Init();
-	}
-	if(FDCAN3 ->TXFQS & 1 << 21){
-	 strcpy(wrong_code, can_wrong_code);
-	 MX_FDCAN3_Init();
-	}
+#define BusyFlagof(x) (x -> TXFQS & 1 << 21)
+	if(BusyFlagof(FDCAN1))
+	 MX_FDCAN1_Init(),Wrong_Code.HT |=  1;
+	if(BusyFlagof(FDCAN2))
+	 MX_FDCAN2_Init(),Wrong_Code.HT |=  1;
+	if(BusyFlagof(FDCAN3))
+	 MX_FDCAN3_Init(),Wrong_Code.HT |=  1;
+#undef BusyFlagof
 }
 void LossConnect_Check(void){
 	memset(&Wrong_Code,NONE,sizeof(Wrong_Code));

@@ -192,10 +192,20 @@ bool CheckMoveTimeout(OverallState_t state)
     return false;
 }
 
-void CatchTimeCal()
+float TwoCar_Dis_Calc()
 {
-	
+	float distance;
+	float net_x = vision.field.carcenter_fieldinterp.x / 1000 + net_to_center * cos(ang2rad(site.now.r));
+	float net_y = vision.field.carcenter_fieldinterp.y / 1000 + net_to_center * sin(ang2rad(site.now.r));
+	distance = hypot(fabsf(net_x - send.R1_Exchange.pos.x / 1000), fabsf(net_y - send.R1_Exchange.pos.y / 1000));
+	return distance;
+}
 
+uint32_t CatchTimeCal()
+{
+	uint32_t catch_delay_time;
+	catch_delay_time = sqrtf((2 * TwoCar_Dis_Calc() * tanf(ang2rad(65)) - height_diff) / gravity_accel);
+	return catch_delay_time;
 }
 
 // --- Error Handling Functions ---
@@ -824,8 +834,22 @@ void Overall_Control()
 
 void Loop_Judgement()
 {
+    static uint32_t shoot_start_time;  // Track when R1_Shooted was set
     OverallState_t current_state = catch_status.current_state; // Read current state
     OverallState_t next_state = current_state; // Assume stay in current state by default
+
+    // Check for R1_Shooted timing
+    if (flow.flagof.R1_Shooted) {
+        if (shoot_start_time == 0) {
+            shoot_start_time = HAL_GetTick();  // Start timing when flag is set
+        } else if (HAL_GetTick() - shoot_start_time >= CatchTimeCal() * 1000) {  // Convert seconds to milliseconds
+            interact.defend_status = catch_ball;  // Switch to catch state
+						flow.flagof.R1_Shooted = false;
+            shoot_start_time = 0;  // Reset timer
+        }
+    } else {
+        shoot_start_time = 0;  // Reset timer if flag is cleared
+    }
 
     // Don't process state transitions if in error state
 //    if (IsInErrorState()) {

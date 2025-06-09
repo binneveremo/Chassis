@@ -46,8 +46,10 @@ void Vision_Basket_Decode(void){
 	vision.visual.carzero_visual.x = vision.convert.float_data[0] * 1000 - 172.84 * (sin(2 * PI * 0.16 * ang2rad(vision.field.carcenter_field.r) + 1.71) - sin(1.71));
 	vision.visual.carzero_visual.y = vision.convert.float_data[1] * 1000 - 177.94 * (sin(2 * PI * 0.16 * ang2rad(vision.field.carcenter_field.r) + 0.18) - sin(0.18));
 	vision.visual.carzero_visual.r = vision.convert.float_data[3] * rad2ang(1);
-#endif
 	
+	if((vision.flagof.gyro_offset_angle_init == false) && (vision.header == position_id))
+		yis506.euler.yaw_offset = yis506.euler.yaw - vision.visual.ladar_visual.r,vision.flagof.gyro_offset_angle_init = true;
+#endif
 }
 void Get_Vision_Data(int header, unsigned char *data){
 	switch (header)
@@ -63,11 +65,11 @@ void Get_Vision_Data(int header, unsigned char *data){
 		break;
 	case online_id:
 		vision.position.online_flag = true;
-	//memcpy(&vision.offset_angle,data,sizeof(float));
-	//yis506.euler.yaw_offset = yis506.euler.yaw - vision.offset_angle;
+		vision.flagof.gyro_offset_angle_init = false;
 	default:
 		break;
 	}
+	vision.header = header;
 }
 void Send_Velocity_Vision(void)
 {
@@ -135,25 +137,6 @@ void LadarPosInterpolation(int dt)
 	
 	basketlock.protectselfbasket_angle = rad2ang(atan2f(vision.field.carcenter_field.y - self_basket_point.y,vision.field.carcenter_field.x - self_basket_point.x));
 }
-
-//void Vision_Reset() {    
-//	FDCAN_Send(&hfdcan3,vision_reset_id,"STD",NULL,"FD",4,"OFF");   
-//	vision.basketlock.online_flag = false;	
-//	vision.position.online_flag = false;	
-//	osDelay(10);	
-//	vision.basketlock.online_flag = false;	
-//	vision.position.online_flag = false;	
-//}
-
-
-
-
-
-
-
-
-
-
 
 
 
