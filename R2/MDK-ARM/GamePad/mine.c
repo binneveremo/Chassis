@@ -106,57 +106,62 @@ void GamePad_Data_Cla(void){
 		skill.success_time++;
 	if(((GamePad_Data.key[21] == 1)) && (chassis.Control_Status == Auto_Control))
 		Back_GamePadControl();
+	
+	
 	//手柄控制相关标志位
-	chassis.flagof.gamepad.standard = GamePad_Data.witch[3];
+	chassis.flagof.gamepad.standard = GamePad_Data.witch[1];
 	chassis.flagof.gamepad.noheader = !chassis.flagof.gamepad.standard;
-	chassis.flagof.gamepad.inverse = GamePad_Data.witch[0];
-	chassis.flagof.gamepad.accel  = GamePad_Data.key[21];
-	chassis.flagof.gamepad.shutdown  = GamePad_Data.key[8];
+	//chassis.flagof.gamepad.accel  = GamePad_Data.key[3];
+	chassis.flagof.gamepad.slow = GamePad_Data.key[1];
+	chassis.flagof.gamepad.shutdown  = GamePad_Data.key[0];
 	//通信方面
 	if(GamePad_Data.key[12] == 1)
  		Tell_Yao_Xuan("fold");
-	if(GamePad_Data.key[7] == 1)
- 		Tell_Yao_Xuan("catch");
-	if(GamePad_Data.key[3] == 1)
- 		Tell_Yao_Xuan("predunk");
 	if(GamePad_Data.key[13] == 1)
  		Tell_Yao_Xuan("defend");
+	if(GamePad_Data.key[8] == 1)
+ 		Tell_Yao_Xuan("fold");
+	if(GamePad_Data.key[9] == 1)
+ 		Tell_Yao_Xuan("catch");
+	if(GamePad_Data.key[10] == 1)
+ 		Tell_Yao_Xuan("predunk");
+	if(GamePad_Data.key[11] == 1)
+ 		Tell_Yao_Xuan("defend");
+	
 	
 	
 	if(GamePad_Data.key[15] == 1)
  		Tell_Yao_Xuan("down");
-	if(GamePad_Data.key[16] == 1)
- 		Tell_Yao_Xuan("dribble");
-	if(GamePad_Data.key[13] == 1)
- 		Tell_Yao_Xuan("lift");
-	if(GamePad_Data.key[15] == 1)
- 		Tell_Yao_Xuan("jump");
 	if(GamePad_Data.key[14] == 1)
- 		Tell_Yao_Xuan("stick");
+ 		Tell_Yao_Xuan("jump");
 	//更改Debug界面
-	DebugPage_Change(GamePadKey_FallingCheck(4));
+	DebugPage_Change(GamePadKey_FallingCheck(11));
 	//无线串口
 	send.Debug.send_flag = GamePad_Data.witch[1];
 	//加速和减速相关
-	//计算朝向
+	
+	//自动旋转开关
+	if(GamePadKey_FallingCheck(21) == 1)
+		chassis.flagof.gamepad.rotate = !chassis.flagof.gamepad.rotate;
+	
 	if(GamePad_Data.key[20])
 		chassis.opposite = R1;
 	else if(GamePad_Data.key[18])
 		chassis.opposite = oppo_basket;
 	else if(GamePad_Data.key[14])
 		chassis.opposite = self_basket;
+	else if(GamePad_Data.key[22])
+		chassis.opposite = forward;
 	else
 		chassis.opposite = none;
 
-	if(GamePadKey_FallingCheck(2) == 1) 
+	if(GamePadKey_FallingCheck(7) == 1) 
 		Vision_Reset();
-	if(GamePadKey_FallingCheck(0) == 1) 
+	if(GamePadKey_FallingCheck(4) == 1) 
 		Zero(skill.success_time);
 	//清空码盘
-	if((GamePad_Data.key[6] == 1) && (GamePad_Data.key[21] == 1))
+	if(GamePadKey_FallingCheck(7) == 1)
  		Odometer_Clear("default"),Gyro_Reset();
-	else if((GamePad_Data.key[6] == 1) && (GamePad_Data.key[21] == 0))
- 		Odometer_Clear("armor"),Gyro_Reset();
 	
 #endif
 	for (char i = 0; i<22;i++)

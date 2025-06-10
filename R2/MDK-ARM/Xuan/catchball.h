@@ -73,7 +73,7 @@ typedef struct
     uint32_t last_feedback_time_ms; // Timestamp of the last valid feedback update
 
 } CatchControlStatus_t;
-
+extern CatchControlStatus_t catch_status;
 
 // --- Timeout Definitions ---
 // Updated to use new enum names

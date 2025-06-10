@@ -5,6 +5,7 @@
 #include "Global.h"
 #include "string.h"
 #include "Interact.h"
+#include "catchball.h"
 
 #define stickball_id_recv 0xB2
 #define staffdown_id_recv 0xB3

@@ -47,7 +47,7 @@ void Vision_Basket_Decode(void){
 	vision.visual.carzero_visual.y = vision.convert.float_data[1] * 1000 - 177.94 * (sin(2 * PI * 0.16 * ang2rad(vision.field.carcenter_field.r) + 0.18) - sin(0.18));
 	vision.visual.carzero_visual.r = vision.convert.float_data[3] * rad2ang(1);
 	
-	if((vision.flagof.gyro_offset_angle_init == false) && (vision.header == position_id))
+	if((vision.flagof.gyro_offset_angle_init == false) && (vision.header == position_id) && (vision.position.online_flag == true))
 		yis506.euler.yaw_offset = yis506.euler.yaw - vision.visual.ladar_visual.r,vision.flagof.gyro_offset_angle_init = true;
 #endif
 }

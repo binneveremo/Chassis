@@ -105,7 +105,8 @@ struct Chassis{
 			char inverse;
 			char standard;
 			char noheader;
-			char shutdown; 
+			char shutdown;
+			bool rotate;
 		}gamepad;
 	}flagof;
 	enum{

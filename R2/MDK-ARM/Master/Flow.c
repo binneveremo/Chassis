@@ -62,7 +62,7 @@ void Back_Flow(void){
 		back.flagof.end = true,Self_Lock_Out("HomePoint");
 }
 /// @brief 运球流程
-struct dribble_t dribble = {.time.wait = 1300,.time.end = 2400,.parameter.dribble_front_velocity = 5500,.parameter.dribble_left_velocity = 1200,};
+struct dribble_t dribble = {.time.wait = 1300,.time.end = 2400,.parameter.dribble_front_velocity = 6000,.parameter.dribble_left_velocity = 900,};
 void Dribble_Flow(void){
 	int now = HAL_GetTick();
 	if(dribble.flagof.init == false){
@@ -79,7 +79,7 @@ void Dribble_Flow(void){
 	else
 		Self_Lock_Out("WaitDribble");
 	//Tell_Yao_Xuan(((HAL_GetTick() - dribble.time.begin < dribble.time.wait + 400)&&(HAL_GetTick() - dribble.time.begin > dribble.time.wait))?"fold":((HAL_GetTick() - dribble.time.begin > dribble.time.wait + 1000)?"fold":"catch"));
-	Tell_Yao_Xuan(((HAL_GetTick() - dribble.time.begin < dribble.time.wait + 400)&&(HAL_GetTick() - dribble.time.begin > dribble.time.wait))?"fold":"catch");
+	Tell_Yao_Xuan(((HAL_GetTick() - dribble.time.begin < dribble.time.wait + 700)&&(HAL_GetTick() - dribble.time.begin > dribble.time.wait))?"fold":"catch");
 	dribble.flagof.end = (HAL_GetTick() - dribble.time.begin > dribble.time.end) ? true : false;
 }
 /////////技能挑战赛流程
@@ -119,16 +119,16 @@ struct skill_t skill = {
 	.param.catch_advanced_dis[5] = 200,
 	.param.catch_advanced_dis[6] = 200,
 
-	.param.shoot_advanced_dis[0] = 100,
-	.param.shoot_advanced_dis[1] = 100,
-	.param.shoot_advanced_dis[2] = 100,
-	.param.shoot_advanced_dis[3] = 100,
-	.param.shoot_advanced_dis[4] = 100,
-	.param.shoot_advanced_dis[5] = 100,
-	.param.shoot_advanced_dis[6] = 100,
+	.param.shoot_advanced_dis[0] = 50,
+	.param.shoot_advanced_dis[1] = 50,
+	.param.shoot_advanced_dis[2] = 50,
+	.param.shoot_advanced_dis[3] = 50,
+	.param.shoot_advanced_dis[4] = 50,
+	.param.shoot_advanced_dis[5] = 50,
+	.param.shoot_advanced_dis[6] = 50,
 
 	.param.lock_dis = 150,
-	.param.lock_angle = 15,
+	.param.lock_angle = 8,
 };
 struct Point SkillFlow_R2PositionToR1(struct Point point){
 #define xoffset 2500 - 390

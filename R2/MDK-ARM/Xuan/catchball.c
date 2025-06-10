@@ -87,12 +87,12 @@ float Pos_Target[8]= {16,         30.5,         123,    36,      16,         123
 float Spd_Move_Up = 80;
 float Spd_Move_Up_Defend = 150; 
 float Spd_Move_Up_Test = 30;
-float Spd_Move_Down = -50; 
+float Spd_Move_Down = -100; 
 float Kd_Move_Up = 3;
 float Kd_Move_Up_Test = 4;
 float Kd_Move_Down = 0.2; 
 float Trq_Move_Up = 1;  
-float Trq_Move_Down = 3;
+float Trq_Move_Down = 1.5;
 
 #else
 // Target Positions
