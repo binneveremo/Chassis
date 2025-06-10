@@ -74,12 +74,21 @@ void Dribble_Flow(void){
 		flow.flagof.stick_ball = false;
 		dribble.flagof.init = true;       
 	}
-	if(now - dribble.time.begin > dribble.time.wait)
+	if(now - dribble.time.begin > dribble.time.wait){
 		Chassis_Velocity_Out(dribble.parameter.dribble_left_velocity,dribble.parameter.dribble_front_velocity,0);
-	else
+		if(now - dribble.time.begin < (dribble.time.wait + 700))
+			Tell_Yao_Xuan("fold");
+		else
+			Tell_Yao_Xuan("catch");
+	}
+	else{
 		Self_Lock_Out("WaitDribble");
-	//Tell_Yao_Xuan(((HAL_GetTick() - dribble.time.begin < dribble.time.wait + 400)&&(HAL_GetTick() - dribble.time.begin > dribble.time.wait))?"fold":((HAL_GetTick() - dribble.time.begin > dribble.time.wait + 1000)?"fold":"catch"));
-	Tell_Yao_Xuan(((HAL_GetTick() - dribble.time.begin < dribble.time.wait + 700)&&(HAL_GetTick() - dribble.time.begin > dribble.time.wait))?"fold":"catch");
+		if(interact.defend_status == initial || interact.defend_status == fold)
+			interact.defend_status = catch_ball;
+		else
+			interact.defend_status = predunk;
+	}
+//	Tell_Yao_Xuan(((HAL_GetTick() - dribble.time.begin < dribble.time.wait + 700)&&(HAL_GetTick() - dribble.time.begin > dribble.time.wait))?"fold":"catch");
 	dribble.flagof.end = (HAL_GetTick() - dribble.time.begin > dribble.time.end) ? true : false;
 }
 /////////技能挑战赛流程

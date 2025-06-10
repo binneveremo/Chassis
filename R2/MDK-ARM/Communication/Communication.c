@@ -19,19 +19,18 @@ void Tell_Yao_Xuan(char *message){
        interact.defend_status = predunk;
 		else if(strcmp(message, "moving") == 0)
        interact.defend_status = moving;
-		
 		else if(strcmp(message, "down") == 0) 
       FDCAN_Send(&Com_Can,poledown_id_send,"STD",NULL,"FD",0,"OFF");
-		else if(strcmp(message, "dribble") == 0)
+		else if(strcmp(message, "dribble") == 0){
       FDCAN_Send(&Com_Can,dribble_id_send,"STD",NULL,"FD",0,"OFF");
+			interact.defend_status = (interact.defend_status == predunk)?interact.defend_status:predunk;
+		}
     else if(strcmp(message, "lift") == 0) {
-      FDCAN_Send(&Com_Can,lift_id_send,"STD",NULL,"FD",0,"OFF");
-//			interact.defend_status = (interact.defend_status == predunk)?interact.defend_status:predunk;
-			interact.defend_status = (interact.defend_status == initial || interact.defend_status == fold) ? catch_ball : predunk;
-
+			FDCAN_Send(&Com_Can,lift_id_send,"STD",NULL,"FD",0,"OFF");
+			interact.defend_status = (interact.defend_status == predunk)?interact.defend_status:predunk;
 		}
 		else if(strcmp(message, "jump") == 0){ 
-//			interact.defend_status = (interact.defend_status == predunk)?interact.defend_status:predunk;
+			interact.defend_status = (interact.defend_status == predunk)?interact.defend_status:predunk;
       FDCAN_Send(&Com_Can,jump_id_send,"STD",NULL,"FD",0,"OFF");
 		}
 		else if(strcmp(message, "stick") == 0)
@@ -41,8 +40,6 @@ void Tell_Yao_Xuan(char *message){
 void Car_State_Decode(int id,unsigned char * data){
 	if((id == stickball_id_recv) && (chassis.Control_Status == Auto_Control))
 		flow.flagof.stick_ball = true;
-//	if(id == staffdown_id_recv)
-//		flow.flagof.staffdown = true;
 }
 
 

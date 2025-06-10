@@ -39,7 +39,7 @@ struct Point self_basket_point = {
 	.y = -4000,
 	.r = 0};
 // 选择篮筐定位方式
-#define GLOBAL_BASKETLOCK_POSITION true
+#define GLOBAL_BASKETLOCK_POSITION false
 #define PARTIAL_BASKETLOCK_POSITION !GLOBAL_BASKETLOCK_POSITION
 
 #define GLOBAL_BASKETLOCK_ANGLE false
