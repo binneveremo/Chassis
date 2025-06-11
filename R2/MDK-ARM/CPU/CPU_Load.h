@@ -10,6 +10,6 @@ extern long long CPU_Tick;
 
 extern float CPU_USAGE_PERCENT;
 void CPU_Usage_Test(void);
-
+void StartIdleMonitor(void);
 #endif 
 

@@ -5,7 +5,6 @@
 #include "Location.h"
 #include "stdbool.h"
 #include "string.h"
-#include "Global.h"
 #include "HO7213.h"
 #include "mine.h"
 #include "VESC.h"
@@ -38,7 +37,7 @@
 #define front_offset 137
 #define left_offset 40
 #define right_offset 82
-#define behind_offset 24
+#define behind_offset -66
 
 
 #else
@@ -64,24 +63,29 @@
 #define behind_offset  -69
 
 #endif
+enum opposite_t{
+	none,
+	R1,
+	self_basket,
+	oppo_basket,
+	forward,
+};
 
-
-struct Spot_t
-{
+struct Spot_t{
 	struct {
 		float p;
+		
 		float i;
 		float istart;
 		float iend;
 		float ilimit;
+		
 		float outlimit;
-		float brake_mindis;
-		float brake_gain;
-		float brake_percent;
 	}param;
 	struct {
-		float total_dis;
-		float brake_distance;
+		float fade_start;
+		float fade_end;
+		
 		float gain;
 		float itotal_x;
 		float itotal_y;
@@ -93,6 +97,7 @@ struct Chassis{
 	enum{
 		GamePad_Control,
 		Auto_Control,
+		Debug_Control,
 	}Control_Status;
 	struct {
 		struct VESC  drive[VESC_NUM];
@@ -109,13 +114,7 @@ struct Chassis{
 			bool rotate;
 		}gamepad;
 	}flagof;
-	enum{
-			none,
-			R1,
-			self_basket,
-			oppo_basket,
-			forward,
-		}opposite;
+	enum opposite_t opposite;
 	struct {
 		char flag;
 		char reason[20];
@@ -127,14 +126,21 @@ struct correct_angle_t{
 	float p;
 	float i;
 	float d;
-	float predict_step;
-	float error_last;
+	
+	
 	float itotal;
 	float ilimit;
 	float istart;
 	float iend;
+	
+	float fade_max;
+	float fade_min;
+	
 	float outlimit;
 };
+
+
+
 #define Set_Target_Point(x) memcpy(&site.target, &x, sizeof(x))
 
 
@@ -154,7 +160,7 @@ extern struct Mark mark;
 void Get_VESC_Data(int id,unsigned char * data);
 //泡点参数初始化
 //纠正角度
-float Correct_Angle(float target);
+float Correct_Angle(float now,float target);
 //舵轮的输出以及解码
 void Turn_Motor_Decode(int id,unsigned char * data);
 void VectorWheel_SetSpeed(void);
@@ -170,8 +176,11 @@ void GamePad_Velocity_Control(void);
 void Self_Lock_Auto(void);
 void Self_Lock_Out(char * lock_reason);
 
-void Position_With_Mark_PID_Run(char * type);
+void Position_With_Mark_PID_Run(enum opposite_t opposite);
 bool TurnMotor_InTurnPosition(void);
+
+void Debug_Test(void);
+
 #endif
 
 

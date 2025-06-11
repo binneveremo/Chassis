@@ -67,14 +67,14 @@ void Send_MessageToR1(void){
 }
 
 
-void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t size)
-{
-	R1ExchangeData_Decode(huart);
-}
-void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart)
-{
-	Wireless_init();
-}
+//void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t size)
+//{
+//	R1ExchangeData_Decode(huart);
+//}
+//void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart)
+//{
+//	Wireless_init();
+//}
 
 
 

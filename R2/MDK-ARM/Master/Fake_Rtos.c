@@ -30,6 +30,9 @@ void motor_control(void const * argument)
 			case Auto_Control:
 				Auto_Flow();
 			break;
+			case Debug_Control:
+				Debug_Test();
+			break;
 		}
 		//察觉到空置状态的变化
 		ControlStatus_Detect();

@@ -1,6 +1,6 @@
 #include "Communication.h"
 #define Com_Can hfdcan3
-
+#include "RGB.h"
 #define poledown_id_send 0xCA
 #define dribble_id_send 0xCB
 #define lift_id_send 0xCC
@@ -21,12 +21,10 @@ void Tell_Yao_Xuan(char *message){
        interact.defend_status = moving;
 		else if(strcmp(message, "down") == 0) 
       FDCAN_Send(&Com_Can,poledown_id_send,"STD",NULL,"FD",0,"OFF");
-		else if(strcmp(message, "dribble") == 0){
+		else if(strcmp(message, "dribble") == 0)
       FDCAN_Send(&Com_Can,dribble_id_send,"STD",NULL,"FD",0,"OFF");
-			interact.defend_status = (interact.defend_status == predunk)?interact.defend_status:predunk;
-		}
-    else if(strcmp(message, "lift") == 0) {
-			FDCAN_Send(&Com_Can,lift_id_send,"STD",NULL,"FD",0,"OFF");
+    if(strcmp(message, "lift") == 0) {
+      FDCAN_Send(&Com_Can,lift_id_send,"STD",NULL,"FD",0,"OFF");
 			interact.defend_status = (interact.defend_status == predunk)?interact.defend_status:predunk;
 		}
 		else if(strcmp(message, "jump") == 0){ 
@@ -36,10 +34,9 @@ void Tell_Yao_Xuan(char *message){
 		else if(strcmp(message, "stick") == 0)
 			FDCAN_Send(&Com_Can,stick_id_send,"STD",NULL,"FD",0,"OFF");
 }
-
 void Car_State_Decode(int id,unsigned char * data){
 	if((id == stickball_id_recv) && (chassis.Control_Status == Auto_Control))
-		flow.flagof.stick_ball = true;
+		RGB_ON = true,flow.flagof.stick_ball = true;
 }
 
 

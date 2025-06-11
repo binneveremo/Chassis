@@ -129,6 +129,8 @@ void RGB_Wave(int color){
 	RGB_Line_Cal(3,color,bright[(cnt + 3) % 5]);
 	RGB_Line_Cal(4,color,bright[(cnt + 4) % 5]);
 }
+char RGB_ON;
+
 void RGB_Show_Msg(void){
 	//清空显示
 	RGB_Clear_Cal();
@@ -158,6 +160,11 @@ void RGB_Show_Msg(void){
 			}
 		break;
 	}
+//	if(RGB_ON == true)
+//		RGB_Color_All(Pink,20);
+//	else 
+//		RGB_Color_All(Black,10);
+	
 	RGB_OutPut();
 }
 

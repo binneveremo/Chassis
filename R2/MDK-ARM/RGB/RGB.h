@@ -29,7 +29,8 @@ struct panel_t{
 
 };
 
-
+extern char RGB_ON;
+#define RGB_RESET (RGB_ON = false) 
 void RGB_Show_Msg(void);
 void RGB_Init(void);
 void RGB_Show_Color(int color,int bright);

@@ -2,52 +2,33 @@
 #include "main.h"
 #include <stdio.h>
 #include "recDecode.h"
-#include "Global.h"
-//#include "Config.h"
 #define INFINITE_LOOP_START for(;;){osDelay(1);
 #define INFINITE_LOOP_END }
 
-#define USE_UART
+// #define USE_UART
+// // #define USE_UDP
 #define USE_NRF
 
 
+#ifdef USE_UART
 #include "usart.h"
 #include "mySerial.h"
-#define TX_Uart huart4
+#define TX_UART huart1
 extern myUartStruct commuUart;
-#include "zigbee.h"
-#define peer_addr 0x8003
-extern zigbee_state_t zigbee_state;
-extern zigbee_msg_t zigbee_msg;
-extern struct zigbee_conf_t zigbee_conf;
-/*
-DevMode 0：主机模式 1：透传模式
-Serial_Rate 波特率 0x0B： 1.5M 
-SetMyAddr 主机地址
-DstAddr 透传模式目标地址
-Chan 通道
-PowerLevel 功率
-DataRate 空中速率
-RetryNum 自动重发次数
-RetryTimeout 自动重发等待时间
-*/
-#define ZIGBEE_STATE_INIT (zigbee_state_t) {							\
-	.huart = &TX_Uart,																			\
-	.DevMode = 0,																						\
-	.Serial_Rate = 0x0B,																		\
-	.PanID = 0x0081,																				\
-	.SetMyAddr = 0x8004,																		\
-	.DstAddr = 0x8003,																			\
-	.Chan = 0x23,																						\
-	.PowerLevel = 0x09,																			\
-	.DataRate = 0x04,																				\
-	.RetryNum = 0x01,																				\
-	.RetryTimeout = 0x0002,																	\
-}
+#endif
 
+#ifdef USE_UDP
+#include "myUdp.h"
+#define DES_IP_DEF 	{192,168,1,11}
+#define DES_PORT	11
+#define MY_PORT		12
+#endif
 
 #ifdef USE_NRF
+#include "Global.h"
 #include "Nrf.h"
+extern Nrf_t nrf;
+
 #ifdef Carbon_Car
 	#define NRF_INIT (Nrf_t) {                                                \
 			.hspi = &hspi4,                                                     \
@@ -95,23 +76,8 @@ struct transmit_package_struct
 } __attribute__((packed));	// 对齐设置,强制不进行补位操作
 extern struct transmit_package_struct debugData_pkg;
 
-/* 统计丢包情况 */
-#define MAX_PACKETS 256			// 统计丢包率的总数
-
-typedef struct {
-	int packets[MAX_PACKETS]; // 包的接收状态
-	int index;                // 当前索引
-} PacketStats;
-
-extern PacketStats stats_toReceiver; // 数据的丢包情况结构体
 extern uint8_t GamepadLostConnection;
 
 void NrfCommu_EXTI_Callback(uint8_t channel, uint8_t *data, uint8_t len);
 void Commu_init(void);
-void Transmit_task(void);
 
-void initStats(PacketStats *stats);
-void ArrangeSerialList(void);
-void sendSuccess(PacketStats *stats, int n);
-void sendFail(PacketStats *stats, int n);
-uint8_t getLossRate(PacketStats *stats);

@@ -77,6 +77,7 @@ void UART4_IRQHandler(void);
 void DMA2_Stream0_IRQHandler(void);
 void DMA2_Stream1_IRQHandler(void);
 void SPI4_IRQHandler(void);
+void TIM16_IRQHandler(void);
 void FDCAN3_IT0_IRQHandler(void);
 void FDCAN3_IT1_IRQHandler(void);
 void TIM23_IRQHandler(void);

@@ -5,9 +5,8 @@
 #include "Correct.h"
 #include "Gyro.h"
 #include "mine.h"
-#include "RGB.h"
 #include "Nrf.h"
-#define OLD_GAMEPAD true
+#define OLD_GAMEPAD false
 #define DebugPage_Change(x)	(GamePad_Data.Debug_Page = (GamePad_Data.Debug_Page >= 5)?0:GamePad_Data.Debug_Page + x)
 
 struct Game_Pad_Data GamePad_Data;
@@ -90,7 +89,7 @@ void GamePad_Data_Cla(void){
 	if((GamePad_Data.key[6] == 1) && (GamePad_Data.key[21] == 1))
  		Odometer_Clear("default"),Gyro_Reset();
 	else if((GamePad_Data.key[6] == 1) && (GamePad_Data.key[21] == 0))
- 		Odometer_Clear("armor"),Gyro_Reset(),RGB_RESET;
+ 		Odometer_Clear("armor"),Gyro_Reset();
 #else
 
 #define flow_begin (chassis.Control_Status = Auto_Control)
@@ -160,7 +159,7 @@ void GamePad_Data_Cla(void){
 		Vision_Reset();
 	//清空码盘
 	if(GamePadKey_FallingCheck(16) == 1)
- 		Odometer_Clear("default"),Gyro_Reset(),RGB_RESET;
+ 		Odometer_Clear("default"),Gyro_Reset();
 	
 #endif
 	for (char i = 0; i<22;i++)

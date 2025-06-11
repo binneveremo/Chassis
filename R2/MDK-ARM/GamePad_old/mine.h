@@ -11,7 +11,7 @@ struct Game_Pad_Data {
 
 extern struct Game_Pad_Data GamePad_Data;
 
-#define GamePad_Init() {Commu_init();HAL_TIM_Base_Start_IT(&htim16);}
+#define GamePad_Init() Commu_init()
 #define GamePadKey_FallingCheck(index) ((GamePad_Data.key[index] == 0) && (GamePad_Data.last[index] == 1))
 #define Rocker_Move() ((hypot(GamePad_Data.rocker[0],GamePad_Data.rocker[1]) > 20) || (hypot(GamePad_Data.rocker[2],GamePad_Data.rocker[3]) > 20))
 //#define Rocker_Move() ((hypot(GamePad_Data.rocker[0],GamePad_Data.rocker[1]) > 20) || (hypot(GamePad_Data.rocker[2],GamePad_Data.rocker[3]) > 20))

@@ -132,6 +132,7 @@ int main(void)
   MX_SPI4_Init();
   MX_SPI5_Init();
   MX_TIM23_Init();
+  MX_TIM16_Init();
   /* USER CODE BEGIN 2 */
 	FDCAN4_Init();                                                                             
 	RGB_Init();
@@ -172,7 +173,6 @@ void SystemClock_Config(void)
   RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
 
   /** Supply configuration update enable
-	
   */
   HAL_PWREx_ConfigSupply(PWR_LDO_SUPPLY);
 
@@ -340,8 +340,8 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
     HAL_IncTick();
   }
   /* USER CODE BEGIN Callback 1 */
-	if (htim->Instance == TIM6) {
-		
+	if (htim->Instance == TIM16) {
+		Transmit_task();
   }
 	if (htim->Instance == TIM3)
 		CPU_Tick += 1;

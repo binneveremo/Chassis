@@ -82,7 +82,7 @@
           </BeforeMake>
           <AfterMake>
             <RunUserProg1>0</RunUserProg1>
-            <RunUserProg2>0</RunUserProg2>
+            <RunUserProg2>1</RunUserProg2>
             <UserProg1Name></UserProg1Name>
             <UserProg2Name></UserProg2Name>
             <UserProg1Dos16Mode>0</UserProg1Dos16Mode>
@@ -1477,16 +1477,6 @@
           <GroupName>GamePad</GroupName>
           <Files>
             <File>
-              <FileName>crc8.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\GamePad\crc8.c</FilePath>
-            </File>
-            <File>
-              <FileName>crc8.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\GamePad\crc8.h</FilePath>
-            </File>
-            <File>
               <FileName>mine.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\GamePad\mine.c</FilePath>
@@ -1497,6 +1487,21 @@
               <FilePath>.\GamePad\mine.h</FilePath>
             </File>
             <File>
+              <FileName>手柄按键映射.txt</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\GamePad\手柄按键映射.txt</FilePath>
+            </File>
+            <File>
+              <FileName>crc8.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\GamePad\crc8.c</FilePath>
+            </File>
+            <File>
+              <FileName>crc8.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\GamePad\crc8.h</FilePath>
+            </File>
+            <File>
               <FileName>mngCommu.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\GamePad\mngCommu.c</FilePath>
@@ -1505,6 +1510,16 @@
               <FileName>mngCommu.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\GamePad\mngCommu.h</FilePath>
+            </File>
+            <File>
+              <FileName>mySerial.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\GamePad\mySerial.c</FilePath>
+            </File>
+            <File>
+              <FileName>mySerial.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\GamePad\mySerial.h</FilePath>
             </File>
             <File>
               <FileName>Nrf.c</FileName>
@@ -1527,9 +1542,14 @@
               <FilePath>.\GamePad\recDecode.h</FilePath>
             </File>
             <File>
-              <FileName>手柄按键映射.txt</FileName>
+              <FileName>zigbee.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\GamePad\zigbee.c</FilePath>
+            </File>
+            <File>
+              <FileName>zigbee.h</FileName>
               <FileType>5</FileType>
-              <FilePath>.\GamePad\手柄按键映射.txt</FilePath>
+              <FilePath>.\GamePad\zigbee.h</FilePath>
             </File>
           </Files>
         </Group>

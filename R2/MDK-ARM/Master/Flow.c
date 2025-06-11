@@ -57,39 +57,40 @@ void Dunk_Flow(void){
 struct back_t back;
 void Back_Flow(void){
 	Set_Target_Point(home_point);
-	Position_With_Mark_PID_Run("far");
+	Position_With_Mark_PID_Run(forward);
 	if(Point_Distance(site.now,site.target) < 500) 
 		back.flagof.end = true,Self_Lock_Out("HomePoint");
 }
 /// @brief 运球流程
-struct dribble_t dribble = {.time.wait = 1300,.time.end = 2400,.parameter.dribble_front_velocity = 6000,.parameter.dribble_left_velocity = 900,};
+struct dribble_t dribble = {.time.xuan_stamp = 1650,.time.wait = 1100,.time.end = 2800,.parameter.dribble_front_velocity = 3500,.parameter.dribble_left_velocity = 1100,};
 void Dribble_Flow(void){
 	int now = HAL_GetTick();
-	if(dribble.flagof.init == false){
-		if(dribble.flagof.drrbbled == false) Tell_Yao_Xuan("dribble"),dribble.flagof.drrbbled = true;
-		dribble.time.begin = now;
+	switch(dribble.status){
+		case prepare:
+			if(dribble.flagof.prepared == false){
+				Tell_Yao_Xuan("dribble");
+				interact.defend_status = (interact.defend_status == catch_ball)?predunk:interact.defend_status;
+				interact.defend_status = ((interact.defend_status == initial) || (interact.defend_status == fold))?catch_ball:interact.defend_status;
+				dribble.flagof.prepared = true;
+			}
+			if(flow.flagof.stick_ball == true){
+				dribble.time.begin = now;
+				dribble.status = dribble_begin;
+			}
+		break;
+		case dribble_begin:
+			if(now - dribble.time.begin > dribble.time.wait)
+				Chassis_Velocity_Out(dribble.parameter.dribble_left_velocity,dribble.parameter.dribble_front_velocity,0);
+			else
+				Self_Lock_Out("WaitDribble");
+			if(now - dribble.time.begin > dribble.time.xuan_stamp)
+				Tell_Yao_Xuan("catch");
+			else 
+				Tell_Yao_Xuan("fold");
+			if(now - dribble.time.begin > dribble.time.end)
+				dribble.flagof.end = true;
+		break;
 	}
-	if(flow.flagof.stick_ball == true){
-		dribble.time.begin = now;
-		flow.flagof.stick_ball = false;
-		dribble.flagof.init = true;       
-	}
-	if(now - dribble.time.begin > dribble.time.wait){
-		Chassis_Velocity_Out(dribble.parameter.dribble_left_velocity,dribble.parameter.dribble_front_velocity,0);
-		if(now - dribble.time.begin < (dribble.time.wait + 700))
-			Tell_Yao_Xuan("fold");
-		else
-			Tell_Yao_Xuan("catch");
-	}
-	else{
-		Self_Lock_Out("WaitDribble");
-		if(interact.defend_status == initial || interact.defend_status == fold)
-			interact.defend_status = catch_ball;
-		else
-			interact.defend_status = predunk;
-	}
-//	Tell_Yao_Xuan(((HAL_GetTick() - dribble.time.begin < dribble.time.wait + 700)&&(HAL_GetTick() - dribble.time.begin > dribble.time.wait))?"fold":"catch");
-	dribble.flagof.end = (HAL_GetTick() - dribble.time.begin > dribble.time.end) ? true : false;
 }
 /////////技能挑战赛流程
 struct skill_t skill = {
@@ -156,7 +157,7 @@ void Skill_Flow(void){
 	switch(skill.status){
 		case begin:
 			Set_Target_Point(skill.target.point[skill.success_time]);
-			Position_With_Mark_PID_Run("near");
+			Position_With_Mark_PID_Run(R1);
 			if((Point_Distance(site.now,site.target) < skill.param.catch_advanced_dis[skill.success_time]) && (skill.flagof.net_catched == false))
 				skill.flagof.net_catched = true,Tell_Yao_Xuan("catch");
 			if((Point_Distance(site.now,site.target) < skill.param.lock_dis) && (fabs(site.now.r - site.target.r) < skill.param.lock_angle))
@@ -183,9 +184,11 @@ void Back_GamePadControl(void){
 	Zero(dunk.state);
 	Clear(dunk.flagof);
 	
+	Zero(dribble.status);
 	Clear(dribble.flagof);
 	
 	Clear(back.flagof);
+	Clear(flow.flagof);
 	//清除自动流程的枚举
 	chassis.Control_Status = GamePad_Control;
 }
@@ -205,8 +208,7 @@ void Auto_Flow(void){
 			Skill_Flow();
 		break;
 	}
-#define Rocker_Move ((hypot(GamePad_Data.rocker[0],GamePad_Data.rocker[1]) > 30) || (hypot(GamePad_Data.rocker[2],GamePad_Data.rocker[3]) > 30))
-	if((dribble.flagof.end == true) || (dunk.flagof.end == true) || (back.flagof.end == true) || (Rocker_Move == true) || (skill.flagof.end == true))
+	if((dribble.flagof.end == true) || (dunk.flagof.end == true) || (back.flagof.end == true) || (Rocker_Move() == true) || (skill.flagof.end == true))
 		Back_GamePadControl();
 #undef Rocker_Move
 }

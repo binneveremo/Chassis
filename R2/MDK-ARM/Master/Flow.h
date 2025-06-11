@@ -19,17 +19,22 @@ struct Flow {
 };
 extern struct Flow flow;
 struct dribble_t {
+	enum{
+		prepare,
+		dribble_begin,	
+	}status;
 	struct {
 		int dribble_front_velocity;
 		int dribble_left_velocity;
 	}parameter;
 	struct {
 		int begin;
-		int now;
-		int end;
+		int xuan_stamp;
 		int wait;
+		int end;
 	}time;
 	struct {
+		char prepared;
 		char drrbbled;
 		char end;
 		char init;

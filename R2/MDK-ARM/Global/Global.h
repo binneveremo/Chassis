@@ -29,8 +29,10 @@
 #define Point_Distance(a,b) (hypot(a.x - b.x,a.y - b.y))
 #define Point_InDistance(a,b,dis) (hypot(a.x - b.x,a.y - b.y) < dis)?1:0)
 #define Clear(x) (memset(&x,(unsigned char)NULL,sizeof(x)))
+#define Larger(a,b) ((a > b)?a:b)
+#define Smaller(a,b) ((a < b)?a:b)
 #define Normalize_Liner(a,b,c)  ((Limit(fabs(c),a,b)-a)/(b -a))
-#define Normalize_Pow(a,b,c,p)  pow(((Limit(fabs(c),a,b)-a)/(b -a)),p)
+#define Normalize_Pow(a,b,c,p)  pow(((Limit(fabs(c),Smaller(a,b),Larger(a,b))-Smaller(a,b))/(Larger(a,b) - Smaller(a,b))),p)
 #define Copy(a,b)   memcpy(&a,&b,sizeof(a))
 #define Zero(x)     {x = NONE;}
 

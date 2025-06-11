@@ -1,4 +1,203 @@
 #include "Nrf.h"
+#include "math.h"
+
+
+
+
+//当一个函数需要支持多种数据类型时，可以使用宏定义来生成多个函数
+#define MATHBSP_TYPEBASED_FUNC_DEFINITION_LIST(definition, func)                            \
+    definition(double,      func##_double)                                                  \
+    definition(float,       func##_float)                                                   \
+    definition(uint64_t,    func##_uint64)                                                  \
+    definition(int64_t,     func##_int64)                                                   \
+    definition(uint32_t,    func##_uint32)                                                  \
+    definition(int32_t,     func##_int32)                                                   \
+    definition(uint16_t,    func##_uint16)                                                  \
+    definition(int16_t,     func##_int16)                                                   \
+    definition(uint8_t,     func##_uint8)                                                   \
+    definition(int8_t,      func##_int8)
+#define MATHBSP_TYPEBASED_INTEGER_FUNC_DEFINITION_LIST(definition, func)                    \
+    definition(uint64_t,    func##_uint64)                                                  \
+    definition(int64_t,     func##_int64)                                                   \
+    definition(uint32_t,    func##_uint32)                                                  \
+    definition(int32_t,     func##_int32)                                                   \
+    definition(uint16_t,    func##_uint16)                                                  \
+    definition(int16_t,     func##_int16)                                                   \
+    definition(uint8_t,     func##_uint8)                                                   \
+    definition(int8_t,      func##_int8)
+
+
+//归并排序
+#define DEFINE_MERGESORT_FUNC(type, func_name)                                              \
+void _##func_name##_Merge(type* source, type* buff, uint32_t start, uint32_t mid, uint32_t end) {   \
+    uint32_t i = start, j = mid + 1, k = start;                                             \
+    while (i <= mid && j <= end) {                                                          \
+        if (source[i] <= source[j]) buff[k++] = source[i++];                                \
+        else buff[k++] = source[j++];                                                       \
+    }                                                                                       \
+    while (i <= mid) buff[k++] = source[i++];                                               \
+    while (j <= end) buff[k++] = source[j++];                                               \
+    for (i = start; i <= end; i++) source[i] = buff[i];                                     \
+}                                                                                           \
+void _##func_name##_Sort(type* source, type* buff, uint32_t start, uint32_t end) {          \
+    if(start >= end) return;                                                                \
+    uint32_t mid = (start + end) / 2;                                                       \
+    _##func_name##_Sort(source, buff, start, mid);                                          \
+    _##func_name##_Sort(source, buff, mid + 1, end);                                        \
+    _##func_name##_Merge(source, buff, start, mid, end);                                    \
+}                                                                                           \
+type* func_name(type* source, type* buff, uint32_t len) {                                   \
+    if(source != NULL && buff!= NULL && len > 1)                                            \
+        _##func_name##_Sort(source, buff, 0, len - 1);                                      \
+    return buff;                                                                            \
+}
+MATHBSP_TYPEBASED_FUNC_DEFINITION_LIST(DEFINE_MERGESORT_FUNC, MathBsp_MergeSort)
+
+//快速排序
+#define DEFINE_QUICKSORT_FUNC(type, func_name)                                              \
+uint32_t _##func_name##_Partition(type* source, uint32_t low, uint32_t high) {              \
+    type pivot = source[high];                                                              \
+    uint32_t i = (low - 1);                                                                 \
+    for (uint32_t j = low; j <= high - 1; j++) {                                            \
+        if (source[j] < pivot) {                                                            \
+            i++;                                                                            \
+            type t = source[i];                                                             \
+            source[i] = source[j];                                                          \
+            source[j] = t;                                                                  \
+        }                                                                                   \
+    }                                                                                       \
+    type t = source[i + 1];                                                                 \
+    source[i + 1] = source[high];                                                           \
+    source[high] = t;                                                                       \
+    return (i + 1);                                                                         \
+}                                                                                           \
+void _##func_name##_Sort(type* source, uint32_t low, uint32_t high) {                       \
+    if (low < high) {                                                                       \
+        uint32_t pi = _##func_name##_Partition(source, low, high);                          \
+        _##func_name##_Sort(source, low, pi - 1);                                           \
+        _##func_name##_Sort(source, pi + 1, high);                                          \
+    }                                                                                       \
+}                                                                                           \
+type* func_name(type* source, uint32_t len) {                                               \
+    _##func_name##_Sort(source, 0, len - 1);                                                \
+    return source;                                                                          \
+}
+MATHBSP_TYPEBASED_FUNC_DEFINITION_LIST(DEFINE_QUICKSORT_FUNC, MathBsp_QuickSort)
+
+
+//堆排序
+#define DEFINE_HEAPSORT_FUNC(type, func_name)                                               \
+void _##func_name##_Heapify(type* source, uint32_t len, uint32_t i) {                       \
+    uint32_t largest = i;                                                                   \
+    uint32_t l = 2 * i + 1;                                                                 \
+    uint32_t r = 2 * i + 2;                                                                 \
+    if (l < len && source[l] > source[largest]) largest = l;                                \
+    if (r < len && source[r] > source[largest]) largest = r;                                \
+    if (largest != i) {                                                                     \
+        type t = source[i];                                                                 \
+        source[i] = source[largest];                                                        \
+        source[largest] = t;                                                                \
+        _##func_name##_Heapify(source, len, largest);                                       \
+    }                                                                                       \
+}                                                                                           \
+type* func_name(type* source, uint32_t len) {                                               \
+    for (int i = len / 2 - 1; i >= 0; i--) _##func_name##_Heapify(source, len, i);          \
+    for (int i = len - 1; i > 0; i--) {                                                     \
+        type t = source[0];                                                                 \
+        source[0] = source[i];                                                              \
+        source[i] = t;                                                                      \
+        _##func_name##_Heapify(source, i, 0);                                               \
+    }                                                                                       \
+    return source;                                                                          \
+}
+MATHBSP_TYPEBASED_FUNC_DEFINITION_LIST(DEFINE_HEAPSORT_FUNC, MathBsp_HeapSort)
+
+//**位运算相关**/ 
+
+//获取一个数的二进制表示中最高位的1的位置
+#define DEFINE_GETHIGHESTBIT_FUNC(type, func_name)                                          \
+uint32_t func_name(type num) {                                                              \
+    type mask = 1;                                                                          \
+    uint32_t pos = 0;                                                                       \
+    for (uint32_t i = 0; i < sizeof(type) * 8; i++) {                                       \
+        if (num & (type)(mask << i)) pos = i + 1;                                           \
+    }                                                                                       \
+    return pos;                                                                             \
+}
+MATHBSP_TYPEBASED_INTEGER_FUNC_DEFINITION_LIST(DEFINE_GETHIGHESTBIT_FUNC, MathBsp_GetHighestBit)
+//获取一个数的二进制表示中最低位的1的位置
+#define DEFINE_GETLOWESTBIT_FUNC(type, func_name)                                           \
+uint32_t func_name(type num) {                                                              \
+    type mask = 1;                                                                          \
+    uint32_t pos = 0;                                                                       \
+    for (uint32_t i = 0; i < sizeof(type) * 8; i++) {                                       \
+        if (num & (type)(mask << i)){ pos = i + 1; break; }                                 \
+    }                                                                                       \
+    return pos;                                                                             \
+}
+MATHBSP_TYPEBASED_INTEGER_FUNC_DEFINITION_LIST(DEFINE_GETLOWESTBIT_FUNC, MathBsp_GetLowestBit)
+
+//将一个整数的第n位设置为1/0
+#define DEFINE_SETBIT_FUNC(type, func_name)                                                 \
+type func_name(type num, uint32_t n, bool bitstate) {                                       \
+    if (n > sizeof(type) * 8 || n == 0) return num;                                         \
+    type mask = 1;                                                                          \
+    if (bitstate) return num | (type)(mask << (n - 1));                                     \
+    else return num & ~(type)(mask << (n - 1));                                             \
+}
+MATHBSP_TYPEBASED_INTEGER_FUNC_DEFINITION_LIST(DEFINE_SETBIT_FUNC, MathBsp_SetBit)      
+
+//计算一个整数的二进制表示中1的个数
+#define DEFINE_COUNTBIT_FUNC(type, func_name)                                               \
+uint32_t func_name(type num) {                                                              \
+    uint32_t count = 0;                                                                     \
+    for (uint32_t i = 0; i < sizeof(type) * 8; i++) {                                       \
+        if (num & (type)((type)1 << i)) count++;											\
+    }                                                                                       \
+    return count;                                                                           \
+}
+MATHBSP_TYPEBASED_INTEGER_FUNC_DEFINITION_LIST(DEFINE_COUNTBIT_FUNC, MathBsp_CountBit)
+
+//获取一个二进制整数的第n位是1还是0
+#define DEFINE_GETBIT_FUNC(type, func_name)                                                 \
+bool func_name(type num, uint32_t n) {                                                      \
+    if (n > sizeof(type) * 8 || n == 0) return false;                                       \
+    type mask = 1;                                                                          \
+    return num & (type)(mask << (n - 1));                                                   \
+}
+MATHBSP_TYPEBASED_INTEGER_FUNC_DEFINITION_LIST(DEFINE_GETBIT_FUNC, MathBsp_GetBit)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 //nRF24L01寄存器操作命令
 #define NRF_CMD_READ_REG                0x00  //读配置寄存器,低5位为寄存器地址
@@ -44,40 +243,6 @@
 #define NRF_WID_TX_ADR             5        //5字节的地址宽度
 #define NRF_WID_RX_PLOAD           32       //32字节的用户数据宽度
 #define NRF_WID_ACK_PAYLOAD        5        //5字节的用户数据宽度
-
-// mathbsp函数
-//计算一个整数的二进制表示中1的个数
-//.h
-#define MATHBSP_TYPEBASED_INTEGER_FUNC_REFERENCE_LIST(reference, func)  \
-    reference(uint64_t  ,   func##_uint64)                              \
-    reference(int64_t   ,   func##_int64)                               \
-    reference(uint32_t  ,   func##_uint32)                              \
-    reference(int32_t   ,   func##_int32)                               \
-    reference(uint16_t  ,   func##_uint16)                              \
-    reference(int16_t   ,   func##_int16)                               \
-    reference(uint8_t   ,   func##_uint8)                               \
-    reference(int8_t    ,   func##_int8)
-#define MATHBSP_COUNTBIT_REFERENCE(type, func) uint32_t func(type num);
-//.c
-#define MATHBSP_TYPEBASED_INTEGER_FUNC_DEFINITION_LIST(definition, func)                    \
-    definition(uint64_t,    func##_uint64)                                                  \
-    definition(int64_t,     func##_int64)                                                   \
-    definition(uint32_t,    func##_uint32)                                                  \
-    definition(int32_t,     func##_int32)                                                   \
-    definition(uint16_t,    func##_uint16)                                                  \
-    definition(int16_t,     func##_int16)                                                   \
-    definition(uint8_t,     func##_uint8)                                                   \
-    definition(int8_t,      func##_int8)
-MATHBSP_TYPEBASED_INTEGER_FUNC_REFERENCE_LIST(MATHBSP_COUNTBIT_REFERENCE, MathBsp_CountBit)
-#define DEFINE_COUNTBIT_FUNC(type, func_name)                                               \
-uint32_t func_name(type num) {                                                              \
-    uint32_t count = 0;                                                                     \
-    for (uint32_t i = 0; i < sizeof(type) * 8; i++) {                                       \
-        if (num & (type)((type)1 << i)) count++;											\
-    }                                                                                       \
-    return count;                                                                           \
-}
-MATHBSP_TYPEBASED_INTEGER_FUNC_DEFINITION_LIST(DEFINE_COUNTBIT_FUNC, MathBsp_CountBit)
 
 
 void _Nrf_CE_Low(Nrf_t* nrf)//将CE置低，向nRF24L01发送控制信号

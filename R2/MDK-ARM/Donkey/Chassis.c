@@ -1,5 +1,6 @@
 #include "mngCommu.h"
 #include "Chassis.h"
+#include "Global.h"
 #include "Basket.h"
 #include "Flow.h"
 
@@ -65,7 +66,7 @@ void GamePad_Velocity_Control(void)
 	rocker_y = GamePad_Data.rocker[1];
 	rocker_r = -GamePad_Data.rocker[2];
 	// 陀螺仪逆时针为正
-	float Rocker_GainT = chassis.flagof.gamepad.slow ? 12 : (chassis.flagof.gamepad.accel ? 127 : 68);
+	float Rocker_GainT = chassis.flagof.gamepad.slow ? 12 : (chassis.flagof.gamepad.accel ? 108 : 82);
 	float Rocker_GainR = chassis.flagof.gamepad.slow ? 5 : (chassis.flagof.gamepad.accel ? 35 : 32);
 	float r = (chassis.flagof.gamepad.inverse == 1) ? site.now.r + 90 : site.now.r + 0.01 * site.gyro.omiga ;
 	float y = (float)rocker_y * cos(ang2rad(r)) + rocker_x * sin(ang2rad(r));
@@ -77,21 +78,21 @@ void GamePad_Velocity_Control(void)
 			rout = Rocker_GainR * rocker_r;
 		break;
 		case R1:
-			rout = Correct_Angle(send.R1_Exchange.pos.r);
+			rout = Correct_Angle(site.gyro.r,send.R1_Exchange.pos.r);
 		break;
 		case self_basket:
-			rout = Correct_Angle(basketlock.protectselfbasket_angle);
+			rout = Correct_Angle(site.gyro.r,basketlock.protectselfbasket_angle);
 		break;
 		case oppo_basket:
 			rout = BasketAngleLock();
 		 break;
 		case forward:
-			rout = Correct_Angle(NONE);
+			rout = Correct_Angle(site.now.r,NONE);
+			chassis.flagof.gamepad.rotate = false;
 		break;
 	}
 	if(chassis.flagof.gamepad.rotate)
-		rout = 1500;
-	
+		rout = 3000;
 	if(chassis.flagof.gamepad.shutdown){
 		float shutdown_angle = atan2f(site.car.vy_gyro,site.car.vx_gyro);
 		if(site.car.velocity_totalgyro > 1)	Chassis_Velocity_Out(cos(shutdown_angle),-sin(shutdown_angle),0);
@@ -122,63 +123,48 @@ bool TurnMotor_InTurnPosition(void)
 }
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////跑点相关///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////三种跑法：1.位置PID 2.速度PID 3.位置PID+速度PID////////////////////////////////////////////////////////////////////////////////////
-struct correct_angle_t correct_angle = {.p = 35, .d = 0.03, .i = 0.6, .ilimit = 900, .istart = 1, .iend = 10, .outlimit = 6000, .accel_gain = 1.4, .velocity_gain = 0.2,};
-float Correct_Angle(float target)
+struct correct_angle_t correct_angle = {.p = 35, .d = 0.03, .i = 0.6, .ilimit = 1000, .istart = 1, .iend = 10, .outlimit = 6000, .accel_gain = 1.4, .velocity_gain = 0.2,.fade_max = 7, .fade_min = 2};
+float Correct_Angle(float now,float target)
 {
-	float error = NormalizeAng_Single(target - site.now.r);
-	float out;
+	float error = NormalizeAng_Single(target - now);
 	float p = correct_angle.p * error;
-	float gain = Limit(correct_angle.velocity_gain * site.car.velocity_totalenc + correct_angle.accel_gain * site.car.accel_totalgyro, 1, 4);
-
-	gain = (fabs(error) < correct_angle.istart) ? Limit(fabs(error / correct_angle.istart), 0.5, 1) : 1;
-	correct_angle.itotal *= gain;
+	float d = -site.gyro.omiga * correct_angle.d;
+	float dynamic_gain = Limit(correct_angle.velocity_gain * site.car.velocity_totalenc + correct_angle.accel_gain * site.car.accel_totalgyro, 1, 4);
+	float fade_gain = Normalize_Pow(error,correct_angle.fade_min,correct_angle.fade_max,2);
 	correct_angle.itotal = ((fabs(error) > correct_angle.istart) && (fabs(error) < correct_angle.iend)) ? Limit(correct_angle.itotal + correct_angle.i * error, -correct_angle.ilimit, correct_angle.ilimit) : correct_angle.itotal;
-	out = Limit(gain * p + correct_angle.itotal - correct_angle.d*site.gyro.omiga, -correct_angle.outlimit, correct_angle.outlimit);
-	return out;
+	return Limit(dynamic_gain* fade_gain * p + correct_angle.itotal + d, -correct_angle.outlimit, correct_angle.outlimit);
 }
-
-/////////////////////////////////////////4.位置闭环单向PID
-struct Spot_t spot_far = {	.param.p = 3,	.param.i = 2,	.param.istart = 6,	.param.iend = 400,	.param.ilimit = 1000,	.param.outlimit = 16000,	.process.brake_distance = 600,	.param.brake_percent = 0.3,	.param.brake_gain = 0.05, .param.brake_mindis = 600};
-struct Spot_t spot_near = {	.param.p = 5.5, .param.i = 0.8,	.param.istart = 200,.param.iend = 1000,	.param.ilimit = 1200,	.param.outlimit = 16000,	.process.brake_distance = 600,	.param.brake_percent = 0.25,	.param.brake_gain = 0.1, .param.brake_mindis = 400};
-//////////////////////跑点的速度限制       根据最大速度最大速度 10000  那么就会限制刹车距离为 spot.brake_percent * 10000
-void Position_With_Mark_PID_Run(char * type){
-	static struct Spot_t spot; 
-	if(strcmp(type,"far") == 0)
-		Copy(spot.param,spot_far);
-	else 
-		Copy(spot.param,spot_near);
-	static struct Point last;
-	if (Point_Distance(last, site.target) > 100)
-	{
-		spot.process.total_dis = Point_Distance(site.target, site.now);  
-		spot.process.brake_distance = Limit(spot.param.brake_percent * spot.process.total_dis, spot.param.brake_mindis, spot.param.outlimit * spot.param.brake_percent);
-		memcpy(&last, &site.target, sizeof(last));
-	}
+///////////////////////////////////////新型PID 测试使用
+struct Spot_t spot = {.param.p = 8,	.param.i = 2,	.param.istart = 6,	.param.iend = 400,	.param.ilimit = 600,	.param.outlimit = 16000, .process.fade_start = 200, .process.fade_end = 50};
+void Position_With_Mark_PID_Run(enum opposite_t opposite){
 	float xerror = site.target.x - site.now.x;
 	float yerror = site.target.y - site.now.y;
-	float rerror = site.target.r - site.now.r;
-
-	spot.process.gain = (hypot(xerror, yerror) > spot.process.brake_distance) ? 1 : spot.param.brake_gain;
-	float outlimit = spot.param.outlimit;
-	float ilimit = spot.param.ilimit;
-
+	float dis = hypot(xerror,yerror);
+	spot.process.gain = Normalize_Pow(spot.process.fade_start,spot.process.fade_end,dis,2);
 	float xp = spot.param.p * xerror;
 	float xi = ((fabs(xerror) < spot.param.iend) && (fabs(xerror) > spot.param.istart)) ? spot.param.i * xerror : 0;
-	spot.process.itotal_x = (fabs(xerror) < spot.param.istart) ? 0 : Limit(spot.process.itotal_x + xi, -ilimit, ilimit);
+	spot.process.itotal_x = (fabs(xerror) < spot.param.istart) ? 0 : Limit(spot.process.itotal_x + xi, -spot.param.ilimit, spot.param.ilimit);
 	spot.process.outx = spot.process.gain * xp + spot.process.itotal_x;
 
 	float yp = spot.param.p * yerror;
 	float yi = ((fabs(yerror) < spot.param.iend) && (fabs(yerror) > spot.param.istart)) ? spot.param.i * yerror : 0;
-	spot.process.itotal_y = (fabs(yerror) < spot.param.istart) ? 0 : Limit(spot.process.itotal_y + yi, -ilimit, ilimit);
+	spot.process.itotal_y = (fabs(yerror) < spot.param.istart) ? 0 : Limit(spot.process.itotal_y + yi, -spot.param.ilimit, spot.param.ilimit);
 	spot.process.outy = spot.process.gain * yp + spot.process.itotal_y;
 
 	// 请记住 第一项为front left 角速度
-	float vnow = Limit(hypot(spot.process.outx, spot.process.outy), -outlimit, outlimit);
+	float vnow = Limit(hypot(spot.process.outx, spot.process.outy), -spot.param.outlimit,spot.param.outlimit);
 	float angle = atan2f(yerror, xerror) - ang2rad(site.now.r);
-
-	Chassis_Velocity_Out(vnow * sin(angle), vnow * cos(angle), Correct_Angle(send.R1_Exchange.pos.r));
+	switch(opposite){
+		case R1:
+			Chassis_Velocity_Out(vnow * sin(angle), vnow * cos(angle), Correct_Angle(site.now.r,send.R1_Exchange.pos.r));
+		break;
+		case forward:
+			Chassis_Velocity_Out(vnow * sin(angle), vnow * cos(angle), Correct_Angle(site.now.r,0));
+		break;
+		default:
+			break;
+	}
 }
-
 void Self_Lock_Out(char *lock_reason){
 	Min_Angle_Cal(&chassis.motor.turn[front_wheel], &chassis.motor.drive[front_wheel], 0);
 	Min_Angle_Cal(&chassis.motor.turn[left_wheel], &chassis.motor.drive[left_wheel], -83);
@@ -244,3 +230,37 @@ void Get_VESC_Data(int id, unsigned char *data)
 		break;
 	}
 }
+void Debug_Test(void){
+	if(Rocker_Move() == true)
+		Chassis_Velocity_Out(0,10000,0);
+	else 
+		Chassis_Velocity_Out(0,10,0);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
