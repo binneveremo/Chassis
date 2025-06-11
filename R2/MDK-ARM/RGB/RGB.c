@@ -159,12 +159,7 @@ void RGB_Show_Msg(void){
 				break;
 			}
 		break;
-	}
-//	if(RGB_ON == true)
-//		RGB_Color_All(Pink,20);
-//	else 
-//		RGB_Color_All(Black,10);
-	
+	}	
 	RGB_OutPut();
 }
 

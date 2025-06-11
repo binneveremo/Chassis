@@ -134,6 +134,7 @@ int main(void)
   MX_TIM23_Init();
   MX_TIM16_Init();
   /* USER CODE BEGIN 2 */
+	Chassis_SelfLock("ON");
 	FDCAN4_Init();                                                                             
 	RGB_Init();
 	Gyro_Init();

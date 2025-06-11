@@ -46,7 +46,14 @@ void R1ExchangeData_Decode(UART_HandleTypeDef *huart){
 		flow.flagof.R1_Shooted = (send.R1_Exchange.receive[9] == 1)?true:flow.flagof.R1_Shooted;
 	}
 }
-void Send_MessageToR1(void){
+
+unsigned char R1Data_Sum(void){
+	char sum = NONE;
+	for(unsigned char i=0;i < 10;i++)
+		sum += send.R1_Exchange.send[i];
+	return sum;
+}
+void Send_MessageToR1(void){	
 #define net_offset 80 //289
 	send.R1_Exchange.send[0] = 0xAA;
 	if((chassis.Control_Status == Auto_Control) && (flow.type == skill_flow)){
@@ -62,19 +69,10 @@ void Send_MessageToR1(void){
 	send.convert.float_data[0] = send.R1_Exchange.net.x;
 	send.convert.float_data[1] = send.R1_Exchange.net.y;
 	memcpy(&send.R1_Exchange.send[1],send.convert.uint8_data,8);
+	send.R1_Exchange.send[10] = R1Data_Sum();
 #undef net_offset
-		HAL_UART_Transmit(&R1_Exchange_Usart, send.R1_Exchange.send, sizeof(send.R1_Exchange.send), HAL_MAX_DELAY);
+		HAL_UART_Transmit(&R1_Exchange_Usart, send.R1_Exchange.send, R1_Data_Num, HAL_MAX_DELAY);
 }
-
-
-//void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t size)
-//{
-//	R1ExchangeData_Decode(huart);
-//}
-//void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart)
-//{
-//	Wireless_init();
-//}
 
 
 

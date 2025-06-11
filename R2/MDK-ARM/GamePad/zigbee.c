@@ -19,7 +19,7 @@ void zigbee_transmit(uint8_t* Tdata, uint8_t lenth, uint16_t target_addr)
 	data[2] = target_addr >> 8; data[3] = target_addr & 0xFF;
 	// 拷贝发送数据
 	memcpy(&data[4], Tdata, lenth);
-	HAL_UART_Transmit_DMA(zigbee_state.huart, data, lenth+5);
+	//HAL_UART_Transmit_DMA(zigbee_state.huart, data, lenth+5);
 }
 
 void get_signal_strength(uint16_t target_addr)

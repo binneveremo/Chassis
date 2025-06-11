@@ -9,6 +9,9 @@
 #include "mine.h"
 #include "VESC.h"
 
+#define Chassis_SelfLock(x) {chassis.lock.permit = (strcmp(x,"ON") == 0)?true:false;}
+
+
 #define VESC_NUM 4
 #define TURN_NUM 4
 #define front_wheel 0		
@@ -81,10 +84,12 @@ struct Spot_t{
 		float ilimit;
 		
 		float outlimit;
-	}param;
-	struct {
+		
 		float fade_start;
 		float fade_end;
+	}param;
+	struct {
+		
 		
 		float gain;
 		float itotal_x;
@@ -93,6 +98,7 @@ struct Spot_t{
 		float outy;
 	}process;
 };
+extern struct Spot_t spot;
 struct Chassis{
 	enum{
 		GamePad_Control,
@@ -116,6 +122,7 @@ struct Chassis{
 	}flagof;
 	enum opposite_t opposite;
 	struct {
+		char permit;
 		char flag;
 		char reason[20];
 	}lock;
@@ -142,8 +149,6 @@ struct correct_angle_t{
 
 
 #define Set_Target_Point(x) memcpy(&site.target, &x, sizeof(x))
-
-
 #define TurnMotor_OffsetAngleInit() {\
 	chassis.motor.turn[front_wheel].offset_angle  = front_offset;		\
 	chassis.motor.turn[right_wheel].offset_angle  = right_offset;		\

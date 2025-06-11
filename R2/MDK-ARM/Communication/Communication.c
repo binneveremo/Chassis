@@ -35,7 +35,7 @@ void Tell_Yao_Xuan(char *message){
 			FDCAN_Send(&Com_Can,stick_id_send,"STD",NULL,"FD",0,"OFF");
 }
 void Car_State_Decode(int id,unsigned char * data){
-	if((id == stickball_id_recv) && (chassis.Control_Status == Auto_Control))
+	if((id == staffdown_id_recv) && (chassis.Control_Status == Auto_Control))
 		RGB_ON = true,flow.flagof.stick_ball = true;
 }
 

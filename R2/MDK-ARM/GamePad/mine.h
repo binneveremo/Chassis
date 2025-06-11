@@ -3,8 +3,8 @@
 
 struct Game_Pad_Data {
 	float rocker[4];
-	unsigned char key[23];
-	unsigned char last[23];
+	unsigned char key[25];
+	unsigned char last[25];
 	unsigned char witch[10];
 	char Debug_Page;
 };

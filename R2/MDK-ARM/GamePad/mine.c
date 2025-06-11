@@ -7,7 +7,7 @@
 #include "mine.h"
 #include "RGB.h"
 #include "Nrf.h"
-#define OLD_GAMEPAD true
+#define OLD_GAMEPAD false
 #define DebugPage_Change(x)	(GamePad_Data.Debug_Page = (GamePad_Data.Debug_Page >= 5)?0:GamePad_Data.Debug_Page + x)
 
 struct Game_Pad_Data GamePad_Data;
@@ -16,7 +16,7 @@ struct Game_Pad_Data GamePad_Data;
 void Get_GamePad_Data(void){
 	for(int i = 0; i< 4;i++)
 		GamePad_Data.rocker[i] = get_rocker(i);
-	for(int i = 0; i< 23;i++)
+	for(int i = 0; i< 25;i++)
 		GamePad_Data.key[i] = get_fk_state(i);
 	for(int i = 0; i< 10;i++)
 	   GamePad_Data.witch[i] = get_sw_state(i);
@@ -92,13 +92,19 @@ void GamePad_Data_Cla(void){
 	else if((GamePad_Data.key[6] == 1) && (GamePad_Data.key[21] == 0))
  		Odometer_Clear("armor"),Gyro_Reset(),RGB_RESET;
 #else
-
+#define Reuse_Witch GamePad_Data.witch[5] 
 #define flow_begin (chassis.Control_Status = Auto_Control)
-	if(GamePad_Data.key[19] == 1)
+	if((GamePad_Data.key[19] == 1) && (Reuse_Witch == 0))
 		flow_begin, flow.type = dribble_flow;
-	else if(GamePad_Data.key[18] == 1)
+	else if((GamePad_Data.key[18] == 1) && (Reuse_Witch == 0))
 		flow_begin, flow.type = dunk_flow;
+	else if((GamePad_Data.key[19] == 1) && (Reuse_Witch == 1))
+		flow_begin, flow.type = skill_flow;
+	else if(GamePadKey_FallingCheck(18) && (Reuse_Witch == 1) && (chassis.Control_Status == Auto_Control))
+		skill.success_time++;
 #undef flow_begin
+#undef Reuse_Witch
+	
 	if((chassis.Control_Status == Auto_Control) && (flow.type == skill_flow) && (GamePadKey_FallingCheck(20) == 1))
 		skill.success_time++;
 	if((GamePad_Data.key[2] == 1 || GamePad_Data.key[3] == 1 ) && (chassis.Control_Status == Auto_Control))
@@ -127,6 +133,8 @@ void GamePad_Data_Cla(void){
 	if(GamePad_Data.key[4] == 1)
  		Tell_Yao_Xuan("defend");
 	
+	if(GamePad_Data.key[15] == 1)
+ 		Tell_Yao_Xuan("down");
 	if(GamePad_Data.key[8] == 1)
  		Tell_Yao_Xuan("down");
 	if(GamePad_Data.key[9] == 1)
@@ -143,16 +151,16 @@ void GamePad_Data_Cla(void){
 	
 	//自动旋转开关
 //	if(GamePadKey_FallingCheck(21) == 1)
-//		chassis.flagof.gamepad.rotate = !chassis.flagof.gamepad.rotate;
+//		chassis.flagof.gamepad.rotate = true;
 	
-	if(GamePad_Data.key[20])
-		chassis.opposite = R1;
-	else if(GamePad_Data.key[18])
-		chassis.opposite = oppo_basket;
-	else if(GamePad_Data.key[14])
-		chassis.opposite = self_basket;
-	else if(GamePad_Data.key[22])
-		chassis.opposite = forward;
+#define Stop_Rotate (chassis.flagof.gamepad.rotate = false)
+	if(GamePadKey_FallingCheck(20) == 1)
+		Stop_Rotate;
+	
+	if(GamePad_Data.key[23] == 1)
+		Stop_Rotate,chassis.opposite = self_basket;
+	else if(GamePad_Data.key[22] == 1)
+		Stop_Rotate,chassis.opposite = forward;
 	else
 		chassis.opposite = none;
 

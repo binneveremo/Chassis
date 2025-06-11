@@ -88,7 +88,6 @@ void GamePad_Velocity_Control(void)
 		 break;
 		case forward:
 			rout = Correct_Angle(site.now.r,NONE);
-			chassis.flagof.gamepad.rotate = false;
 		break;
 	}
 	if(chassis.flagof.gamepad.rotate)
@@ -102,6 +101,8 @@ void GamePad_Velocity_Control(void)
 		Chassis_Velocity_Out(x * Rocker_GainT, y * Rocker_GainT, rout);
 	else 
 		Chassis_Velocity_Out(rocker_x * Rocker_GainT,rocker_y * Rocker_GainT, rout);
+	if((fabs((float)GamePad_Data.rocker[0]) <= 1) && (fabs((float)GamePad_Data.rocker[1]) <= 1) && (fabs(GamePad_Data.rocker[2]) <= 5))
+		Self_Lock_Out("GamePad");
 }
 bool TurnMotor_InPosition(void)
 {
@@ -130,17 +131,17 @@ float Correct_Angle(float now,float target)
 	float p = correct_angle.p * error;
 	float d = -site.gyro.omiga * correct_angle.d;
 	float dynamic_gain = Limit(correct_angle.velocity_gain * site.car.velocity_totalenc + correct_angle.accel_gain * site.car.accel_totalgyro, 1, 4);
-	float fade_gain = Normalize_Pow(error,correct_angle.fade_min,correct_angle.fade_max,2);
+	float fade_gain = Normalize_Pow(correct_angle.fade_min,correct_angle.fade_max,error,2);
 	correct_angle.itotal = ((fabs(error) > correct_angle.istart) && (fabs(error) < correct_angle.iend)) ? Limit(correct_angle.itotal + correct_angle.i * error, -correct_angle.ilimit, correct_angle.ilimit) : correct_angle.itotal;
 	return Limit(dynamic_gain* fade_gain * p + correct_angle.itotal + d, -correct_angle.outlimit, correct_angle.outlimit);
 }
 ///////////////////////////////////////新型PID 测试使用
-struct Spot_t spot = {.param.p = 8,	.param.i = 2,	.param.istart = 6,	.param.iend = 400,	.param.ilimit = 600,	.param.outlimit = 16000, .process.fade_start = 200, .process.fade_end = 50};
+struct Spot_t spot = {.param.p = 5.3,	.param.i = 1,	.param.istart = 6,	.param.iend = 400,	.param.ilimit = 1000,	.param.outlimit = 12000, .param.fade_start = 430, .param.fade_end = 100};
 void Position_With_Mark_PID_Run(enum opposite_t opposite){
 	float xerror = site.target.x - site.now.x;
 	float yerror = site.target.y - site.now.y;
 	float dis = hypot(xerror,yerror);
-	spot.process.gain = Normalize_Pow(spot.process.fade_start,spot.process.fade_end,dis,2);
+	spot.process.gain = Normalize_Pow(spot.param.fade_start,spot.param.fade_end,dis,2);
 	float xp = spot.param.p * xerror;
 	float xi = ((fabs(xerror) < spot.param.iend) && (fabs(xerror) > spot.param.istart)) ? spot.param.i * xerror : 0;
 	spot.process.itotal_x = (fabs(xerror) < spot.param.istart) ? 0 : Limit(spot.process.itotal_x + xi, -spot.param.ilimit, spot.param.ilimit);

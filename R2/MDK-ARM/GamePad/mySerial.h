@@ -3,8 +3,6 @@
 #include <stdio.h>
 #include "usart.h"
 
-//#define TX_Uart huart3		// 重定向串口  // 在config.h中定义
-
 #define BUFFER_SIZE 500
 #define require_queue_length 20
 

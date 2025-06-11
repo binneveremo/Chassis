@@ -62,7 +62,7 @@ void Back_Flow(void){
 		back.flagof.end = true,Self_Lock_Out("HomePoint");
 }
 /// @brief 运球流程
-struct dribble_t dribble = {.time.xuan_stamp = 1650,.time.wait = 1100,.time.end = 2800,.parameter.dribble_front_velocity = 3500,.parameter.dribble_left_velocity = 1100,};
+struct dribble_t dribble = {.time.xuan_stamp = 1350,.time.wait = 600,.time.end = 2000,.parameter.dribble_front_velocity = 3700,.parameter.dribble_left_velocity = 700,};
 void Dribble_Flow(void){
 	int now = HAL_GetTick();
 	switch(dribble.status){
@@ -137,7 +137,7 @@ struct skill_t skill = {
 	.param.shoot_advanced_dis[5] = 50,
 	.param.shoot_advanced_dis[6] = 50,
 
-	.param.lock_dis = 150,
+	.param.lock_dis = 240,
 	.param.lock_angle = 8,
 };
 struct Point SkillFlow_R2PositionToR1(struct Point point){
@@ -153,14 +153,14 @@ struct Point SkillFlow_R2PositionToR1(struct Point point){
 
 void Skill_Flow(void){
 	static char last_success_times;
-	//char index = skill.flagof.success_time;
+	char index = skill.success_time % 7;
 	switch(skill.status){
 		case begin:
-			Set_Target_Point(skill.target.point[skill.success_time]);
+			Set_Target_Point(skill.target.point[index]);
 			Position_With_Mark_PID_Run(R1);
-			if((Point_Distance(site.now,site.target) < skill.param.catch_advanced_dis[skill.success_time]) && (skill.flagof.net_catched == false))
+			if((Point_Distance(site.now,site.target) < skill.param.catch_advanced_dis[index]) && (skill.flagof.net_catched == false))
 				skill.flagof.net_catched = true,Tell_Yao_Xuan("catch");
-			if((Point_Distance(site.now,site.target) < skill.param.lock_dis) && (fabs(site.now.r - site.target.r) < skill.param.lock_angle))
+			if((Point_Distance(site.now,site.target) < skill.param.lock_dis))
 				Self_Lock_Out("SkillFlow"),send.R1_Exchange.request_flag = true;
 			else 
 				send.R1_Exchange.request_flag = true;
@@ -168,10 +168,14 @@ void Skill_Flow(void){
 				last_success_times = skill.success_time,skill.status = clear;
 		break;
 		case clear:
+			if(skill.success_time == 8) {
+				skill.flagof.end = true;
+				return;
+			}
 			Tell_Yao_Xuan("defend");
+			//Clear(spot.process);
 			Clear(skill.flagof);
 			skill.status = begin;
-			if(skill.success_time == 7) skill.flagof.end = true;
 		break;
 	}
 }
@@ -189,6 +193,8 @@ void Back_GamePadControl(void){
 	
 	Clear(back.flagof);
 	Clear(flow.flagof);
+	
+	Zero(skill.success_time);
 	//清除自动流程的枚举
 	chassis.Control_Status = GamePad_Control;
 }

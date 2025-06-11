@@ -34,9 +34,6 @@ void motor_control(void const * argument)
 				Debug_Test();
 			break;
 		}
-		//察觉到空置状态的变化
-		ControlStatus_Detect();
-		Self_Lock_Auto();
 	  VectorWheel_SetAngle();
 		VectorWheel_SetSpeed();
 		osDelay(4);
@@ -48,8 +45,8 @@ void communication(void const * argument)
   {
 		Vision_Basket_Decode();
 		GamePad_Data_Cla();
-	  Send_MessageToR1();		
-		osDelay(10);
+	  Send_MessageToR1();	
+		osDelay(25);
 	}
 }
 void location(void const * argument)

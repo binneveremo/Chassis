@@ -10,7 +10,7 @@
 #include "usart.h"
 #include <stdio.h>
 
-#define R1_Data_Num 10
+#define R1_Data_Num 11
 #define Send_Put_Data(index,data) {send.convert.float_data[index] = data;}
 
 struct Send{

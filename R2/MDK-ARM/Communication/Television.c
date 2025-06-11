@@ -1,7 +1,7 @@
 #include "Television.h"
 #include "Gyro.h"
 
-struct Vision vision = {.param.basket_xoffset = 130,.param.ladar2siteangleoffset = -2.4};
+struct Vision vision = {.param.basket_xoffset = 70,.param.ladar2siteangleoffset = -2.4};
 #define OLD_COMMUNICATION false
 
 void Vision_Basket_Decode(void){
