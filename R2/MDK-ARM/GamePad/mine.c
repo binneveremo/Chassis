@@ -8,6 +8,9 @@
 #include "RGB.h"
 #include "Nrf.h"
 #define OLD_GAMEPAD false
+#define MY_SELF true
+#define SLHD false	
+
 #define DebugPage_Change(x)	(GamePad_Data.Debug_Page = (GamePad_Data.Debug_Page >= 5)?0:GamePad_Data.Debug_Page + x)
 
 struct Game_Pad_Data GamePad_Data;
@@ -91,7 +94,8 @@ void GamePad_Data_Cla(void){
  		Odometer_Clear("default"),Gyro_Reset();
 	else if((GamePad_Data.key[6] == 1) && (GamePad_Data.key[21] == 0))
  		Odometer_Clear("armor"),Gyro_Reset(),RGB_RESET;
-#else
+#elif MY_SELF
+
 #define Reuse_Witch GamePad_Data.witch[5] 
 #define flow_begin (chassis.Control_Status = Auto_Control)
 	if((GamePad_Data.key[19] == 1) && (Reuse_Witch == 0))
@@ -169,7 +173,43 @@ void GamePad_Data_Cla(void){
 	//清空码盘
 	if(GamePadKey_FallingCheck(16) == 1)
  		Odometer_Clear("default"),Gyro_Reset(),RGB_RESET;
+
+#elif SLHD
+#define flow_begin (chassis.Control_Status = Auto_Control)
 	
+
+	if(GamePad_Data.key[0] == 1)
+		flow_begin, flow.type = dribble_flow;
+	else if(GamePad_Data.key[3] == 1)
+		flow_begin, flow.type = dunk_flow;
+
+	if(GamePad_Data.key[20] == 1)
+ 		Tell_Yao_Xuan("defend");
+	if(GamePad_Data.key[21] == 1)
+ 		Tell_Yao_Xuan("fold");
+	
+	if(GamePad_Data.key[22] == 1)
+ 		Tell_Yao_Xuan("lift");
+	if(GamePad_Data.key[23] == 1)
+ 		Tell_Yao_Xuan("jump");
+	if(GamePad_Data.key[18] == 1)
+ 		Tell_Yao_Xuan("down");
+	
+	if((GamePad_Data.key[19] == 1) && (chassis.Control_Status == Auto_Control))
+		Back_GamePadControl();
+	
+	chassis.flagof.gamepad.standard = GamePad_Data.witch[0];
+	chassis.flagof.gamepad.noheader = !chassis.flagof.gamepad.standard;
+	
+	if(GamePadKey_FallingCheck(16) == 1)
+ 		Odometer_Clear("default"),Gyro_Reset();
+	if(GamePadKey_FallingCheck(17) == 1) 
+		Vision_Reset();
+	DebugPage_Change(GamePadKey_FallingCheck(15));
+	chassis.flagof.gamepad.accel  = GamePad_Data.key[2];
+	chassis.flagof.gamepad.slow   = GamePad_Data.key[1];
+	
+	DebugPage_Change(GamePadKey_FallingCheck(7));
 #endif
 	for (char i = 0; i<22;i++)
 		GamePad_Data.last[i] = GamePad_Data.key[i];

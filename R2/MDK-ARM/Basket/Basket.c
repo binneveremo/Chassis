@@ -23,7 +23,7 @@ struct BasketPosition_Lock_t basketpositionlock = {
 	.param.outlimit = 6800,
 };
 struct Basket_Lock_t basketlock = {
-	.parameter.basketdis = 950,
+	.parameter.basketdis = 825,
 	.parameter.anglebetween_ladarandpole = 4,
 	.parameter.siteinterp_gain = 0.5,
 	.parameter.angleinterp_gain = 0.4,
@@ -39,7 +39,7 @@ struct Point self_basket_point = {
 	.y = -4000,
 	.r = 0};
 // 选择篮筐定位方式
-#define GLOBAL_BASKETLOCK_POSITION false
+#define GLOBAL_BASKETLOCK_POSITION true
 #define PARTIAL_BASKETLOCK_POSITION !GLOBAL_BASKETLOCK_POSITION
 
 #define GLOBAL_BASKETLOCK_ANGLE false
