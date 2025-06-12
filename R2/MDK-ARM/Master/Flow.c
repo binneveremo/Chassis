@@ -62,7 +62,7 @@ void Back_Flow(void){
 		back.flagof.end = true,Self_Lock_Out("HomePoint");
 }
 /// @brief 运球流程
-struct dribble_t dribble = {.time.xuan_stamp = 1350,.time.wait = 600,.time.end = 2000,.parameter.dribble_front_velocity = 3700,.parameter.dribble_left_velocity = 700,};
+struct dribble_t dribble = {.time.xuan_stamp = 1700,.time.wait = 800,.time.end = 2000,.parameter.dribble_front_velocity = 3700,.parameter.dribble_left_velocity = 700,};
 void Dribble_Flow(void){
 	int now = HAL_GetTick();
 	switch(dribble.status){
@@ -79,6 +79,8 @@ void Dribble_Flow(void){
 			}
 		break;
 		case dribble_begin:
+//			if(now - dribble.time.begin > 50 && now - dribble.time.begin < (dribble.time.wait - 150))
+//					Chassis_Velocity_Out(0,-2000,0);
 			if(now - dribble.time.begin > dribble.time.wait)
 				Chassis_Velocity_Out(dribble.parameter.dribble_left_velocity,dribble.parameter.dribble_front_velocity,0);
 			else

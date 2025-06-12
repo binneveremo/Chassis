@@ -150,8 +150,8 @@ void GamePad_Data_Cla(void){
 	//加速和减速相关
 	
 	//自动旋转开关
-//	if(GamePadKey_FallingCheck(21) == 1)
-//		chassis.flagof.gamepad.rotate = true;
+	if(GamePadKey_FallingCheck(21) == 1)
+		chassis.flagof.gamepad.rotate = true;
 	
 #define Stop_Rotate (chassis.flagof.gamepad.rotate = false)
 	if(GamePadKey_FallingCheck(20) == 1)
