@@ -2,6 +2,7 @@
 #define __FLOW_H
 
 #include "Chassis.h"
+#include "Basket.h"
 #include "Send.h"
 
 struct Flow {

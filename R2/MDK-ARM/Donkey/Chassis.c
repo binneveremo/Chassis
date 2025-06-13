@@ -78,16 +78,15 @@ void GamePad_Velocity_Control(void)
 			rout = Rocker_GainR * rocker_r;
 		break;
 		case R1:
-			rout = Correct_Angle(site.gyro.r,send.R1_Exchange.pos.r);
+			rout = Angle_Lock(site.gyro.r,send.R1_Exchange.pos.r,&cr_skill);
 		break;
 		case self_basket:
-			rout = Correct_Angle(site.gyro.r,basketlock.protectselfbasket_angle);
+			rout = Angle_Lock(site.gyro.r,basketlock.protectselfbasket_angle,&cr_skill);
 		break;
-		case oppo_basket:
-			rout = BasketAngleLock();
-		 break;
 		case forward:
-			rout = Correct_Angle(site.now.r,NONE);
+			rout = Angle_Lock(site.now.r,NONE,&cr_skill);
+		break;
+		default:
 		break;
 	}
 	if(chassis.flagof.gamepad.rotate)
@@ -122,50 +121,71 @@ bool TurnMotor_InTurnPosition(void)
 	Chassis_Velocity_Out(0, 0, 1);
 	return TurnMotor_InPosition();
 }
+
+
+
+
+
+///////////////角度与跑点PID
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////跑点相关///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////三种跑法：1.位置PID 2.速度PID 3.位置PID+速度PID////////////////////////////////////////////////////////////////////////////////////
-struct correct_angle_t correct_angle = {.p = 35, .d = 0.03, .i = 0.6, .ilimit = 1000, .istart = 1, .iend = 10, .outlimit = 6000, .accel_gain = 1.4, .velocity_gain = 0.2,.fade_max = 7, .fade_min = 2};
-float Correct_Angle(float now,float target)
-{
-	float error = NormalizeAng_Single(target - now);
-	float p = correct_angle.p * error;
-	float d = -site.gyro.omiga * correct_angle.d;
-	float dynamic_gain = Limit(correct_angle.velocity_gain * site.car.velocity_totalenc + correct_angle.accel_gain * site.car.accel_totalgyro, 1, 4);
-	float fade_gain = Normalize_Pow(correct_angle.fade_min,correct_angle.fade_max,error,2);
-	correct_angle.itotal = ((fabs(error) > correct_angle.istart) && (fabs(error) < correct_angle.iend)) ? Limit(correct_angle.itotal + correct_angle.i * error, -correct_angle.ilimit, correct_angle.ilimit) : correct_angle.itotal;
-	return Limit(dynamic_gain* fade_gain * p + correct_angle.itotal + d, -correct_angle.outlimit, correct_angle.outlimit);
+struct correct_angle_t cr_basket = {.p = 35, .d = 0.03, .i = 0.6, .ilimit = 1000, .istart = 1, .iend = 15, .outlimit = 6000, .accel_gain = 1.4, .velocity_gain = 0.2,.fade_max = 5, .fade_min = 1.5 ,.lock_angle = 1};
+struct correct_angle_t cr_skill  = {.p = 35, .d = 0.03, .i = 0.6, .ilimit = 1000, .istart = 6, .iend = 15, .outlimit = 6000, .accel_gain = 1.4, .velocity_gain = 0.2,.fade_max = 5, .fade_min = 1.5 ,.lock_angle = 8};
+float Angle_Lock(float now,float target,struct correct_angle_t * cr){
+	cr->error = NormalizeAng_Single(target - now);
+	float p = cr->p * cr->error;
+	float d = -site.gyro.omiga * cr->d;
+	float dynamic_gain = Limit(cr->velocity_gain * site.car.velocity_totalenc + cr->accel_gain * site.car.accel_totalgyro, 1, 4);
+	float fade_gain = Normalize_Pow(cr->fade_min,cr->fade_max,cr->error,2);
+	cr->itotal = ((fabs(cr->error) > cr->istart) && (fabs(cr->error) < cr->iend)) ? Limit(cr->itotal + cr->i * cr->error, -cr->ilimit, cr->ilimit) : cr->itotal;
+	return Limit(dynamic_gain* fade_gain * p + cr->itotal + d, -cr->outlimit, cr->outlimit);
 }
 ///////////////////////////////////////新型PID 测试使用
-struct Spot_t spot = {.param.p = 5.3,	.param.i = 1,	.param.istart = 6,	.param.iend = 400,	.param.ilimit = 1000,	.param.outlimit = 12000, .param.fade_start = 430, .param.fade_end = 100};
-void Position_With_Mark_PID_Run(enum opposite_t opposite){
-	float xerror = site.target.x - site.now.x;
-	float yerror = site.target.y - site.now.y;
+struct Spot_t spot_skill  = {.param.p = 3.8,	.param.i = 1,	.param.istart = 6,	.param.iend = 400,	.param.ilimit = 1000,	.param.outlimit = 11000, .param.fade_start = 430, .param.fade_end = 100};
+struct Spot_t spot_basket = {.param.p = 4.3,	.param.i = 1,	.param.istart = 6,	.param.iend = 400,	.param.ilimit = 1000,	.param.outlimit = 12000, .param.fade_start = 250, .param.fade_end = 150};
+void PositionWithAngle_Lock(struct Point now,struct Point target,struct Spot_t * spot,struct correct_angle_t * cr){
+	float xerror = target.x - now.x;
+	float yerror = target.y - now.y;
 	float dis = hypot(xerror,yerror);
-	spot.process.gain = Normalize_Pow(spot.param.fade_start,spot.param.fade_end,dis,2);
-	float xp = spot.param.p * xerror;
-	float xi = ((fabs(xerror) < spot.param.iend) && (fabs(xerror) > spot.param.istart)) ? spot.param.i * xerror : 0;
-	spot.process.itotal_x = (fabs(xerror) < spot.param.istart) ? 0 : Limit(spot.process.itotal_x + xi, -spot.param.ilimit, spot.param.ilimit);
-	spot.process.outx = spot.process.gain * xp + spot.process.itotal_x;
+	spot->process.gain = Normalize_Pow(spot->param.fade_start,spot->param.fade_end,dis,2);
+	float xp = spot->param.p * xerror;
+	float xi = ((fabs(xerror) < spot->param.iend) && (fabs(xerror) > spot->param.istart)) ? spot->param.i * xerror : 0;
+	spot->process.itotal_x = (fabs(xerror) < spot->param.istart) ? 0 : Limit(spot->process.itotal_x + xi, -spot->param.ilimit, spot->param.ilimit);
+	spot->process.outx = spot->process.gain * xp + spot->process.itotal_x;
 
-	float yp = spot.param.p * yerror;
-	float yi = ((fabs(yerror) < spot.param.iend) && (fabs(yerror) > spot.param.istart)) ? spot.param.i * yerror : 0;
-	spot.process.itotal_y = (fabs(yerror) < spot.param.istart) ? 0 : Limit(spot.process.itotal_y + yi, -spot.param.ilimit, spot.param.ilimit);
-	spot.process.outy = spot.process.gain * yp + spot.process.itotal_y;
+	float yp = spot->param.p * yerror;
+	float yi = ((fabs(yerror) < spot->param.iend) && (fabs(yerror) > spot->param.istart)) ? spot->param.i * yerror : 0;
+	spot->process.itotal_y = (fabs(yerror) < spot->param.istart) ? 0 : Limit(spot->process.itotal_y + yi, -spot->param.ilimit, spot->param.ilimit);
+	spot->process.outy = spot->process.gain * yp + spot->process.itotal_y;
 
 	// 请记住 第一项为front left 角速度
-	float vnow = Limit(hypot(spot.process.outx, spot.process.outy), -spot.param.outlimit,spot.param.outlimit);
+	float vnow = Limit(hypot(spot->process.outx, spot->process.outy), -spot->param.outlimit,spot->param.outlimit);
 	float angle = atan2f(yerror, xerror) - ang2rad(site.now.r);
-	switch(opposite){
-		case R1:
-			Chassis_Velocity_Out(vnow * sin(angle), vnow * cos(angle), Correct_Angle(site.now.r,send.R1_Exchange.pos.r));
-		break;
-		case forward:
-			Chassis_Velocity_Out(vnow * sin(angle), vnow * cos(angle), Correct_Angle(site.now.r,0));
-		break;
-		default:
-			break;
-	}
+	
+	Chassis_Velocity_Out(vnow * sin(angle), vnow * cos(angle), Angle_Lock(now.r,target.r,cr));
+	if((dis < spot->param.lock_dis) && (fabs(cr->error) < cr->lock_angle))
+		Self_Lock_Out("Near");
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 void Self_Lock_Out(char *lock_reason){
 	Min_Angle_Cal(&chassis.motor.turn[front_wheel], &chassis.motor.drive[front_wheel], 0);
 	Min_Angle_Cal(&chassis.motor.turn[left_wheel], &chassis.motor.drive[left_wheel], -83);
@@ -237,8 +257,6 @@ void Debug_Test(void){
 	else 
 		Chassis_Velocity_Out(0,10,0);
 }
-
-
 
 
 

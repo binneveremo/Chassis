@@ -58,8 +58,8 @@ void Send_MessageToR1(void){
 	int net_offset = (interact.defend_status == defend)?289:80;
 	send.R1_Exchange.send[0] = 0xAA;
 	if((chassis.Control_Status == Auto_Control) && (flow.type == skill_flow)){
-		send.R1_Exchange.net.x = vision.field.carcenter_fieldinterp.x + net_offset * cos(ang2rad(site.now.r));
-		send.R1_Exchange.net.y = vision.field.carcenter_fieldinterp.y + net_offset * sin(ang2rad(site.now.r));
+		send.R1_Exchange.net.x = skill.target.point[skill.success_time].x + net_offset * cos(ang2rad(site.now.r));
+		send.R1_Exchange.net.y = skill.target.point[skill.success_time].y + net_offset * sin(ang2rad(site.now.r));
 		send.R1_Exchange.send[9] = (send.R1_Exchange.request_flag == true)?2:net_Status;
 	}
 	else{

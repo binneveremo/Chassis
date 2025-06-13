@@ -36,6 +36,9 @@
 #define Copy(a,b)   memcpy(&a,&b,sizeof(a))
 #define Zero(x)     {x = NONE;}
 
+
+
+
 struct Point {
 	float x;
 	float y;
@@ -49,7 +52,7 @@ typedef union __attribute__((packed))
 } uint8_uint32_float_union;
 
 float char2float(unsigned char * data);
-
+struct Point Merge_Point(struct Point a,struct Point b);
 
 
 #endif

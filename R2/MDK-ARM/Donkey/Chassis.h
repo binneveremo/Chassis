@@ -9,7 +9,7 @@
 #include "mine.h"
 #include "VESC.h"
 
-#define Chassis_SelfLock(x) {chassis.lock.permit = (strcmp(x,"ON") == 0)?true:false;}
+#define Chassis_SelfLock(x) {chassis.lock.permit = x;}
 
 
 #define VESC_NUM 4
@@ -87,10 +87,10 @@ struct Spot_t{
 		
 		float fade_start;
 		float fade_end;
+		
+		float lock_dis;
 	}param;
 	struct {
-		
-		
 		float gain;
 		float itotal_x;
 		float itotal_y;
@@ -133,18 +133,25 @@ struct correct_angle_t{
 	float p;
 	float i;
 	float d;
+	float fade_max;
+	float fade_min;
+	float outlimit;
+	float lock_angle;
 	
-	
+	float error;
 	float itotal;
 	float ilimit;
 	float istart;
 	float iend;
-	
-	float fade_max;
-	float fade_min;
-	
-	float outlimit;
 };
+
+
+
+
+
+
+
+
 
 
 
@@ -157,15 +164,19 @@ struct correct_angle_t{
 	for(int i = 0; i < TURN_NUM;i++)																\
 		chassis.motor.turn[i].param.p = 155,chassis.motor.turn[i].param.d = 55;\
 }
+
+
 extern struct Chassis chassis;
 extern struct Mark mark;
-
+extern struct Spot_t spot_skill;
+extern struct Spot_t spot_basket;
+extern struct correct_angle_t cr_skill;
+extern struct correct_angle_t cr_basket;
 
 
 void Get_VESC_Data(int id,unsigned char * data);
 //泡点参数初始化
 //纠正角度
-float Correct_Angle(float now,float target);
 //舵轮的输出以及解码
 void Turn_Motor_Decode(int id,unsigned char * data);
 void VectorWheel_SetSpeed(void);
@@ -180,9 +191,11 @@ void GamePad_Velocity_Control(void);
 //自动自锁
 void Self_Lock_Auto(void);
 void Self_Lock_Out(char * lock_reason);
+float Angle_Lock(float now,float target,struct correct_angle_t * cr);
+void PositionWithAngle_Lock(struct Point now,struct Point target,struct Spot_t * spot,struct correct_angle_t * cr);
 
-void Position_With_Mark_PID_Run(enum opposite_t opposite);
 bool TurnMotor_InTurnPosition(void);
+
 
 void Debug_Test(void);
 

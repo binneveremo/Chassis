@@ -87,7 +87,7 @@ void MX_FREERTOS_Init(void);
   * @brief  The application entry point.
   * @retval int
   */
-int main(void)
+int main(void) 
 {
 
   /* USER CODE BEGIN 1 */
@@ -134,7 +134,7 @@ int main(void)
   MX_TIM23_Init();
   MX_TIM16_Init();
   /* USER CODE BEGIN 2 */
-	Chassis_SelfLock("ON");
+	Chassis_SelfLock(true);
 	FDCAN4_Init();                                                                             
 	RGB_Init();
 	Gyro_Init();

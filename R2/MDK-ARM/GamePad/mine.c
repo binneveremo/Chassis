@@ -68,6 +68,7 @@ void GamePad_Data_Cla(void){
  		Tell_Yao_Xuan("lift");
 	if(GamePad_Data.key[15] == 1)
  		Tell_Yao_Xuan("jump");
+
 	if(GamePad_Data.key[19] == 1)
  		Tell_Yao_Xuan("stick");
 	//更改Debug界面
@@ -139,14 +140,14 @@ void GamePad_Data_Cla(void){
 	
 	if(GamePad_Data.key[15] == 1)
  		Tell_Yao_Xuan("down");
+	if(GamePad_Data.key[14] == 1)
+ 		Tell_Yao_Xuan("jump");
 	if(GamePad_Data.key[8] == 1)
  		Tell_Yao_Xuan("down");
 	if(GamePad_Data.key[9] == 1)
  		Tell_Yao_Xuan("stick");
 	if(GamePad_Data.key[10] == 1)
  		Tell_Yao_Xuan("lift");
-	if(GamePad_Data.key[11] == 1)
- 		Tell_Yao_Xuan("jump");
 	//更改Debug界面
 	DebugPage_Change(GamePadKey_FallingCheck(11));
 	//无线串口

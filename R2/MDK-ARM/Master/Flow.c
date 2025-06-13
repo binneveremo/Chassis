@@ -17,12 +17,12 @@ struct dunk_t dunk;
 void Dunk_Flow(void){
 	switch(dunk.state){
 		case init:
-			BasketPoint_Init();
+			BasketPoint_Init(&dunk.flagof.init);
 			dunk.state = goto_dunkpoint;
 		case goto_dunkpoint:
-			BasketPositionLock();
-			Tell_Yao_Xuan("fold");
-			dunk.state = (basketpositionlock.flagof.lock_flag == 1)?turnmotor_ready:dunk.state;
+			BasketPosition_Lock();
+			Tell_Yao_Xuan("defend");
+			if(chassis.lock.flag == 1)  dunk.state = turnmotor_ready;
 		break;
 		case turnmotor_ready:
 			if(TurnMotor_InTurnPosition() == true) dunk.state = wait_shoot;
@@ -30,8 +30,7 @@ void Dunk_Flow(void){
 		case wait_shoot:
 			Tell_Yao_Xuan("catch");
 #if Opposite_R1
-		
-			Chassis_Velocity_Out(0,0,Correct_Angle(send.R1_Exchange.pos.r + 180));
+		Chassis_Velocity_Out(0,0,Correct_Angle(send.R1_Exchange.pos.r + 180));
 #endif
 		dunk.state = (flow.flagof.R1_Shooted == true)?oppositebasket:dunk.state;
 		break;
@@ -41,7 +40,7 @@ void Dunk_Flow(void){
 #else 
 		Self_Lock_Out("BasketFlow");
 #endif
-			dunk.state = (fabs(basketanglelock.progress.error) < 1.5)?jump:dunk.state;
+			//dunk.state = (fabs(basketanglelock.progress.error) < 1.5)?jump:dunk.state;
 		break;
 		case jump:
 			Self_Lock_Out("BasketFlow");
@@ -56,13 +55,12 @@ void Dunk_Flow(void){
 /// @brief 回家流程
 struct back_t back;
 void Back_Flow(void){
-	Set_Target_Point(home_point);
-	Position_With_Mark_PID_Run(forward);
+	PositionWithAngle_Lock(site.now,home_point,&spot_skill,&cr_skill);
 	if(Point_Distance(site.now,site.target) < 500) 
 		back.flagof.end = true,Self_Lock_Out("HomePoint");
 }
 /// @brief 运球流程
-struct dribble_t dribble = {.time.xuan_stamp = 1700,.time.wait = 700,.time.end = 2000,.parameter.dribble_front_velocity = 3700,.parameter.dribble_left_velocity = 700,};
+struct dribble_t dribble = {.time.xuan_stamp = 1700,.time.wait = 700,.time.end = 2000,.parameter.dribble_front_velocity = 3700,.parameter.dribble_left_velocity = 300,};
 void Dribble_Flow(void){
 	int now = HAL_GetTick();
 	switch(dribble.status){
@@ -79,8 +77,6 @@ void Dribble_Flow(void){
 			}
 		break;
 		case dribble_begin:
-//			if(now - dribble.time.begin > 50 && now - dribble.time.begin < (dribble.time.wait - 150))
-//					Chassis_Velocity_Out(0,-2000,0);
 			if(now - dribble.time.begin > dribble.time.wait)
 				Chassis_Velocity_Out(dribble.parameter.dribble_left_velocity,dribble.parameter.dribble_front_velocity,0);
 			else
@@ -139,30 +135,18 @@ struct skill_t skill = {
 	.param.shoot_advanced_dis[5] = 50,
 	.param.shoot_advanced_dis[6] = 50,
 
-	.param.lock_dis = 240,
+	.param.lock_dis = 80,
 	.param.lock_angle = 8,
 };
-struct Point SkillFlow_R2PositionToR1(struct Point point){
-#define xoffset 2500 - 390
-#define yoffset -5250 + 396
-	struct Point p;
-	p.x = xoffset + point.x;
-	p.y = yoffset + point.y;
-#undef xoffset
-#undef yoffset
-	return p;
-}
-
 void Skill_Flow(void){
 	static char last_success_times;
-	char index = skill.success_time % 7;
+	char index = skill.success_time % 7;      
 	switch(skill.status){
 		case begin:
-			Set_Target_Point(skill.target.point[index]);
-			Position_With_Mark_PID_Run(R1);
-			if((Point_Distance(site.now,site.target) < skill.param.catch_advanced_dis[index]) && (skill.flagof.net_catched == false))
-				skill.flagof.net_catched = true,Tell_Yao_Xuan("catch");
-			if((Point_Distance(site.now,site.target) < skill.param.lock_dis))
+			PositionWithAngle_Lock(site.now,Merge_Point(skill.target.point[index],send.R1_Exchange.pos),&spot_skill,&cr_skill);
+			if((Point_Distance(site.now,skill.target.point[index]) < skill.param.catch_advanced_dis[index]) && (skill.flagof.net_catched == false))
+				skill.flagof.net_catched = true,Tell_Yao_Xuan("defend");
+			if((Point_Distance(site.now,skill.target.point[index]) < skill.param.lock_dis))
 				Self_Lock_Out("SkillFlow"),send.R1_Exchange.request_flag = true;
 			else 
 				send.R1_Exchange.request_flag = true;
@@ -226,17 +210,3 @@ void ControlStatus_Detect(void){
 }
 
 
-
-
-
-
-
-
-
-
-//	if(flow.flagof.staffdown == true)
-//	{
-//		Chassis_Velocity_Out(dribble.parameter.dribble_left_velocity,dribble.parameter.dribble_front_velocity,0);
-//	}
-//	else 
-//		Self_Lock_Out("WaitDribble");

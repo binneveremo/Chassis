@@ -1,7 +1,7 @@
 #include "Television.h"
 #include "Gyro.h"
 
-struct Vision vision = {.param.basket_xoffset = 70,.param.ladar2siteangleoffset = -2.4};
+struct Vision vision = {.param.basket_xoffset = 130,.param.ladar2siteangleoffset = -2.4};
 #define OLD_COMMUNICATION false
 
 void Vision_Basket_Decode(void){
@@ -128,11 +128,6 @@ void LadarPosInterpolation(int dt)
 	vision.visual.car_visualinterp.y = EKF_Filter(&ladary_interp, vision.basket.car_visual.y, basketlock.parameter.siteinterp_gain * basketlock.parameter.siteinterp_gain * dt * site.field.vy_enc);
 	vision.visual.car_visualinterp.r = NormalizeAng_Single(EKF_Filter(&ladarr_interp,vision.visual.car_visual.r,basketlock.parameter.angleinterp_gain*ang2rad(site.gyro.omiga)));
 #endif
-	static float partialr_last;
-	basketpositionlock.now.partial.x += site.field.vx_enc * dt;
-	basketpositionlock.now.partial.y += site.field.vy_enc * dt;
-	basketpositionlock.now.partial.r += site.gyro.r - partialr_last;
-	partialr_last = site.gyro.r;
 	//计算锁自己篮框的角度
 	
 	basketlock.protectselfbasket_angle = rad2ang(atan2f(vision.field.carcenter_field.y - self_basket_point.y,vision.field.carcenter_field.x - self_basket_point.x));

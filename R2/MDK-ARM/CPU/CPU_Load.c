@@ -9,8 +9,6 @@
 long long CPU_Tick;
 float CPU_USAGE_PERCENT;
 xTaskHandle    xIdleHandle = NULL;
-
-
 #define Record_Peiod 500
 struct CPU_Usage{
 	int idlebegintick;
@@ -62,7 +60,6 @@ void SystemClock_SwitchToHSI(void)
 {
     // 将系统时钟切换到 HSI
     __HAL_RCC_SYSCLK_CONFIG(RCC_SYSCLKSOURCE_HSI);
- 
     // 等待时钟切换完成
     while (__HAL_RCC_GET_SYSCLK_SOURCE() != RCC_SYSCLKSOURCE_STATUS_HSI);
 }

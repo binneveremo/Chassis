@@ -92,7 +92,7 @@ float Kd_Move_Up = 3;
 float Kd_Move_Up_Test = 4;
 float Kd_Move_Down = 0.2; 
 float Trq_Move_Up = 1;  
-float Trq_Move_Down = 1.5;
+float Trq_Move_Down = 2;
 
 #else
 // Target Positions
