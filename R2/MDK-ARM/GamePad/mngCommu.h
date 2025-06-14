@@ -7,7 +7,7 @@
 #define INFINITE_LOOP_START for(;;){osDelay(1);
 #define INFINITE_LOOP_END }
 
-//#define USE_UART
+#define USE_UART
 #define USE_NRF
 
 

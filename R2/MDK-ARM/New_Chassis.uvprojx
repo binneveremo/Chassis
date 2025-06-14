@@ -1456,16 +1456,6 @@
               <FileType>5</FileType>
               <FilePath>.\Xuan\HighTorque.h</FilePath>
             </File>
-            <File>
-              <FileName>CatchDelayCal.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Xuan\CatchDelayCal.c</FilePath>
-            </File>
-            <File>
-              <FileName>CatchDelayCal.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\Xuan\CatchDelayCal.h</FilePath>
-            </File>
           </Files>
         </Group>
         <Group>
