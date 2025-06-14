@@ -6,17 +6,14 @@
 #include "HighTorque.h"
 #include "Global.h"
 #include "Flow.h"
+#include "CatchDelayCal.h"
 
 #ifdef Carbon_Car
 #define R2_Fifth
 #endif
 
 //mechanism parameters
-#define shoot_angle 65
 #define height_diff 0.72755  //net_height(center)[1.90755m] - shoot_height[1.18m]
-#define gravity_accel 9.7913
-#define shooter_to_center 0.24
-#define net_to_center 0.28974
 
 // --- Enums ---
 

@@ -16,12 +16,10 @@
 #define RecPkg_state	stats_toReceiver.packets[stats_toReceiver.index]
 #define RecPkg_indexpp 	stats_toReceiver.index = (stats_toReceiver.index+1) % MAX_PACKETS;			// 递增数据包编号
 
-#ifdef USE_UART
 myUartStruct commuUart;
 zigbee_state_t zigbee_state;
 zigbee_msg_t zigbee_msg;
 struct zigbee_conf_t zigbee_conf;
-#endif
 
 #ifdef USE_NRF
 Nrf_t nrf;
