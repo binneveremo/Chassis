@@ -18,7 +18,7 @@ struct Point self_basket_point = {
 	.y = -4000,
 	.r = 0};
 // 选择篮筐定位方式
-#define GLOBAL_BASKETLOCK_POSITION true
+#define GLOBAL_BASKETLOCK_POSITION false
 #define PARTIAL_BASKETLOCK_POSITION !GLOBAL_BASKETLOCK_POSITION
 
 #define GLOBAL_BASKETLOCK_ANGLE false
@@ -56,8 +56,16 @@ void BasketPoint_Init(char * flag)
 	*flag = true;                             
 }
 void BasketPosition_Lock(void){
-	PositionWithAngle_Lock(basketlock.now.partial,basketlock.target.partial,&spot_basket,&cr_basket);
-	
+	/*
+	无论哪种情况 无论是否全局坐标系 都会选择陀螺仪角度
+	无论全局坐标系还是局部坐标系 目标角度都是一定的 但是i自身角度是不一样的 全局坐标系的自身定位就是雷达的定位，角度插值 局部坐标系的定位就是陀螺仪的角度
+	*/
+#if GLOBAL_BASKETLOCK_POSITION
+	PositionWithAngle_Lock(Merge_Point(basketlock.now.global,basketlock.now.partial),basketlock.target.global, &spot_basket, &cr_basket);
+#else
+	PositionWithAngle_Lock(basketlock.now.partial,basketlock.target.partial, &spot_basket, &cr_basket);
+#endif
+
 }
 
 

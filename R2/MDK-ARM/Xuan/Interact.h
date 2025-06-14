@@ -16,9 +16,6 @@ struct Interact{
 		oscillate = 7
 	}defend_status;
 	struct {
-		
-	}flagof;
-	struct {
 		char HT_Error;
 	}wrongcode;
 };

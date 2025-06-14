@@ -2,7 +2,6 @@
 #include "Encoder.h"
 #include "string.h"
 #include "fdcan.h"
-
 #include "Gyro.h"
 
 char wrong_code[10];

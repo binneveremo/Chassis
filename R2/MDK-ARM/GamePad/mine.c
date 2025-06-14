@@ -109,10 +109,11 @@ void GamePad_Data_Cla(void){
 		skill.success_time++;
 #undef flow_begin
 #undef Reuse_Witch
-	
+	if((GamePad_Data.witch[1] == 1) && (GamePad_Data.witch[2] == 1))
+		chassis.Control_Status = Debug_Control;
 	if((chassis.Control_Status == Auto_Control) && (flow.type == skill_flow) && (GamePadKey_FallingCheck(20) == 1))
 		skill.success_time++;
-	if((GamePad_Data.key[2] == 1 || GamePad_Data.key[3] == 1 ) && (chassis.Control_Status == Auto_Control))
+	if((GamePad_Data.key[2] == 1 || GamePad_Data.key[3] == 1 ))
 		Back_GamePadControl();
 	static char debug_last;
 	if(GamePad_Data.witch[3] == !debug_last)

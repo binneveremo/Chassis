@@ -141,8 +141,8 @@ float Angle_Lock(float now,float target,struct correct_angle_t * cr){
 	return Limit(dynamic_gain* fade_gain * p + cr->itotal + d, -cr->outlimit, cr->outlimit);
 }
 ///////////////////////////////////////新型PID 测试使用
-struct Spot_t spot_skill  = {.param.p = 3.8,	.param.i = 1,	.param.istart = 6,	.param.iend = 400,	.param.ilimit = 1000,	.param.outlimit = 11000, .param.fade_start = 430, .param.fade_end = 100};
-struct Spot_t spot_basket = {.param.p = 4.3,	.param.i = 1,	.param.istart = 6,	.param.iend = 400,	.param.ilimit = 1000,	.param.outlimit = 12000, .param.fade_start = 250, .param.fade_end = 150};
+struct Spot_t spot_skill  = {.param.lock_dis = 100,.param.p = 3.8,	.param.i = 1,	.param.istart = 6,	.param.iend = 400,	.param.ilimit = 1000,	.param.outlimit = 11000, .param.fade_start = 430, .param.fade_end = 100};
+struct Spot_t spot_basket = {.param.lock_dis = 30, .param.p = 4.3,	.param.i = 1,	.param.istart = 6,	.param.iend = 400,	.param.ilimit = 1000,	.param.outlimit = 12000, .param.fade_start = 250, .param.fade_end = 150};
 void PositionWithAngle_Lock(struct Point now,struct Point target,struct Spot_t * spot,struct correct_angle_t * cr){
 	float xerror = target.x - now.x;
 	float yerror = target.y - now.y;

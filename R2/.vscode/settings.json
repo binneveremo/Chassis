@@ -1,0 +1,7 @@
+{
+    "files.associations": {
+        "adc.h": "c",
+        "spi_fdcan.h": "c",
+        "correct.h": "c"
+    }
+}

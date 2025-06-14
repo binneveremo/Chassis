@@ -5,7 +5,7 @@
 
 #ifdef Carbon_Car
 #define R1_Exchange_Usart huart3
-#define R1_Exchange_Baudrate 115200
+#define R1_Exchange_Baudrate 1500000
 #else 
 #define R1_Exchange_Usart huart3
 #define R1_Exchange_Baudrate 115200
