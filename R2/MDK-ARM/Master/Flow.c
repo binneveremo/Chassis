@@ -59,8 +59,8 @@ void Back_Flow(void){
 	if(Point_Distance(site.now,site.target) < 500) 
 		back.flagof.end = true,Self_Lock_Out("HomePoint");
 }
-/// @brief 运球流程
-struct dribble_t dribble = {.time.xuan_stamp = 1700,.time.wait = 700,.time.end = 2000,.parameter.dribble_front_velocity = 3700,.parameter.dribble_left_velocity = 300,};
+/// @brief 运球流程  //stamp 1700 front v  3700
+struct dribble_t dribble = {.time.xuan_stamp = 1100,.time.wait = 700,.time.end = 2000,.parameter.dribble_front_velocity = 3600,.parameter.dribble_left_velocity = 120,};
 void Dribble_Flow(void){
 	int now = HAL_GetTick();
 	switch(dribble.status){
