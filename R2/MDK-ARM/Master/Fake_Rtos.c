@@ -34,7 +34,7 @@ void motor_control(void const * argument)
 				Debug_Test();
 			break;
 		}
-	    VectorWheel_SetAngle();
+	  VectorWheel_SetAngle();
 		VectorWheel_SetSpeed();
 		osDelay(4);
 	}
@@ -54,7 +54,7 @@ void location(void const * argument)
 {
   for(;;)
   {
-	    YIS506_Decode();
+	  YIS506_Decode();
 		//陀螺仪原始数据计算 
 		Encoder_XY_VX_VY_Cal(2);
 		//获取陀螺仪加速度
@@ -62,7 +62,7 @@ void location(void const * argument)
 		//编码器速度计与陀螺仪及速度计的融合
 		Enc_VXVY_Fuse_With_Gyro_AXAY(2);
 		//雷达与编码器的重定位融合
-    	Location_Type_Choose();
+    Location_Type_Choose();
 		//插帧得到篮筐和当前坐标的相关信息
 		BasketPositionCal_AccordingVision(2);
 		//码盘线性插帧
@@ -75,9 +75,10 @@ void Detect(void const * argument)
 {
   for(;;)
   {
-		//RGB_Show_Msg();
+		RGB_Show_Msg();
 		LossConnect_Check();
-   		osDelay(200);
+		Can_Detect();
+    osDelay(200);
   }
 }
 ////////////////////////////////////////////////////////////璇老师的进程//////////////////////////////

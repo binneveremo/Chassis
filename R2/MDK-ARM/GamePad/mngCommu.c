@@ -97,6 +97,7 @@ void Transmit_task(void)
 
 // 定时任务,freertos执行
 void StartTransmit_task(void const * argument) {
+	static uint8_t cnt;
 	osDelay(200);
 INFINITE_LOOP_START
 	// 处理要发送的数据

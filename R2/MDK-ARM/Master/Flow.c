@@ -146,7 +146,10 @@ void Skill_Flow(void){
 			PositionWithAngle_Lock(site.now,Merge_Point(skill.target.point[index],send.R1_Exchange.pos),&spot_skill,&cr_skill);
 			if((Point_Distance(site.now,skill.target.point[index]) < skill.param.catch_advanced_dis[index]) && (skill.flagof.net_catched == false))
 				skill.flagof.net_catched = true,Tell_Yao_Xuan("defend");
-			send.R1_Exchange.request_flag = chassis.lock.flag;
+			if((Point_Distance(site.now,skill.target.point[index]) < skill.param.lock_dis))
+				Self_Lock_Out("SkillFlow"),send.R1_Exchange.request_flag = true;
+			else 
+				send.R1_Exchange.request_flag = true;
 			if(last_success_times != skill.success_time)
 				last_success_times = skill.success_time,skill.status = clear;
 		break;

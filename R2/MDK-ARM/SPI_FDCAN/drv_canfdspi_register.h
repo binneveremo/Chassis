@@ -796,7 +796,12 @@ extern "C"
 // Control Register Reset Values up to FIFOs
 #define N_CAN_CTRL_REGS 20
     static uint32_t canControlResetValues[] = {
+    /* Address 0x000 to 0x00C */
+#ifdef CAN_TXQUEUE_IMPLEMENTED
         0x04980760, 0x003E0F0F, 0x000E0303, 0x00021000,
+#else
+    0x04880760, 0x003E0F0F, 0x000E0303, 0x00021000,
+#endif
         /* Address 0x010 to 0x01C */
         0x00000000, 0x00000000, 0x40400040, 0x00000000,
         /* Address 0x020 to 0x02C */
@@ -817,10 +822,16 @@ extern "C"
 
 // Filter and Mask Object Reset Values
 #define N_CAN_FILTER_OBJ_REGS (CAN_FILTER_TOTAL * CiFILTER_OFFSET)
-    static uint32_t canFilterObjectResetValues[] = {0x00000000, 0x00000000};
+    static uint32_t canFilterObjectResetValues[] = {
+        0x00000000, 0x00000000};
 
+    // *****************************************************************************
+    /* MCP2517 */
+
+#ifdef MCP2517FD
 #define N_MCP2517_CTRL_REGS 5
     static uint32_t mcp2517ControlResetValues[] = {
         0x00000460, 0x00000003, 0x00000000, 0x00000000, 0x00000000};
+#endif
 
 #endif // _DRV_CANFDSPI_REGISTER_H
