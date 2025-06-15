@@ -32,7 +32,7 @@ void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t size);
 void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart);
 
 // 串口重定向
-int fputc(int ch, FILE *f);
+//int fputc(int ch, FILE *f);
 int fgetc(FILE * f);
 
 // 串口初始化 / 反初始化

@@ -13,11 +13,14 @@
 #include "Gyro.h"
 #include "RGB.h"
 #include "SPI_FDCAN.h"
+#include "Second_Order.hpp"
 
 #include "HighTorque.h"
 #include "CPU_Load.h"
 #include "Interact.h"
 #include "Basket.h"
+
+
 
 void motor_control(void const * argument)
 {
@@ -45,8 +48,10 @@ void communication(void const * argument)
   {
 		Vision_Basket_Decode();
 		GamePad_Data_Cla();
-	  Send_MessageToR1();	
+	    Send_MessageToR1();
+		Eigen_Test();
 		osDelay(25);
+
 	}
 }
 void location(void const * argument)
@@ -86,6 +91,7 @@ void HTMotorControl(void const * argument)
 {
 	for(;;)
 	{
+		HT_Test();
 		Single_Control();
 		HighTorque_SendPosParam_f(&hfdcan1, 6);
 		osDelay(4);

@@ -315,7 +315,7 @@
           </ArmAdsMisc>
           <Cads>
             <interw>1</interw>
-            <Optim>1</Optim>
+            <Optim>3</Optim>
             <oTime>0</oTime>
             <SplitLS>0</SplitLS>
             <OneElfS>1</OneElfS>
@@ -341,7 +341,7 @@
               <MiscControls></MiscControls>
               <Define>USE_HAL_DRIVER,STM32H723xx,USE_PWR_LDO_SUPPLY</Define>
               <Undefine></Undefine>
-              <IncludePath>../Core/Inc;../Drivers/STM32H7xx_HAL_Driver/Inc;../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy;../Middlewares/Third_Party/FreeRTOS/Source/include;../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS;../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F;../Drivers/CMSIS/Device/ST/STM32H7xx/Include;../Drivers/CMSIS/Include;./Can;./Carrot;./Donkey;./GamePad;./Global;./Master;./CPU;./Position;./Communication;./Filter;./Correct;./Debug;./RGB;./Guard;./Xuan;./Basket;./SPI_FDCAN</IncludePath>
+              <IncludePath>../Core/Inc;../Drivers/STM32H7xx_HAL_Driver/Inc;../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy;../Middlewares/Third_Party/FreeRTOS/Source/include;../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS;../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F;../Drivers/CMSIS/Device/ST/STM32H7xx/Include;../Drivers/CMSIS/Include;./Can;./Carrot;./Donkey;./GamePad;./Global;./Master;./CPU;./Position;./Communication;./Filter;./Correct;./Debug;./RGB;./Guard;./Xuan;./Basket;./SPI_FDCAN;..\lib\eigen</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -1360,6 +1360,16 @@
               <FileName>Kalman.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\Filter\Kalman.h</FilePath>
+            </File>
+            <File>
+              <FileName>Second_Order.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>.\Filter\Second_Order.cpp</FilePath>
+            </File>
+            <File>
+              <FileName>Second_Order.hpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>.\Filter\Second_Order.hpp</FilePath>
             </File>
           </Files>
         </Group>

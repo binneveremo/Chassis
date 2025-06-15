@@ -1,0 +1,9 @@
+{
+    "files.associations": {
+        "adc.h": "c",
+        "spi_fdcan.h": "c",
+        "correct.h": "c",
+        "second_order.hpp": "c",
+        "hightorque.h": "c"
+    }
+}

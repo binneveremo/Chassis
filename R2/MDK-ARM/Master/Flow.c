@@ -19,6 +19,7 @@ void Dunk_Flow(void){
 		case init:
 			BasketPoint_Init(&dunk.flagof.init);
 			dunk.state = goto_dunkpoint;
+			break;
 		case goto_dunkpoint:
 			BasketPosition_Lock();
 			Tell_Yao_Xuan("defend");

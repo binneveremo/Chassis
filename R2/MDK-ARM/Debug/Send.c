@@ -15,7 +15,7 @@ struct Send send;
 void Send_Float_Data(char num){
 	//计算前几位的值
 	float total; 
-	for(char i = 0; i < num;i++)
+	for(unsigned char i = 0; i < num;i++)
 		total += send.convert.float_data[i];
 	//计算最后一位 也就是校验位的数值
 	send.convert.float_data[num] = total;

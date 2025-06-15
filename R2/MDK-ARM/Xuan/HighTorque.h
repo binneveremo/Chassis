@@ -112,5 +112,5 @@ void HighTorque_SetSpdLimit(void *FDCAN_handle, unsigned char ID, float spd, flo
 void HighTorque_SwitchMode(void *FDCAN_handle, unsigned char ID, unsigned char HIGHTORQUE_MODE);\
 
 void HighTorque_getFedback(FDCAN_RxHeaderTypeDef* FDCAN_RxHeader, uint8_t* RxFifo0);
-
+void HT_Test(void);
 #endif

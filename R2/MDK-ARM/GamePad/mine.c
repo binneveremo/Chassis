@@ -212,7 +212,7 @@ void GamePad_Data_Cla(void){
 	
 	DebugPage_Change(GamePadKey_FallingCheck(7));
 #endif
-	for (char i = 0; i<22;i++)
+	for (unsigned char i = 0; i<22;i++)
 		GamePad_Data.last[i] = GamePad_Data.key[i];
 } 
 float Char2float(char str[4]){

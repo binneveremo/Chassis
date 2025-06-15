@@ -28,7 +28,7 @@
 #define Limit(x,y,z) ((x < y)?y:((x > z)?z:x))
 #define Point_Distance(a,b) (hypot(a.x - b.x,a.y - b.y))
 #define Point_InDistance(a,b,dis) (hypot(a.x - b.x,a.y - b.y) < dis)?1:0)
-#define Clear(x) (memset(&x,(unsigned char)NULL,sizeof(x)))
+#define Clear(x) (memset(&x,NONE,sizeof(x)))
 #define Larger(a,b) ((a > b)?a:b)
 #define Smaller(a,b) ((a < b)?a:b)
 #define Normalize_Liner(a,b,c)  ((Limit(fabs(c),a,b)-a)/(b -a))

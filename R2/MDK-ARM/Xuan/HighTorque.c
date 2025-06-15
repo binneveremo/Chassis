@@ -112,22 +112,32 @@ void HighTorque_SwitchMode(void *FDCAN_handle, unsigned char ID, unsigned char H
     }
     }
 }*/
-
+unsigned char HT_Data[20];
+int HT_ID;
 void HighTorque_getFedback(FDCAN_RxHeaderTypeDef* FDCAN_RxHeader, uint8_t* RxData)
 {
-	unsigned char ID_array = (FDCAN_RxHeader->Identifier >> 8) - HIGHTORQUE_IDOFFSET;
-
-	if (RxData[0] == (HIGHTORQUE_DATA_RE | HIGHTORQUE_DATA_TYPE_FLOAT | 3) &&
-        RxData[1] == HIGHTORQUE_REG_POS_FDBK &&
-        RxData[14] == (HIGHTORQUE_DATA_RE | HIGHTORQUE_DATA_TYPE_FLOAT | 1) &&
-        RxData[15] == HIGHTORQUE_REG_TEMP)
-    {
-        HighTorque[ID_array].fdbk.pos = *(float *)&RxData[2];
-				HighTorque[ID_array].fdbk.pos *= 360;
-        HighTorque[ID_array].fdbk.spd = *(float *)&RxData[6];
-				HighTorque[ID_array].fdbk.spd *= 360;
-        HighTorque[ID_array].fdbk.trq = *(float *)&RxData[10];
-        // HighTorque[ID_array].fdbk.trq = *(float *)&RxData[10] * HTDW_4538_32_NE.trq_k + HTDW_4538_32_NE.trq_d;
-        HighTorque[ID_array].fdbk.temp = *(float *)&RxData[16];
-    }
+	if(RxData[0] != (HIGHTORQUE_DATA_RE | HIGHTORQUE_DATA_TYPE_FLOAT | 3)) 
+		return;
+	if(RxData[1] != HIGHTORQUE_REG_POS_FDBK)
+		return;
+	if(RxData[14] != (HIGHTORQUE_DATA_RE | HIGHTORQUE_DATA_TYPE_FLOAT | 1))
+		return;
+	if(RxData[15] != HIGHTORQUE_REG_TEMP)
+	  return;
+	HT_ID = (FDCAN_RxHeader->Identifier >> 8) - HIGHTORQUE_IDOFFSET;
+	memcpy(HT_Data,RxData,20);
+	
+    
 }
+void HT_Test(void){
+	HighTorque[HT_ID].fdbk.pos = *(float *)&HT_Data[2];
+	HighTorque[HT_ID].fdbk.pos *= 360;
+	HighTorque[HT_ID].fdbk.spd = *(float *)&HT_Data[6];
+	HighTorque[HT_ID].fdbk.spd *= 360;
+	HighTorque[HT_ID].fdbk.trq = *(float *)&HT_Data[10];
+	HighTorque[HT_ID].fdbk.temp = *(float *)&HT_Data[16];
+}
+
+
+
+//// HighTorque[ID_array].fdbk.trq = *(float *)&RxData[10] * HTDW_4538_32_NE.trq_k + HTDW_4538_32_NE.trq_d;

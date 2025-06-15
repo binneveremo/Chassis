@@ -22,13 +22,11 @@ struct CPU_Usage{
 	float usage;
 };
 struct CPU_Usage cu;
-void vApplicationIdleHook(void)
-{
+void vApplicationIdleHook(void){
 	if(xIdleHandle == NULL)
-			xIdleHandle = xTaskGetCurrentTaskHandle();
+		xIdleHandle = xTaskGetCurrentTaskHandle();
 }
-void vApplicationTickHook (void)
-{
+void vApplicationTickHook (void){
 	if(CPU_Tick - cu.lastrecordtick > Record_Peiod){
 		cu.usage = (float)((float)cu.idletotaltick / ((float)CPU_Tick - (float)cu.lastrecordtick));
 		cu.idletotaltick = 0;
@@ -36,13 +34,11 @@ void vApplicationTickHook (void)
 		CPU_USAGE_PERCENT = 100*(1 - cu.usage);
 	}
 }
-void StartIdleMonitor (void)
-{
+void StartIdleMonitor (void){
 	if(xTaskGetCurrentTaskHandle() == xIdleHandle )
 		cu.idlebegintick = CPU_Tick;
 }
-void EndIdleMonitor (void)
-{
+void EndIdleMonitor (void){
 	if( xTaskGetCurrentTaskHandle() == xIdleHandle )
 		cu.idletotaltick += (CPU_Tick - cu.idlebegintick);
     

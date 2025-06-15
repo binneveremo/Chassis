@@ -83,7 +83,7 @@ struct skill_t {
 		char net_catched;
 		char end;
 	}flagof;
-	char success_time;
+	unsigned char success_time;
 };
 extern struct skill_t skill;
 

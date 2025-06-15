@@ -146,11 +146,11 @@ void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart)
 }
 
 /* 串口重定向 */
-int fputc(int ch, FILE *f){
-	uint8_t temp[1] = {ch};
-	HAL_UART_Transmit(&TX_Uart, temp, 1, 0xffff);
-	return ch;
-}
+//int fputc(int ch, FILE *f){
+//	uint8_t temp[1] = {ch};
+//	HAL_UART_Transmit(&TX_Uart, temp, 1, 0xffff);
+//	return ch;
+//}
 int fgetc(FILE * f)
 {
 	uint8_t ch = 0;

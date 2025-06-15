@@ -43,9 +43,9 @@ void LossConnect_Check(void){
 	Wrong_Code.HT |= (1 << (interact.wrongcode.HT_Error - 1));
 	
 	/////////////清零操作
-	for(char i = 0; i < TURN_NUM;i++)
+	for(unsigned char i = 0; i < TURN_NUM;i++)
 		chassis.motor.turn[i].online_flag = false;
-	for(char i = 0; i < VESC_NUM;i++)
+	for(unsigned char i = 0; i < VESC_NUM;i++)
 		chassis.motor.drive[i].online_flag = false;
 	yis506.online_flag = false;
 	odometer.xenc_online = false;

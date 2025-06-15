@@ -199,7 +199,7 @@ void Self_Lock_Out(char *lock_reason){
 // 自动自锁函数
 void Self_Lock_Auto(void)
 {
-	memset(chassis.lock.reason, (char)NULL, sizeof(chassis.lock.reason));
+	memset(chassis.lock.reason, (char)NONE, sizeof(chassis.lock.reason));
 	char flag = ((fabs((float)GamePad_Data.rocker[0]) <= 1) && (fabs((float)GamePad_Data.rocker[1]) <= 1) && (fabs(GamePad_Data.rocker[2]) <= 5)) ? 1 : 0;
 	switch (chassis.Control_Status)
 	{

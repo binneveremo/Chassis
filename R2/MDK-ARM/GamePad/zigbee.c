@@ -4,8 +4,9 @@
 
 //#include "Config.h"
 
-//zigbee_state_t zigbee_state = {.huart = &TX_Uart};
-//struct zigbee_conf_t zigbee_conf;
+zigbee_state_t zigbee_state;// = {.huart = &TX_Uart};
+struct zigbee_conf_t zigbee_conf;
+zigbee_msg_t zigbee_msg;
 
 uint8_t data[100];
 

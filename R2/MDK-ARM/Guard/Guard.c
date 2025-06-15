@@ -5,10 +5,8 @@
 struct Guard_Trace trace = {	.p = 13,	.brake_distance = 430,	.break_angle = 150,	.outlimit = 9000,};
 void Guard_Trace_Run(void)
 {
-	static struct Point last;
 	float xerror = site.target.x - site.now.x;
 	float yerror = site.target.y - site.now.y;
-	float rerror = site.target.r - site.now.r;
 	float xp = trace.p * xerror;
 	trace.outx = xp;
 	float yp = trace.p * yerror;

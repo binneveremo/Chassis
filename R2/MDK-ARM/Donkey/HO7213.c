@@ -1,5 +1,5 @@
 #include "HO7213.h"
-
+#include "Global.h"
 uint8_t HO7213_RXData[16] = {0}; // 电机回传数据
 HO7213_INFO HO7213;				 // 电机信息结构体
 
@@ -284,9 +284,9 @@ void HO7213_Decode_for_CN(uint8_t *RxData)
 	HO7213.Position = ((float)(((HO7213_RXData[1] << 8) + HO7213_RXData[2]) - 0x8000) / 0x8000) * 4096 * PMAX;
 	HO7213.Speed = ((float)((HO7213_RXData[3] << 4) + (HO7213_RXData[4] >> 4) - 0x800) / 0x800) * Spd_MAX;
 	HO7213.Torque = ((float)(((HO7213_RXData[4] & 0x0F) << 8) + HO7213_RXData[5] - 0x800) / 0x800) * Cur_MAX * Tqe_Constant;
-	HO7213.Mode = NULL;
-	HO7213.Run_status = NULL;
-	HO7213.temperature = NULL;
+	HO7213.Mode = NONE;
+	HO7213.Run_status = NONE;
+	HO7213.temperature = NONE;
 	HO7213.ID = HO7213_RXData[0];
 }
 /*CAN扩展模式下数据解码(8字节)*/
@@ -296,9 +296,9 @@ void HO7213_Decode_for_CE(uint8_t *RxData)
 	HO7213.Position = (((float)((HO7213_RXData[6] << 24) + (HO7213_RXData[7] << 16) + (HO7213_RXData[1] << 8) + HO7213_RXData[2]) / (1 << 20)) - 2048) * 4096;
 	HO7213.Speed = ((float)((HO7213_RXData[3] << 4) + (HO7213_RXData[4] >> 4) - 0x800) / 0x800) * Spd_MAX;
 	HO7213.Torque = ((float)(((HO7213_RXData[4] & 0x0F) << 8) + HO7213_RXData[5] - 0x800) / 0x800) * Cur_MAX * Tqe_Constant;
-	HO7213.Mode = NULL;
-	HO7213.Run_status = NULL;
-	HO7213.temperature = NULL;
+	HO7213.Mode = NONE;
+	HO7213.Run_status = NONE;
+	HO7213.temperature = NONE;
 	HO7213.ID = HO7213_RXData[0];
 }
 /*FDCAN模式下数据解码(普通和扩展模式下的回传数据均为16字节，解码函数相同)*/

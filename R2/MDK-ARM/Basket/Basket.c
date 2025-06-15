@@ -57,7 +57,6 @@ void BasketPoint_Init(char * flag)
 }
 void BasketPosition_Lock(void){
 	PositionWithAngle_Lock(basketlock.now.partial,basketlock.target.partial,&spot_basket,&cr_basket);
-	
 }
 
 

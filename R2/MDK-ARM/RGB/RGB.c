@@ -51,11 +51,11 @@ void RGB_Cal_Color(unsigned short LED_index, unsigned int color, unsigned char b
 	unsigned char R = (unsigned char)(color>>0x10) * ((float)bright/100.0);
 	unsigned char G = (unsigned char)(color>>0x08) * ((float)bright/100.0);
 	unsigned char B = (unsigned char)(color>>0x00) * ((float)bright/100.0);
-	for(char i = 7; i>=0; i--)
+	for(signed char i = 7; i>=0; i--)
 			send_buff[LED_index][0][7-i] = ((G>>i) & 0x01) ? RGB_HIGH : RGB_LOW;
-	for(char i = 7; i>=0; i--) 
+	for(signed char i = 7; i>=0; i--) 
 			send_buff[LED_index][1][7-i] = ((R>>i) & 0x01) ? RGB_HIGH : RGB_LOW;
-	for(char i = 7; i>=0; i--) 
+	for(signed char i = 7; i>=0; i--) 
 			send_buff[LED_index][2][7-i] = ((B>>i) & 0x01) ? RGB_HIGH : RGB_LOW;
 }
 /*
@@ -84,7 +84,7 @@ void RGB_Color_All(int color,int bright){
 void RGB_OutPut(void)
 {
 	HAL_TIM_PWM_Stop_DMA(&ws2812_tim, ws2812_channel); 
-	HAL_TIM_PWM_Start_DMA(&ws2812_tim, ws2812_channel, (unsigned int *)send_buff, (LED_NUM+1)*3*8); 	
+	HAL_TIM_PWM_Start_DMA(&ws2812_tim, ws2812_channel, (const unsigned int *)send_buff, (unsigned short)(LED_NUM+1)*3*8); 	
 }
 void SwitchRGBShowMsg(void){
 	char Check_Key[] = {2,6}; 
@@ -242,35 +242,6 @@ void RGB_Show_Velocity(void){
 		RGB_Line_Cal(4,0x4B0000,40);
 	RGB_OutPut();
 }
-static char A[25] = {
-	0, 0, 1, 0, 0, 
-	0, 1, 0, 1, 0,
-  0, 1, 1, 1, 0, 
-  1, 0, 0, 0, 1,  
-  1, 0, 0, 0, 1   
-};
-static char B[25] = {
-	1, 1, 1, 0, 0, 
-	1, 0, 0, 1, 0,
-  1, 1, 1, 0, 0, 
-  1, 0, 0, 1, 0,  
-  1, 1, 1, 0, 0   
-};
-static char C[25] = {
-	0, 1, 1, 1, 0, 
-	1, 0, 0, 0, 0,
-  1, 0, 0, 0, 0, 
-  1, 0, 0, 0, 0,  
-  0, 1, 1, 1, 0   
-};
-static char Z[25] = {
-	1, 1, 1, 1, 1, 
-	0, 0, 0, 1, 0,
-  0, 0, 1, 0, 0, 
-  0, 1, 0, 0, 0,  
-  1, 1, 1, 1, 1   
-};
-
 ////////////////////////////////////////////////////////////////////一定要记住 先考虑line 在考虑list 对于我们的RGB来说 也就是先考虑堆叠 在考虑侧向 也就是 char * letter[5][3]
 char RGB_Order_Convert(char order){
 	 return 14 - (order / 3) - (order % 3) * 5;
