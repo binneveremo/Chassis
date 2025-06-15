@@ -38,20 +38,11 @@ struct Site{
 		struct Point enc;
 	}partial;
 };
-enum Location_Type{
-	odometer_location,
-	vision_location,
-	dt35_location,
-	mix_location
-};
 
 extern struct Site site;
 
 void Location_Type_Choose(void);
-void DT35_Fuse_With_Odometer(float dt);
-
 void Enc_VXVY_Fuse_With_Gyro_AXAY(float dt);
 //雷达与马盘数据融合
-void Ladar_With_Odometer_Kalman(float dt);
-void Ladar_With_Odometer_Relocation(float dt);
+
 #endif

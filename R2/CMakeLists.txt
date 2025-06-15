@@ -16,6 +16,23 @@ set(CMAKE_CXX_STANDARD 17)
 
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Os") 
 set(CMAKE_C_FLAGS_DEBUG "-Os")
+
+# 启用FPU支持（针对STM32F4/F7）
+add_compile_definitions(
+    ARM_MATH_CM7  # 使用 Cortex-M7 的数学库
+)
+
+# FPU 和指令集选项
+add_compile_options(
+    -mcpu=cortex-m7
+    -mthumb
+    -mfloat-abi=hard  # 硬件浮点加速
+    -mfpu=fpv5-d16  # H7 的 FPU 类型
+    -D__TARGET_FPU_VFP  # 指定 VFP 浮点单元
+)
+
+# 精简C++特性
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-exceptions -fno-rtti")
 # Define the build type
 if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE "Debug")
