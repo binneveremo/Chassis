@@ -11,7 +11,7 @@
 #define R1_Exchange_Baudrate 115200
 #endif
 
-struct Send send;
+__attribute__((section(".sram_data"))) struct Send send;
 void Send_Float_Data(char num){
 	//计算前几位的值
 	float total; 

@@ -1,16 +1,15 @@
 #pragma once
-
+#include "Global.h"
 #ifdef __cplusplus
 extern "C" {
 #endif
+#if MPC 
 
+void Kalman3D_Init(void);
+void Kalman3D_Update(float position, float velocity, float acceleration);
+float MPC_Test(float position, float velocity, float accel);
 
-void Eigen_Test(void);  // 声明为 C 接口
-
-
-
-
-
+#endif
 #ifdef __cplusplus
 }
 #endif

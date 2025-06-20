@@ -26,7 +26,6 @@ struct Vision{
 		unsigned char data[20];
 	}basketlock;
 	struct {
-		char unused_flag;
 		char online_flag;
 		unsigned char data[24];
 	}position;
@@ -44,14 +43,11 @@ struct Vision{
 	struct{
 		float basket_xoffset;
 		float basket_yoffset;
-#if totle
-		//float ladar2siteangleoffset = -1.45; 
-#endif
 		float ladar2siteangleoffset;
 	}param;
 	struct {
 		char gyro_offset_angle_init;
-	
+		char used_flag;
 	}flagof;
 	int header;
 	uint8_uint32_float_union convert;
@@ -71,7 +67,7 @@ car_vfield
 场地坐标系
 car_field
 */
-extern struct Vision vision;
+extern __attribute__((section(".sram_data"))) struct Vision vision;
 void Vision_Basket_Decode(void);
 void Get_Vision_Data(int header,unsigned char * data);
 void Ladar_Decode(void);

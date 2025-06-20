@@ -8,6 +8,7 @@
 #include "fdcan.h"
 struct YIS506 yis506;
 void Gyro_AX_AY_Cal(void){
+	YIS506_Decode();
 	site.car.ax_gyro = -(yis506.X.accel - yis506.X.accel_offset);
 	site.car.ay_gyro = -(yis506.Y.accel - yis506.Y.accel_offset);
 	site.car.accel_totalgyro = hypot(site.car.ax_gyro,site.car.ay_gyro);
@@ -60,11 +61,10 @@ void YIS506_Decode(void){
 }
 /////////////////////////////////////////////定期修正陀螺仪角度/////////////////////////////
 void Gyro_Reset(void){
+	yis506.X.accel_offset = yis506.X.accel;
+	yis506.Y.accel_offset = yis506.Y.accel;
+	yis506.euler.yaw_offset = yis506.euler.yaw;
 	yis506.reset_flag = true;
-	yis506.euler.yaw_offset = yis506.euler.yaw;
-}
-void Gyro_Init(void){
-	yis506.euler.yaw_offset = yis506.euler.yaw;
 }
 
 

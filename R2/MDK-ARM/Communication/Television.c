@@ -1,44 +1,22 @@
 #include "Television.h"
 #include "Gyro.h"
 
-struct Vision vision = {.param.basket_xoffset = 130,.param.ladar2siteangleoffset = -2.4};
+__attribute__((section(".sram_data"))) struct Vision vision = {.param.basket_xoffset = 130,.param.ladar2siteangleoffset = -2.4};
 #define OLD_COMMUNICATION false
 
 void Vision_Basket_Decode(void){
-#if OLD_COMMUNICATION
-	memcpy(vision.convert.uint8_data, vision.basketlock.data, 20);
-	vision.visual.basket_visual.x = vision.convert.float_data[0] * 1000 + vision.param.basket_xoffset;
-	vision.visual.basket_visual.y = vision.convert.float_data[1] * 1000 + vision.param.basket_yoffset;
-
-	vision.visual.ladar_visual.x = vision.convert.float_data[2] * 1000;
-	vision.visual.ladar_visual.y = vision.convert.float_data[3] * 1000;
-	vision.visual.ladar_visual.r = vision.convert.float_data[4] * rad2ang(1);
-	
-	
-	memcpy(vision.convert.uint8_data, vision.position.data, 20);
-	vision.visual.carzero_visual.r = vision.convert.float_data[3] * rad2ang(1);
-	vision.visual.carzero_visual.x = vision.convert.float_data[0] * 1000 - 126.69 * (sin(2 * PI * 0.16 * ang2rad(vision.visual.carzero_visual.r) + 1.29) - sin(1.29));
-	vision.visual.carzero_visual.y = vision.convert.float_data[1] * 1000 - 124.75 * (sin(2 * PI * 0.16 * ang2rad(vision.visual.carzero_visual.r) - 0.25) + sin(0.25));
-	
-	
-	float r = ang2rad(vision.param.ladar2siteangleoffset);
-	vision.field.carcenter_field.x = vision.visual.carzero_visual.x * cos(r) + vision.visual.carzero_visual.y * sin(r) + 390;
-	vision.field.carcenter_field.y = vision.visual.carzero_visual.y * cos(r) - vision.visual.carzero_visual.x * sin(r) - 386;
-	vision.field.carcenter_field.r = vision.visual.carzero_visual.r;
-#else
+	if(vision.flagof.used_flag == true)
+		return;
 	memcpy(vision.convert.uint8_data, vision.basketlock.data, 20);
 	vision.visual.basket_visual.x = vision.convert.float_data[0] * 1000 + vision.param.basket_xoffset;
 	vision.visual.basket_visual.y = vision.convert.float_data[1] * 1000 + vision.param.basket_yoffset;
 	
-//	vision.visual.ladar_visual.x = vision.convert.float_data[2] * 1000;
-//	vision.visual.ladar_visual.y = vision.convert.float_data[3] * 1000;
-//	vision.visual.ladar_visual.r = vision.convert.float_data[4] * rad2ang(1);
 	
 	memcpy(vision.convert.uint8_data, vision.position.data,16);
 	vision.visual.ladar_visual.x = vision.convert.float_data[0] * 1000;
 	vision.visual.ladar_visual.y = vision.convert.float_data[1] * 1000;
 	vision.visual.ladar_visual.r = vision.convert.float_data[3] * rad2ang(1);
-//	172.84, 频率: 0.16, 相位: 1.71, 偏移: 799.54
+
 	vision.field.carcenter_field.r = vision.convert.float_data[3] * rad2ang(1);
 	vision.field.carcenter_field.x = vision.convert.float_data[0] * 1000 - 172.84 * (sin(2 * PI * 0.16 * ang2rad(vision.visual.ladar_visual.r) + 1.71));
 	vision.field.carcenter_field.y = vision.convert.float_data[1] * 1000 - 177.94 * (sin(2 * PI * 0.16 * ang2rad(vision.visual.ladar_visual.r) + 0.18));
@@ -47,9 +25,10 @@ void Vision_Basket_Decode(void){
 	vision.visual.carzero_visual.y = vision.convert.float_data[1] * 1000 - 177.94 * (sin(2 * PI * 0.16 * ang2rad(vision.field.carcenter_field.r) + 0.18) - sin(0.18));
 	vision.visual.carzero_visual.r = vision.convert.float_data[3] * rad2ang(1);
 	
+	
+	
 	if((vision.flagof.gyro_offset_angle_init == false) && (vision.header == position_id) && (vision.position.online_flag == true))
-		yis506.euler.yaw_offset = yis506.euler.yaw - vision.visual.ladar_visual.r,vision.flagof.gyro_offset_angle_init = true;
-#endif
+		Gyro_Reset(),vision.flagof.gyro_offset_angle_init = true;
 }
 void Get_Vision_Data(int header, unsigned char *data){
 	switch (header)
@@ -60,7 +39,7 @@ void Get_Vision_Data(int header, unsigned char *data){
 		break;
 	case position_id:
 		vision.position.online_flag = true;
-		vision.position.unused_flag = true;
+		vision.flagof.used_flag = false;
 		memcpy(vision.position.data, data, 16);
 		break;
 	case online_id:
@@ -71,21 +50,6 @@ void Get_Vision_Data(int header, unsigned char *data){
 	}
 	vision.header = header;
 }
-void Send_Velocity_Vision(void)
-{
-#ifndef Carbon_Car
-	memset(vision.convert.uint8_data, 0, sizeof(vision.convert));
-	vision.convert.float_data[0] = site.field.x_enc / 1000;
-	vision.convert.float_data[1] = site.field.y_enc / 1000;
-	vision.convert.float_data[2] = ang2rad(site.now.r);
-#define MAX_VELOCITY 2
-#define MIN_VELOCITY 0.3
-	vision.convert.float_data[3] = ((site.car.velocity_totalgyro < MAX_VELOCITY) && (site.car.velocity_totalgyro > MIN_VELOCITY)) ? 1.00f : 0.00f;
-	memcpy(vision.send, vision.convert.uint8_data, sizeof(vision.send));
-	FDCAN_Send(&hfdcan3, site_id, "STD", vision.send, "FD", 16, "OFF");
-#endif
-}
-
 #define position_kalman_encinterp false
 #define position_liner_encinterp true
 
@@ -104,12 +68,13 @@ struct EKF ladarr_interp = {
 
 void LadarPosInterpolation(int dt)
 {
+	Vision_Basket_Decode();
 #if position_liner_encinterp
 	static float dx, dy,dr;
-	if (vision.position.unused_flag == true)
+	if (vision.flagof.used_flag == false)
 	{
 		dx = 0, dy = 0,dr = 0;
-		vision.position.unused_flag = false;
+		vision.flagof.used_flag = true;
 	}
 	else
 	{
@@ -129,7 +94,6 @@ void LadarPosInterpolation(int dt)
 	vision.visual.car_visualinterp.r = NormalizeAng_Single(EKF_Filter(&ladarr_interp,vision.visual.car_visual.r,basketlock.parameter.angleinterp_gain*ang2rad(site.gyro.omiga)));
 #endif
 	//计算锁自己篮框的角度
-	
 	basketlock.protectselfbasket_angle = rad2ang(atan2f(vision.field.carcenter_field.y - self_basket_point.y,vision.field.carcenter_field.x - self_basket_point.x));
 }
 

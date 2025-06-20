@@ -278,37 +278,37 @@
         <Ww>
           <count>23</count>
           <WinNumber>1</WinNumber>
-          <ItemText>correct_angle</ItemText>
+          <ItemText>dribble,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>24</count>
           <WinNumber>1</WinNumber>
-          <ItemText>dribble,0x0A</ItemText>
+          <ItemText>dunk</ItemText>
         </Ww>
         <Ww>
           <count>25</count>
           <WinNumber>1</WinNumber>
-          <ItemText>dunk</ItemText>
+          <ItemText>interact</ItemText>
         </Ww>
         <Ww>
           <count>26</count>
           <WinNumber>1</WinNumber>
-          <ItemText>interact</ItemText>
+          <ItemText>spot_basket</ItemText>
         </Ww>
         <Ww>
           <count>27</count>
           <WinNumber>1</WinNumber>
-          <ItemText>spot_basket</ItemText>
+          <ItemText>spot_skill</ItemText>
         </Ww>
         <Ww>
           <count>28</count>
           <WinNumber>1</WinNumber>
-          <ItemText>spot_skill</ItemText>
+          <ItemText>kalman_3d</ItemText>
         </Ww>
         <Ww>
           <count>29</count>
           <WinNumber>1</WinNumber>
-          <ItemText>value_check</ItemText>
+          <ItemText>CPU_USAGE_PERCENT</ItemText>
         </Ww>
       </WatchWindow1>
       <WatchWindow2>
@@ -422,7 +422,7 @@
 
   <Group>
     <GroupName>Application/MDK-ARM</GroupName>
-    <tvExp>0</tvExp>
+    <tvExp>1</tvExp>
     <tvExpOptDlg>0</tvExpOptDlg>
     <cbSel>0</cbSel>
     <RteFlg>0</RteFlg>

@@ -2,6 +2,7 @@
 #define __FLOW_H
 
 #include "Chassis.h"
+
 #include "Basket.h"
 #include "Send.h"
 
@@ -75,6 +76,7 @@ struct skill_t {
 		int catch_advanced_dis[7];
 		float lock_dis;
 		float lock_angle;
+		struct Spot_t spot[7];
 	}param;
 	struct {
 		struct Point point[7];

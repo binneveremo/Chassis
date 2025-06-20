@@ -13,8 +13,9 @@
 #include "Gyro.h"
 #include "RGB.h"
 #include "SPI_FDCAN.h"
-//#include "Second_Order.hpp"
-
+#if MPC
+#include "Second_Order.hpp"
+#endif
 #include "HighTorque.h"
 #include "CPU_Load.h"
 #include "Interact.h"
@@ -34,7 +35,7 @@ void motor_control(void const * argument)
 				Auto_Flow();
 			break;
 			case Debug_Control:
-				Debug_Test();
+				
 			break;
 		}
 	  VectorWheel_SetAngle();
@@ -46,34 +47,36 @@ void communication(void const * argument)
 {
   for(;;)
   {
+		Send_Put_Data(0,site.filter[1]);
+		Send_Put_Data(1,site.field.vx_enc);
+		Send_Put_Data(2,site.filter[2]);
+		Send_Put_Data(3,site.field.ax_gyro);
+		Send_Float_Data(4);
 		Vision_Basket_Decode();
 		GamePad_Data_Cla();
-	  Send_MessageToR1();
-		//Eigen_Test();
+	  //Send_MessageToR1();
 		osDelay(25);
 
 	}
 }
 void location(void const * argument)
-	
 {
   for(;;)
   {
-	  YIS506_Decode();
-		//陀螺仪原始数据计算 
-		Encoder_XY_VX_VY_Cal(2);
-		//获取陀螺仪加速度
-		Gyro_AX_AY_Cal();
-		//编码器速度计与陀螺仪及速度计的融合
-		Enc_VXVY_Fuse_With_Gyro_AXAY(2);
-		//雷达与编码器的重定位融合
-    Location_Type_Choose();
-		//插帧得到篮筐和当前坐标的相关信息
-		BasketPositionCal_AccordingVision(2);
-		//码盘线性插帧
-		LadarPosInterpolation(2);
-		//DT35解算
-		osDelay(2);
+	  Gyro_AX_AY_Cal();
+	  // 陀螺仪原始数据计算
+	  Encoder_XY_VX_VY_Cal(2);
+	  // 获取陀螺仪加速度
+	  Location_Type_Choose();
+	  // 插帧得到篮筐和当前坐标的相关信息
+	  BasketPositionCal_AccordingVision(2);
+	  // 码盘线性插帧
+	  LadarPosInterpolation(2);
+	  // DT35解算
+	  #if MPC
+	  Kalman3D_Update(site.now.x, site.field.vx_enc, site.field.ax_gyro);
+	  #endif 
+	  osDelay(2);
   }
 }
 void Detect(void const * argument)

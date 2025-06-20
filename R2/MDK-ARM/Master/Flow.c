@@ -30,18 +30,11 @@ void Dunk_Flow(void){
 		break;
 		case wait_shoot:
 			Tell_Yao_Xuan("catch");
-#if Opposite_R1
-		Chassis_Velocity_Out(0,0,Correct_Angle(send.R1_Exchange.pos.r + 180));
-#endif
-		dunk.state = (flow.flagof.R1_Shooted == true)?oppositebasket:dunk.state;
+		  dunk.state = (flow.flagof.R1_Shooted == true)?oppositebasket:dunk.state;
 		break;
 		case oppositebasket:
-#if Opposite_R1
-			Chassis_Velocity_Out(0,0,BasketAngleLock());
-#else 
-		Self_Lock_Out("BasketFlow");
-#endif
-			//dunk.state = (fabs(basketanglelock.progress.error) < 1.5)?jump:dunk.state;
+			Tell_Yao_Xuan("lift");
+			Self_Lock_Out("BasketFlow");
 		break;
 		case jump:
 			Self_Lock_Out("BasketFlow");
@@ -138,15 +131,23 @@ struct skill_t skill = {
 
 	.param.lock_dis = 80,
 	.param.lock_angle = 8,
+	
+	.param.spot[0] = {.param.p = 3.8,	.param.i = 1,	.param.istart = 6,	.param.iend = 400,	.param.ilimit = 1000,	.param.outlimit = 11000, .param.fade_start = 430, .param.fade_end = 100},
+	.param.spot[1] = {.param.p = 3.8,	.param.i = 1,	.param.istart = 6,	.param.iend = 400,	.param.ilimit = 1000,	.param.outlimit = 11000, .param.fade_start = 430, .param.fade_end = 100},
+	.param.spot[2] = {.param.p = 3.8,	.param.i = 1,	.param.istart = 6,	.param.iend = 400,	.param.ilimit = 1000,	.param.outlimit = 11000, .param.fade_start = 430, .param.fade_end = 100},
+	.param.spot[3] = {.param.p = 3.8,	.param.i = 1,	.param.istart = 6,	.param.iend = 400,	.param.ilimit = 1000,	.param.outlimit = 11000, .param.fade_start = 430, .param.fade_end = 100},
+	.param.spot[4] = {.param.p = 3.8,	.param.i = 1,	.param.istart = 6,	.param.iend = 400,	.param.ilimit = 1000,	.param.outlimit = 11000, .param.fade_start = 430, .param.fade_end = 100},
+	.param.spot[5] = {.param.p = 3.8,	.param.i = 1,	.param.istart = 6,	.param.iend = 400,	.param.ilimit = 1000,	.param.outlimit = 11000, .param.fade_start = 430, .param.fade_end = 100},
+	.param.spot[6] = {.param.p = 3.8,	.param.i = 1,	.param.istart = 6,	.param.iend = 400,	.param.ilimit = 1000,	.param.outlimit = 11000, .param.fade_start = 430, .param.fade_end = 100},
 };
 void Skill_Flow(void){
 	static char last_success_times;
 	char index = skill.success_time % 7;      
 	switch(skill.status){
 		case begin:
-			PositionWithAngle_Lock(site.now,Merge_Point(skill.target.point[index],send.R1_Exchange.pos),&spot_skill,&cr_skill);
+			PositionWithAngle_Lock(site.now,Merge_Point(skill.target.point[index],send.R1_Exchange.pos),&skill.param.spot[index],&cr_skill);
 			if((Point_Distance(site.now,skill.target.point[index]) < skill.param.catch_advanced_dis[index]) && (skill.flagof.net_catched == false))
-				skill.flagof.net_catched = true,Tell_Yao_Xuan("defend");
+				skill.flagof.net_catched = true,Tell_Yao_Xuan((index > 3)?"catch":"defend");
 			if((Point_Distance(site.now,skill.target.point[index]) < skill.param.lock_dis))
 				Self_Lock_Out("SkillFlow"),send.R1_Exchange.request_flag = true;
 			else 

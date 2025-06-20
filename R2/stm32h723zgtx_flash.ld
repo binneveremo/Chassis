@@ -186,6 +186,18 @@ SECTIONS
     libm.a ( * )
     libgcc.a ( * )
   }
+  .sram_data :
+  {
+    . = ALIGN(4);
+    _ssram_data = .;        /* 创建全局符号标记起始位置 */
+    *(.sram_data)           /* 收集所有 .sram_data 段 */
+    *(.sram_data*)          /* 收集所有带后缀的 .sram_data 段 */
+    . = ALIGN(4);
+    _esram_data = .;        /* 创建全局符号标记结束位置 */
+  } >RAM AT>FLASH           /* 加载到 RAM 但初始值存储在 FLASH */
+  
+  /* 确保启动代码会复制初始值 */
+  _sisram_data = LOADADDR(.sram_data);
 
 }
 

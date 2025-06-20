@@ -29,6 +29,10 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "Global.h"
+#if MPC
+#include "Second_Order.hpp"
+#endif
 #include "SPI_FDCAN.h"
 #include "Television.h"
 #include "CPU_Load.h"
@@ -46,6 +50,8 @@
 #include "Send.h"
 #include "Gyro.h" 
 #include "RGB.h"
+
+
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -92,6 +98,7 @@ int main(void)
 
   /* USER CODE BEGIN 1 */
 
+
   /* USER CODE END 1 */
 
   /* MPU Configuration--------------------------------------------------------*/
@@ -112,6 +119,7 @@ int main(void)
   PeriphCommonClock_Config();
 
   /* USER CODE BEGIN SysInit */
+	HAL_Delay(200);
 
   /* USER CODE END SysInit */
 
@@ -137,11 +145,14 @@ int main(void)
 	Chassis_SelfLock(true);
 	FDCAN4_Init();                                                                             
 	RGB_Init();
-	Gyro_Init();
 	GamePad_Init();
 	Encoder_Init();
 	TurnMotor_OffsetAngleInit();
 	Wireless_init();
+  #if MPC
+	Kalman3D_Init();
+  #endif
+  Gyro_Reset();
 	//CPU_Usage_Init();
   /* USER CODE END 2 */
 

@@ -1,6 +1,32 @@
 #ifndef __CHASSIS_H
 #define __CHASSIS_H
 
+
+struct Spot_t{
+	struct {
+		float p;
+		float i;
+		float istart;
+		float iend;
+		float ilimit;
+		
+		float outlimit;
+		
+		float fade_start;
+		float fade_end;
+		
+		float lock_dis;
+	}param;
+	struct {
+		float gain;
+		float itotal_x;
+		float itotal_y;
+		float outx;
+		float outy;
+	}process;
+};
+extern struct Spot_t spot;
+
 #include "Communication.h"
 #include "Location.h"
 #include "stdbool.h"
@@ -74,31 +100,7 @@ enum opposite_t{
 	forward,
 };
 
-struct Spot_t{
-	struct {
-		float p;
-		
-		float i;
-		float istart;
-		float iend;
-		float ilimit;
-		
-		float outlimit;
-		
-		float fade_start;
-		float fade_end;
-		
-		float lock_dis;
-	}param;
-	struct {
-		float gain;
-		float itotal_x;
-		float itotal_y;
-		float outx;
-		float outy;
-	}process;
-};
-extern struct Spot_t spot;
+
 struct Chassis{
 	enum{
 		GamePad_Control,
@@ -166,7 +168,7 @@ struct correct_angle_t{
 }
 
 
-extern struct Chassis chassis;
+extern __attribute__((section(".sram_data"))) struct Chassis chassis;
 extern struct Mark mark;
 extern struct Spot_t spot_skill;
 extern struct Spot_t spot_basket;

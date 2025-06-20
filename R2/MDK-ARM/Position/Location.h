@@ -17,6 +17,7 @@ struct Site{
 		float vy_enc;
 		float vx_gyro;
 		float vy_gyro;
+		float filter[3];
 	}field;
 	struct {
 		float r;
@@ -37,6 +38,7 @@ struct Site{
 		struct Point target;
 		struct Point enc;
 	}partial;
+	float filter[3];
 };
 
 extern struct Site site;

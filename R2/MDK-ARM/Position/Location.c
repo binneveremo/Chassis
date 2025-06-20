@@ -7,7 +7,7 @@
 #include "math.h"
 #include "Flow.h"
 
-struct Site site;
+struct Site site = {};
 struct EKF ekf_x = {
 	.q = 0.0002,
 	.r = 1.8,

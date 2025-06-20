@@ -28,7 +28,7 @@ struct Send{
 	}R1_Exchange;
 	uint8_uint32_float_union convert;
 };
-extern struct Send send;
+extern __attribute__((section(".sram_data"))) struct Send send;
 void Wireless_init(void);
 void Send_MessageToR1(void);
 void R1ExchangeData_Decode(UART_HandleTypeDef *huart);
