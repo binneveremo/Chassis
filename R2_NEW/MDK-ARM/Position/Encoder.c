@@ -7,14 +7,11 @@
 //定义enc1为记录x轴方向的码盘，调节sign1使得向前的时候增量为正数
 //定义enc2为记录y轴方向的码盘，调节sign2使得向左的时候增量为正数
 #define odo_can hfdcan2
-#ifdef Carbon_Car
-	#define circle_num 32
-#else 
-	#define circle_num 50
-#endif
+#define circle_num 50
 
-#define signx -1
-#define signy 1
+
+#define signx 1
+#define signy -1
 #define encx_id 1
 #define ency_id 2
 #define ratio 25.321f
@@ -52,15 +49,13 @@ void Set_ZeroPoint(unsigned char ID){
 }
 void Encoder_XY_VX_VY_Cal(int dt){
   Diff_Odometer();
-	//计算旋转补偿
 	//计算车体速度
-#ifdef Carbon_Car
-	float dx_car = ( odometer.do1  * 0.70710678 - odometer.do2  * 0.70710678) / ratio;
-	float dy_car = (-odometer.do2  * 0.70710678 - odometer.do1  * 0.70710678) / ratio;
-#else
-	float dx_car = odometer.do1 / ratio;
-	float dy_car = odometer.do2 / ratio;
-#endif
+	float dy_car = ( odometer.do1  * 0.70710678 - odometer.do2  * 0.70710678) / ratio;
+	float dx_car = (-odometer.do2  * 0.70710678 - odometer.do1  * 0.70710678) / ratio;
+	//计算速度补偿
+	odometer.vx_car = dx_car / dt;
+	odometer.vy_car = dy_car / dt;
+	
 	//计算车体坐标系的速度
 	//初步计算场地坐标系的dx dy
 	float dx_field = dx_car* cos(ang2rad(site.now.r)) - dy_car*sin(ang2rad(site.now.r));

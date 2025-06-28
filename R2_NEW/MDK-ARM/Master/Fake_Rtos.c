@@ -26,18 +26,19 @@ void motor_control(void const * argument)
    for(;;)
   {
 		switch(chassis.Control_Status){
+			ChassisLock_Clear();
 			case GamePad_Control:
 				GamePad_Velocity_Control();
 			break;
 			case Auto_Control:
 				Auto_Flow();
 			break;
-			case Debug_Control:
-				
-			break;
+			case Debug_Control:				
+			break;  
 		}
 	  VectorWheel_SetAngle();
 		VectorWheel_SetSpeed();
+		VectorWheel_LockCheck();
 		osDelay(4);
 	}
 }
@@ -45,11 +46,9 @@ void communication(void const * argument)
 {
   for(;;)
   {
-		Vision_Basket_Decode();
 		GamePad_Data_Cla();
 	  Send_MessageToR1();
-		osDelay(25);
-
+		osDelay(10);
 	}
 }
 void location(void const * argument)
@@ -73,10 +72,9 @@ void Detect(void const * argument)
 {
   for(;;)
   {
-		RGB_Show_Msg();
 		LossConnect_Check();
 		Can_Detect();
-    osDelay(200);
+    osDelay(100);
   }
 }
 ////////////////////////////////////////////////////////////璇老师的进程//////////////////////////////

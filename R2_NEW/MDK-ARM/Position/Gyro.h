@@ -18,6 +18,9 @@
 
 #define YIS512_FILTER_SIZE 5
 
+
+#define Gyro_AngleReset(target) (yis506.euler.yaw_offset = yis506.euler.yaw - target)
+
 struct YIS506{
 	char reset_flag;
     int header;

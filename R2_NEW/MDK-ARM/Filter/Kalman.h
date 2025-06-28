@@ -20,4 +20,5 @@ float EKF_Filter(struct EKF * ekf, float input ,float gain);
 void Position_Velocity_Accel_SecondOrderKalmanCal(void);
 void Kalman_Test(void);
 void SecondOrder_KalmanSystemInit(void);
+float Easy_Filter(float x);
 #endif

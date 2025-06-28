@@ -3,6 +3,14 @@
 
 #include "tim.h"
 
+#define  LED_NUM 79
+#define  main_frequency 275000000
+#define  prescaler  0
+#define  period  (int)(main_frequency / 800000)
+#define  RGB_HIGH  (int)((float)period*0.56)		
+#define  RGB_LOW   (int)((float)period*0.28)			
+#define  ws2812_tim htim23
+#define  ws2812_channel TIM_CHANNEL_1
 
 #define Red ((int)0x00FF0000)
 #define Green ((int)0x0000FF00)
@@ -16,20 +24,27 @@
 #define NavyBlue ((int)0x0F0FA0)
 
 extern char RGB_Switch;
+#define RGB(r,g,b) ((unsigned int)((((unsigned char)(r * 255.0 / 101.0) / 2 * 2) << 16) + (((unsigned char)(g * 255.0 / 101.0) / 2 * 2) << 8) + ((unsigned char)(b * 255.0 / 101.0) / 2 * 2)))
 
-
-struct panel_t{
+struct LED_t{
 	enum{
-		init_msg,
-		press_msg,
-		flow_msg,
-	}display;
+		breath,
+		single_wave,
+		double_wave,
+	}effect;
+	struct {
+		struct{
+			unsigned char index_now;
+			
+		}wave;
+
+	}flagof;
 	
-
-
+	
+	
 };
+void RGB_Reset(void);
 
-extern char RGB_ON;
 #define RGB_RESET (RGB_ON = false) 
 void RGB_Show_Msg(void);
 void RGB_Init(void);
@@ -37,5 +52,5 @@ void RGB_Show_Color(int color,int bright);
 void RGB_Show_Warning(void);
 void RGB_Show_Test(int dt);
 void RGB_Show_Velocity(void);
-void RGB_Test(int index,int color,int bright);
+void RGB_Test(int index,int color);
 #endif

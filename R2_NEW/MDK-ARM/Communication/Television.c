@@ -1,10 +1,10 @@
 #include "Television.h"
 #include "Gyro.h"
 
-__attribute__((section(".sram_data"))) struct Vision vision = {.param.basket_xoffset = 130,.param.ladar2siteangleoffset = -2.4};
+struct Vision vision = {.param.basket_xoffset = 300,.param.ladar2siteangleoffset = -2.4};
 #define OLD_COMMUNICATION false
 
-void Vision_Basket_Decode(void){
+void Vision_DataDecode(void){	
 	if(vision.flagof.used_flag == true)
 		return;
 	memcpy(vision.convert.uint8_data, vision.basketlock.data, 20);
@@ -18,17 +18,16 @@ void Vision_Basket_Decode(void){
 	vision.visual.ladar_visual.r = vision.convert.float_data[3] * rad2ang(1);
 
 	vision.field.carcenter_field.r = vision.convert.float_data[3] * rad2ang(1);
-	vision.field.carcenter_field.x = vision.convert.float_data[0] * 1000 - 172.84 * (sin(2 * PI * 0.16 * ang2rad(vision.visual.ladar_visual.r) + 1.71));
-	vision.field.carcenter_field.y = vision.convert.float_data[1] * 1000 - 177.94 * (sin(2 * PI * 0.16 * ang2rad(vision.visual.ladar_visual.r) + 0.18));
+	vision.field.carcenter_field.x = vision.convert.float_data[0] * 1000 - 264.07 * (sin(2 * PI * 0.16 * ang2rad(vision.visual.ladar_visual.r) + 1.54));
+	vision.field.carcenter_field.y = vision.convert.float_data[1] * 1000 - 261.97 * (sin(2 * PI * 0.16 * ang2rad(vision.visual.ladar_visual.r) - 0.01));
 	
-	vision.visual.carzero_visual.x = vision.convert.float_data[0] * 1000 - 172.84 * (sin(2 * PI * 0.16 * ang2rad(vision.field.carcenter_field.r) + 1.71) - sin(1.71));
-	vision.visual.carzero_visual.y = vision.convert.float_data[1] * 1000 - 177.94 * (sin(2 * PI * 0.16 * ang2rad(vision.field.carcenter_field.r) + 0.18) - sin(0.18));
+	vision.visual.carzero_visual.x = vision.convert.float_data[0] * 1000 - 264.07 * (sin(2 * PI * 0.16 * ang2rad(vision.field.carcenter_field.r) + 1.54) - sin(1.54));
+	vision.visual.carzero_visual.y = vision.convert.float_data[1] * 1000 - 261.97 * (sin(2 * PI * 0.16 * ang2rad(vision.field.carcenter_field.r) + 0.01) - sin(0.01));
 	vision.visual.carzero_visual.r = vision.convert.float_data[3] * rad2ang(1);
 	
-	
-	
 	if((vision.flagof.gyro_offset_angle_init == false) && (vision.header == position_id) && (vision.position.online_flag == true))
-		Gyro_Reset(),vision.flagof.gyro_offset_angle_init = true;
+		Gyro_AngleReset(vision.visual.ladar_visual.r),vision.flagof.gyro_offset_angle_init = true;
+	
 }
 void Get_Vision_Data(int header, unsigned char *data){
 	switch (header)
@@ -68,7 +67,7 @@ struct EKF ladarr_interp = {
 
 void LadarPosInterpolation(int dt)
 {
-	Vision_Basket_Decode();
+	Vision_DataDecode();
 #if position_liner_encinterp
 	static float dx, dy,dr;
 	if (vision.flagof.used_flag == false)

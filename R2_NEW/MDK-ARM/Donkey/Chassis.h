@@ -33,8 +33,8 @@ extern struct Spot_t spot;
 #include "VESC.h"
 
 #define Chassis_SelfLock(x) {chassis.lock.permit = x;}
-
-
+#define ChassisLock_Clear() memset(chassis.lock.reason, (char)NONE, sizeof(chassis.lock.reason))
+#define VectorWheel_LockCheck() chassis.lock.flag = (chassis.lock.reason[NONE] != NONE) ? true : false;
 #define VESC_NUM 4
 #define TURN_NUM 4
 #define front_wheel 0		
@@ -97,8 +97,7 @@ enum opposite_t{
 	forward,
 };
 
-
-struct Chassis{
+struct Chassis{  
 	enum{
 		GamePad_Control,
 		Auto_Control,
@@ -186,9 +185,6 @@ void Chassis_Velocity_Out(float left,float front,float anticlock);
 //释放技能
 //手柄遥控
 void GamePad_Velocity_Control(void);
-
-//自动自锁
-void Self_Lock_Auto(void);
 void Self_Lock_Out(char * lock_reason);
 float Angle_Lock(float now,float target,struct correct_angle_t * cr);
 void PositionWithAngle_Lock(struct Point now,struct Point target,struct Spot_t * spot,struct correct_angle_t * cr);

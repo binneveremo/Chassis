@@ -246,7 +246,7 @@ void MX_TIM23_Init(void)
   htim23.Instance = TIM23;
   htim23.Init.Prescaler = 0;
   htim23.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim23.Init.Period = 342;
+  htim23.Init.Period = 343;
   htim23.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim23.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
   if (HAL_TIM_PWM_Init(&htim23) != HAL_OK)
@@ -469,7 +469,7 @@ void HAL_TIM_MspPostInit(TIM_HandleTypeDef* timHandle)
     */
     GPIO_InitStruct.Pin = GPIO_PIN_12;
     GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
-    GPIO_InitStruct.Pull = GPIO_PULLUP;
+    GPIO_InitStruct.Pull = GPIO_NOPULL;
     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
     GPIO_InitStruct.Alternate = GPIO_AF13_TIM23;
     HAL_GPIO_Init(GPIOG, &GPIO_InitStruct);

@@ -2,8 +2,8 @@
 #include "Flow.h"
 
 struct Basket_Lock_t basketlock = {
-	.parameter.basketdis = 825,
-	.parameter.anglebetween_ladarandpole = 1,
+	.parameter.basketdis = 870,
+	.parameter.anglebetween_ladarandpole = -2,
 	.parameter.siteinterp_gain = 0.5,
 	.parameter.angleinterp_gain = 0.4,
 	.parameter.ladar_offsetrad = 0,
@@ -18,7 +18,7 @@ struct Point self_basket_point = {
 	.y = -4000,
 	.r = 0};
 // 选择篮筐定位方式
-#define GLOBAL_BASKETLOCK_POSITION true
+#define GLOBAL_BASKETLOCK_POSITION false
 #define PARTIAL_BASKETLOCK_POSITION !GLOBAL_BASKETLOCK_POSITION
 
 #define GLOBAL_BASKETLOCK_ANGLE false
@@ -56,7 +56,11 @@ void BasketPoint_Init(char * flag)
 	*flag = true;                             
 }
 void BasketPosition_Lock(void){
+#if GLOBAL_BASKETLOCK_POSITION
+	PositionWithAngle_Lock(basketlock.now.global,basketlock.target.global,&spot_basket,&cr_basket);
+#else 
 	PositionWithAngle_Lock(basketlock.now.partial,basketlock.target.partial,&spot_basket,&cr_basket);
+#endif
 }
 
 

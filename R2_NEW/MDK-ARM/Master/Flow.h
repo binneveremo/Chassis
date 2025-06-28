@@ -51,9 +51,6 @@ struct dunk_t {
 	enum{
 		init,
 		goto_dunkpoint,
-		turnmotor_ready,
-		wait_shoot,
-		oppositebasket,
 		jump,
 		end
 	}state;

@@ -303,12 +303,32 @@
         <Ww>
           <count>28</count>
           <WinNumber>1</WinNumber>
-          <ItemText>kalman_3d</ItemText>
+          <ItemText>CPU_USAGE_PERCENT</ItemText>
         </Ww>
         <Ww>
           <count>29</count>
           <WinNumber>1</WinNumber>
-          <ItemText>CPU_USAGE_PERCENT</ItemText>
+          <ItemText>color</ItemText>
+        </Ww>
+        <Ww>
+          <count>30</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>cr_basket</ItemText>
+        </Ww>
+        <Ww>
+          <count>31</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>dunk</ItemText>
+        </Ww>
+        <Ww>
+          <count>32</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>basketlock</ItemText>
+        </Ww>
+        <Ww>
+          <count>33</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>vision</ItemText>
         </Ww>
       </WatchWindow1>
       <WatchWindow2>

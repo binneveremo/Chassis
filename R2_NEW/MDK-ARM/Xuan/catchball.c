@@ -78,7 +78,7 @@ float SelfCheck_Pos = 40;
 
 // Control Parameters for Position HOLDING (Mapped to Overall_States enum indices)
 // Indices:          {Initialize, CatchingBall, Defend, PreDunk, BackToFold, Test,   Moving}  
-float Kp_Hold[8] =   {0.023,      0.55,         0.55,   0.4,     0.023,      0.55,   0.65 }; 
+float Kp_Hold[8] =   {0,          0.55,         0.55,   0.4,     0.023,      0.55,   0.65 }; 
 float Kd_Hold[8] =   {0,          0.04,         0.05,   0.06,    0,          0.05,   0.04 };      
 float Trq_Hold[8]=   {0,          3.5,          3.0,    1.0,     0,          0,      0    };           
 float Pos_Target[8]= {16,         30.5,         123,    36,      16,         123,    17   };
@@ -96,29 +96,29 @@ float Trq_Move_Down = 1.5;
 
 #else
 // Target Positions
-float Init_Pos = 35;
-float CatchBall_Pos = 14;
-float Defend_Pos = -75;
-float PreDunk_Pos = 7;	
+float Init_Pos = 1.219;
+float CatchBall_Pos = 15.425;
+float Defend_Pos = 122.94;
+float PreDunk_Pos = 8.025;
 float SelfCheck_Pos = 10;
 
 // Control Parameters for Position HOLDING (Mapped to Overall_States enum indices)
 // Indices:          {Initialize, CatchingBall, Defend, PreDunk, BackToFold, Test}
-float Kp_Hold[7] =   {0.023,      0.2,          0.28,   0.2,     0.023,      0.28 }; 
-float Kd_Hold[7] =   {0,          0.02,         0.02,   0.06,    0,          0.02 };      
-float Trq_Hold[7]=   {0,          0,            0,      -0.8,    0,          0    };           
-float Pos_Target[7]= {35,         14,           -75,    7,       35,         -75  };
+float Kp_Hold[7] =   {0.023,      0.45,         0.55,   0.4,     0.023,      0.55 }; 
+float Kd_Hold[7] =   {0,          0.04,         0.05,   0.06,    0,          0.05 };      
+float Trq_Hold[7]=   {0,          3.5,          3.0,    1.0,     0,          0    };           
+float Pos_Target[7]= {1.219,      12.7,         122.94, 12.7,    1.219,      41  };
 
 // Control Parameters for Velocity MOVEMENT (Based on original SpdUp/SpdDown)
-float Spd_Move_Up = -80;
-float Spd_Move_Up_Defend = -150; 
-float Spd_Move_Up_Test = -30;
-float Spd_Move_Down = 50; 
+float Spd_Move_Up = 80;
+float Spd_Move_Up_Defend = 150; 
+float Spd_Move_Up_Test = 30;
+float Spd_Move_Down = -50; 
 float Kd_Move_Up = 3;
 float Kd_Move_Up_Test = 4;
 float Kd_Move_Down = 0.2; 
 float Trq_Move_Up = 0;  
-float Trq_Move_Down = -0.5;
+float Trq_Move_Down = 0.5;
 #endif
 
 
@@ -441,13 +441,13 @@ void Overall_Control()
                 }
 #else
                 // Determine movement direction and set parameters
-                if (HighTorque[0].fdbk.pos < target_pos - POS_THRESHOLD_MOVE_DONE)
+                if (HighTorque[0].fdbk.pos > target_pos + POS_THRESHOLD_MOVE_DONE)
                 {
                     State_Spd = Spd_Move_Down;
                     State_Kd = Kd_Move_Down;
                     State_Trq = Trq_Move_Down; //
                 } 
-                else if (HighTorque[0].fdbk.pos > target_pos + POS_THRESHOLD_MOVE_DONE) 
+                else if (HighTorque[0].fdbk.pos < target_pos - POS_THRESHOLD_MOVE_DONE) 
                 {
                     State_Spd = Spd_Move_Up;
                     State_Kd = Kd_Move_Up;
@@ -493,11 +493,11 @@ void Overall_Control()
                 } 
 #else
                 // Determine movement direction and set parameters
-                if (HighTorque[0].fdbk.pos < target_pos - POS_THRESHOLD_MOVE_DONE) {
+                if (HighTorque[0].fdbk.pos > target_pos + POS_THRESHOLD_MOVE_DONE) {
                     State_Spd = Spd_Move_Down;
                     State_Kd = Kd_Move_Down;
                     State_Trq = Trq_Move_Down;
-                } else if (HighTorque[0].fdbk.pos > target_pos + POS_THRESHOLD_MOVE_DONE) {
+                } else if (HighTorque[0].fdbk.pos < target_pos - POS_THRESHOLD_MOVE_DONE) {
                     State_Spd = Spd_Move_Up_Defend;
                     State_Kd = Kd_Move_Up;
                     State_Trq = Trq_Move_Up;
@@ -541,11 +541,11 @@ void Overall_Control()
                 } 
 #else
                 // Determine movement direction and set parameters
-                 if (HighTorque[0].fdbk.pos < target_pos - POS_THRESHOLD_PREDUNK) {
+                 if (HighTorque[0].fdbk.pos > target_pos + POS_THRESHOLD_PREDUNK) {
                     State_Spd = Spd_Move_Down;
                     State_Kd = Kd_Move_Down;
                     State_Trq = Trq_Move_Down;
-                } else if (HighTorque[0].fdbk.pos > target_pos + POS_THRESHOLD_PREDUNK) {
+                } else if (HighTorque[0].fdbk.pos < target_pos - POS_THRESHOLD_PREDUNK) {
                     State_Spd = Spd_Move_Up;
                     State_Kd = Kd_Move_Up;
                     State_Trq = Trq_Move_Up;
@@ -589,11 +589,11 @@ void Overall_Control()
                 } 
 #else
                 // Determine movement direction and set parameters
-                 if (HighTorque[0].fdbk.pos < target_pos - POS_THRESHOLD_MOVE_DONE) {
+                 if (HighTorque[0].fdbk.pos > target_pos + POS_THRESHOLD_MOVE_DONE) {
                     State_Spd = Spd_Move_Down;
                     State_Kd = Kd_Move_Down;
                     State_Trq = Trq_Move_Down;
-                } else if (HighTorque[0].fdbk.pos > target_pos + POS_THRESHOLD_MOVE_DONE) {
+                } else if (HighTorque[0].fdbk.pos < target_pos - POS_THRESHOLD_MOVE_DONE) {
                     State_Spd = Spd_Move_Up;
                     State_Kd = Kd_Move_Up;
                     State_Trq = Trq_Move_Up;
@@ -643,13 +643,13 @@ void Overall_Control()
                 }
 #else
                 // Determine movement direction and set parameters
-                if (HighTorque[0].fdbk.pos < target_pos - POS_THRESHOLD_MOVE_DONE)
+                if (HighTorque[0].fdbk.pos > target_pos + POS_THRESHOLD_MOVE_DONE)
                 {
                     State_Spd = Spd_Move_Down;
                     State_Kd = Kd_Move_Down;
                     State_Trq = Trq_Move_Down; //
                 } 
-                else if (HighTorque[0].fdbk.pos > target_pos + POS_THRESHOLD_MOVE_DONE) 
+                else if (HighTorque[0].fdbk.pos < target_pos - POS_THRESHOLD_MOVE_DONE) 
                 {
                     State_Spd = Spd_Move_Up;
                     State_Kd = Kd_Move_Up;
@@ -737,7 +737,7 @@ void Overall_Control()
 					catch_status.in_move_to_test = false;
 				}
 #else
-                if(current_pos < target_pos - POS_THRESHOLD_MOVE_DONE)
+        if(current_pos > target_pos + POS_THRESHOLD_MOVE_DONE)
 				{
 					State_Spd = Spd_Move_Down;
 										
@@ -759,7 +759,7 @@ void Overall_Control()
 					}
 					State_Trq = 0;//Trq_Move_Down
 					}
-				else if(current_pos > target_pos + POS_THRESHOLD_MOVE_DONE)
+				else if(current_pos < target_pos - POS_THRESHOLD_MOVE_DONE)
 				{
 					State_Spd = Spd_Move_Up_Test;
 					if(distance_from_start <= 25.0f)
@@ -816,7 +816,7 @@ void Overall_Control()
 					State_Kp = 0;
 					State_Kd = Kd_Move_Up + 2;
 					State_Trq = 0;
-					State_Spd = direction == 0 ? speed : -speed;
+					State_Spd = direction == 0 ? -speed : speed;
 					
 					break;
 				}

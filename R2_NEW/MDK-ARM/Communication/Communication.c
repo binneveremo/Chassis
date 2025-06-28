@@ -1,6 +1,6 @@
 #include "Communication.h"
-#define Com_Can hfdcan3
 #include "RGB.h"
+#define Com_Can hfdcan3
 #define poledown_id_send 0xCA
 #define dribble_id_send 0xCB
 #define lift_id_send 0xCC
@@ -36,7 +36,7 @@ void Tell_Yao_Xuan(char *message){
 }
 void Car_State_Decode(int id,unsigned char * data){
 	if((id == staffdown_id_recv) && (chassis.Control_Status == Auto_Control))
-		RGB_ON = true,flow.flagof.stick_ball = true;
+		flow.flagof.stick_ball = true;
 }
 
 

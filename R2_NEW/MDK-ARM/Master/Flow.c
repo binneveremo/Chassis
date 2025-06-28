@@ -23,25 +23,15 @@ void Dunk_Flow(void){
 		case goto_dunkpoint:
 			BasketPosition_Lock();
 			Tell_Yao_Xuan("defend");
-			if(chassis.lock.flag == 1)  dunk.state = turnmotor_ready;
-		break;
-		case turnmotor_ready:
-			if(TurnMotor_InTurnPosition() == true) dunk.state = wait_shoot;
-		break;
-		case wait_shoot:
-			Tell_Yao_Xuan("catch");
-		  dunk.state = (flow.flagof.R1_Shooted == true)?oppositebasket:dunk.state;
-		break;
-		case oppositebasket:
-			Tell_Yao_Xuan("lift");
-			Self_Lock_Out("BasketFlow");
+			if(chassis.lock.flag == 1)  dunk.state = jump;
 		break;
 		case jump:
 			Self_Lock_Out("BasketFlow");
-			Tell_Yao_Xuan("lift");                                                                                 
+			Tell_Yao_Xuan("lift");                                                      
 			dunk.state = end;
 		break;
 		case end:
+			Self_Lock_Out("BasketFlow");
 			dunk.flagof.end = true;
 		break;
 	}

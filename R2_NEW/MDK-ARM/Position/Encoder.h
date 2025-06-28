@@ -22,8 +22,11 @@ struct Odometer {
 	float dy_field;
 	float x_field;
 	float y_field;
-
 	float offset_angle;
+	
+	float vx_car;
+	float vy_car;
+	
 	//x轴行驶过的里程
 	float xdis;
 	float ydis;

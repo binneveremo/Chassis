@@ -143,7 +143,14 @@ float EKF_Filter(struct EKF * ekf, float input ,float gain){
 	return ekf->a_hat;
 }
 
+float Easy_Filter(float x){
+	static float xpre;
+	xpre = 0.75 * xpre + 0.25 * x;
+	xpre = xpre;
+	return xpre;
 
+
+}
 
 
 

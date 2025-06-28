@@ -173,7 +173,7 @@ void GamePad_Data_Cla(void){
 		Vision_Reset();
 	//清空码盘
 	if(GamePadKey_FallingCheck(16) == 1)
- 		Odometer_Clear("default"),Gyro_Reset(),RGB_RESET;
+ 		Odometer_Clear("default"),Gyro_Reset();
 
 #elif SLHD
 #define flow_begin (chassis.Control_Status = Auto_Control)

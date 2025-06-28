@@ -30,7 +30,6 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "Global.h"
-
 #include "SPI_FDCAN.h"
 #include "Television.h"
 #include "CPU_Load.h"

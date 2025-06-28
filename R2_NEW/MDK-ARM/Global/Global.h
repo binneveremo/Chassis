@@ -36,7 +36,7 @@
 #define Normalize_Pow(a,b,c,p)  pow(((Limit(fabs(c),Smaller(a,b),Larger(a,b))-Smaller(a,b))/(Larger(a,b) - Smaller(a,b))),p)
 #define Copy(a,b)   memcpy(&a,&b,sizeof(a))
 #define Zero(x)     {x = NONE;}
-
+#define SRAM __attribute__((section(".sram_data")))
 
 
 
