@@ -27,7 +27,8 @@ void Dunk_Flow(void){
 		break;
 		case jump:
 			Self_Lock_Out("BasketFlow");
-			Tell_Yao_Xuan("lift");                                                      
+			Tell_Yao_Xuan("lift");          
+			Tell_Yao_Xuan("defend");		
 			dunk.state = end;
 		break;
 		case end:
@@ -129,29 +130,36 @@ struct skill_t skill = {
 	.param.spot[4] = {.param.p = 3.8,	.param.i = 1,	.param.istart = 6,	.param.iend = 400,	.param.ilimit = 1000,	.param.outlimit = 11000, .param.fade_start = 430, .param.fade_end = 100},
 	.param.spot[5] = {.param.p = 3.8,	.param.i = 1,	.param.istart = 6,	.param.iend = 400,	.param.ilimit = 1000,	.param.outlimit = 11000, .param.fade_start = 430, .param.fade_end = 100},
 	.param.spot[6] = {.param.p = 3.8,	.param.i = 1,	.param.istart = 6,	.param.iend = 400,	.param.ilimit = 1000,	.param.outlimit = 11000, .param.fade_start = 430, .param.fade_end = 100},
+		
+	.param.catch_delay_time[0] = 500,
+	.param.catch_delay_time[1] = 500,
+	.param.catch_delay_time[2] = 500,
+	.param.catch_delay_time[3] = 500,
+	.param.catch_delay_time[4] = 500,
+	.param.catch_delay_time[5] = 500,
+	.param.catch_delay_time[6] = 500,
 };
 void Skill_Flow(void){
+	static int catchbegin_time; //记录开始接住球的时间 方便放球延时
 	static char last_success_times;
 	char index = skill.success_time % 7;      
 	switch(skill.status){
 		case begin:
 			PositionWithAngle_Lock(site.now,Merge_Point(skill.target.point[index],send.R1_Exchange.pos),&skill.param.spot[index],&cr_skill);
 			if((Point_Distance(site.now,skill.target.point[index]) < skill.param.catch_advanced_dis[index]) && (skill.flagof.net_catched == false))
-				skill.flagof.net_catched = true,Tell_Yao_Xuan((index > 3)?"catch":"defend");
+				skill.flagof.net_catched = true,Tell_Yao_Xuan((index > 6)?"catch":"defend");
 			if((Point_Distance(site.now,skill.target.point[index]) < skill.param.lock_dis))
 				Self_Lock_Out("SkillFlow"),send.R1_Exchange.request_flag = true;
 			else 
 				send.R1_Exchange.request_flag = true;
 			if(last_success_times != skill.success_time)
-				last_success_times = skill.success_time,skill.status = clear;
+				last_success_times = skill.success_time,skill.status = clear,catchbegin_time = HAL_GetTick();
 		break;
 		case clear:
-			if(skill.success_time == 8) {
+			if(skill.success_time == 8){
 				skill.flagof.end = true;
 				return;
 			}
-			Tell_Yao_Xuan("defend");
-			//Clear(spot.process);
 			Clear(skill.flagof);
 			skill.status = begin;
 		break;

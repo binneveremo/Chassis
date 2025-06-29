@@ -71,6 +71,7 @@ struct skill_t {
 	struct {
 		int shoot_advanced_dis[7];
 		int catch_advanced_dis[7];
+		int catch_delay_time[7];
 		float lock_dis;
 		float lock_angle;
 		struct Spot_t spot[7];

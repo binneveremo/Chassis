@@ -7,7 +7,7 @@
 #define INFINITE_LOOP_START for(;;){osDelay(1);
 #define INFINITE_LOOP_END }
 
-//#define USE_UART
+#define USE_UART
 #define USE_NRF
 
 
@@ -43,6 +43,8 @@ RetryTimeout 自动重发等待时间
 	.DataRate = 0x04,																				\
 	.RetryNum = 0x01,																				\
 	.RetryTimeout = 0x0002,																	\
+    .SerialTimeout = 0x04,                                                                                                \
+    .SerialByteout = 0xFF,                                                                                                \
 }
 
 

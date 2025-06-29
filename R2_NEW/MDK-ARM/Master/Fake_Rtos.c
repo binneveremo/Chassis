@@ -25,8 +25,8 @@ void motor_control(void const * argument)
 {
    for(;;)
   {
+		ChassisLock_Clear();
 		switch(chassis.Control_Status){
-			ChassisLock_Clear();
 			case GamePad_Control:
 				GamePad_Velocity_Control();
 			break;
@@ -42,12 +42,16 @@ void motor_control(void const * argument)
 		osDelay(4);
 	}
 }
+char in;
+float r,g,b;
+int color;
 void communication(void const * argument)
 {
   for(;;)
   {
 		GamePad_Data_Cla();
 	  Send_MessageToR1();
+		RGB_Show();
 		osDelay(10);
 	}
 }
@@ -64,7 +68,7 @@ void location(void const * argument)
 	  BasketPositionCal_AccordingVision(2);
 	  // 码盘线性插帧
 	  LadarPosInterpolation(2);
-	  // DT35解算
+	  
 	  osDelay(2);
   }
 }

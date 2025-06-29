@@ -3,12 +3,12 @@
 
 #include "tim.h"
 
-#define  LED_NUM 79
+#define  LED_NUM 75
 #define  main_frequency 275000000
 #define  prescaler  0
 #define  period  (int)(main_frequency / 800000)
-#define  RGB_HIGH  (int)((float)period*0.56)		
-#define  RGB_LOW   (int)((float)period*0.28)			
+#define  RGB_HIGH  (int)((float)period*0.7)		
+#define  RGB_LOW   (int)((float)period*0.3)			
 #define  ws2812_tim htim23
 #define  ws2812_channel TIM_CHANNEL_1
 
@@ -23,9 +23,9 @@
 #define Black ((int)0x000000)
 #define NavyBlue ((int)0x0F0FA0)
 
-extern char RGB_Switch;
-#define RGB(r,g,b) ((unsigned int)((((unsigned char)(r * 255.0 / 101.0) / 2 * 2) << 16) + (((unsigned char)(g * 255.0 / 101.0) / 2 * 2) << 8) + ((unsigned char)(b * 255.0 / 101.0) / 2 * 2)))
 
+//#define RGB(r,g,b) ((unsigned int)((((unsigned char)((float)r * 255.0 / 101.0) / 2 * 2) << 16) + (((unsigned char)((float)g * 255.0 / 101.0) / 2 * 2) << 8) + ((unsigned char)((float)b * 255.0 / 101.0) / 2 * 2)))
+unsigned int RGB(float r,float g,float b);
 struct LED_t{
 	enum{
 		breath,
@@ -34,7 +34,7 @@ struct LED_t{
 	}effect;
 	struct {
 		struct{
-			unsigned char index_now;
+			char index_now;
 			
 		}wave;
 
@@ -44,13 +44,17 @@ struct LED_t{
 	
 };
 void RGB_Reset(void);
-
+void RGB_Show(void);
+void RGB_Cal_Color(unsigned short LED_index, unsigned int color);
 #define RGB_RESET (RGB_ON = false) 
+#define RGB_Clear() {for(char i =0; i < LED_NUM;i ++) RGB_Cal_Color(i,Black);}	
+#define RGB_Total(color) {for(char i =0; i < LED_NUM;i ++) RGB_Cal_Color(i,color);}	
+
 void RGB_Show_Msg(void);
 void RGB_Init(void);
 void RGB_Show_Color(int color,int bright);
 void RGB_Show_Warning(void);
 void RGB_Show_Test(int dt);
 void RGB_Show_Velocity(void);
-void RGB_Test(int index,int color);
+void RGB_Test(char index,unsigned int color);
 #endif

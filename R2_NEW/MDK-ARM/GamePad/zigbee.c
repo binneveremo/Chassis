@@ -1,12 +1,10 @@
 #include "zigbee.h"
 #include <string.h>
 #include <stdlib.h>
+#include "mngCommu.h"
 
-//#include "Config.h"
-
-zigbee_state_t zigbee_state;// = {.huart = &TX_Uart};
-struct zigbee_conf_t zigbee_conf;
-zigbee_msg_t zigbee_msg;
+//zigbee_state_t zigbee_state = {.huart = &TX_Uart};
+//struct zigbee_conf_t zigbee_conf;
 
 uint8_t data[100];
 
@@ -20,7 +18,7 @@ void zigbee_transmit(uint8_t* Tdata, uint8_t lenth, uint16_t target_addr)
 	data[2] = target_addr >> 8; data[3] = target_addr & 0xFF;
 	// 拷贝发送数据
 	memcpy(&data[4], Tdata, lenth);
-	//HAL_UART_Transmit_DMA(zigbee_state.huart, data, lenth+5);
+	HAL_UART_Transmit_DMA(zigbee_state.huart, data, lenth+5);
 }
 
 void get_signal_strength(uint16_t target_addr)
@@ -189,6 +187,8 @@ void load_Conf(void)
 	zigbee_conf.DataRate = zigbee_state.DataRate;
 	zigbee_conf.RetryNum = zigbee_state.RetryNum;
 	zigbee_conf.RetryTimeout_oppo = ((zigbee_state.RetryTimeout&0xFF)<<8) + (zigbee_state.RetryTimeout>>8);
+	zigbee_conf.Serial_Timeout = zigbee_state.SerialTimeout;
+	zigbee_conf.Serial_Byteout = zigbee_state.SerialByteout;
 }
 // 读取并写入配置，写入后重启模块生效；并且只有在460800及以下波特率才能够写入成功
 void get_write_Conf(void)

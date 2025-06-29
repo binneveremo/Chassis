@@ -14,10 +14,13 @@
 
 char RGB_Switch;
 struct LED_t led;
-SRAM unsigned int send_buff[LED_NUM+1][24];		
-unsigned int clear_buff[LED_NUM];	
-void RGB_Reset_Load(void){
-	memset(send_buff[0],0,4 * 24);
+unsigned int send_buff[LED_NUM+1][24];		
+unsigned int RGB(float r,float g,float b){
+	r = (unsigned char)(r * 255.0 / 101.0) / 2 * 2;
+	g = (unsigned char)(g * 255.0 / 101.0) / 2 * 2;
+	b = (unsigned char)(b * 255.0 / 101.0) / 2 * 2;
+	
+	return (unsigned int)(((unsigned char)r << 16) + ((unsigned char)g << 8) + (unsigned char)b);
 }
 void RGB_Init(void){
 	HAL_TIM_Base_Stop_IT(&ws2812_tim);
@@ -26,6 +29,7 @@ void RGB_Init(void){
 	__HAL_TIM_CLEAR_FLAG(&ws2812_tim, TIM_FLAG_UPDATE);
 	__HAL_TIM_SET_COUNTER(&ws2812_tim, NONE);
 	HAL_TIM_Base_DeInit(&ws2812_tim);
+	RGB_Clear();
 }
 void RGB_Cal_Color(unsigned short LED_index, unsigned int color){
 	if((LED_index < 0) || (LED_index >= LED_NUM))	return;
@@ -40,18 +44,33 @@ void RGB_OutPut(void){
 	HAL_TIM_PWM_Stop_DMA(&ws2812_tim, ws2812_channel); 
 	HAL_TIM_PWM_Start_DMA(&ws2812_tim, ws2812_channel, (unsigned int *)send_buff, (LED_NUM+1)*24); 	
 }
-void RGB_Wave(int color,char dt){
-	static int last;
-	if(HAL_GetTick() - last < dt) 
-		return;
-	
-	
-	
-	
-
+void RGB_Wave(int wavecolor,int backcolor,char dt){
+	static char last,dir;
+	RGB_Total(backcolor);
+	for(char i=0;i < 7;i++)
+		RGB_Cal_Color(led.flagof.wave.index_now + i,wavecolor);
+//	RGB_Cal_Color(led.flagof.wave.index_now - 1,backcolor);
+//	RGB_Cal_Color(led.flagof.wave.index_now + 3,backcolor);
+	led.flagof.wave.index_now += (dir == 0)?-1:dir;
+	if((led.flagof.wave.index_now == LED_NUM) || (led.flagof.wave.index_now == -1)) dir = !dir;
+	RGB_OutPut();
 	last = HAL_GetTick();
 }
+float ctest[12] = {15,25,10,3,15,25,45,4,2,27,10,12};
 
+
+void RGB_Show(void){
+	if(chassis.lock.flag == true)
+		RGB_Wave(RGB(ctest[0],ctest[1],ctest[2]),RGB(ctest[3],ctest[4],ctest[5]),2);
+	else 
+		RGB_Wave(RGB(ctest[6],ctest[7],ctest[8]),RGB(ctest[9],ctest[10],ctest[11]),2);
+}
+void RGB_Test(char index,unsigned int color){
+	RGB_Cal_Color(index,color);
+	RGB_OutPut();
+
+
+}
 
 
 

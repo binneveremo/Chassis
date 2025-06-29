@@ -68,6 +68,8 @@ typedef struct
 	uint8_t RetryNum;
 	uint16_t RetryTimeout;
 	uint8_t PowerLevel;
+	uint8_t SerialTimeout;
+	uint8_t SerialByteout;
 }zigbee_state_t;
 extern zigbee_state_t zigbee_state;
 
