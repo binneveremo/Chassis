@@ -29,6 +29,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "Control.hpp"
 #include "Global.h"
 #include "SPI_FDCAN.h"
 #include "Television.h"
@@ -146,6 +147,7 @@ int main(void)
 	TurnMotor_OffsetAngleInit();
 	Wireless_init();
   Gyro_Reset();
+	Kalman_Init();
 	//CPU_Usage_Init();
   /* USER CODE END 2 */
 

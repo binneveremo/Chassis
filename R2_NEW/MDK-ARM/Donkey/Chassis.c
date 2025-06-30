@@ -92,8 +92,8 @@ void GamePad_Velocity_Control(void)
 	if(chassis.flagof.gamepad.rotate)
 		rout = 3000;
 	if(chassis.flagof.gamepad.shutdown){
-		float shutdown_angle = atan2f(site.car.vy_gyro,site.car.vx_gyro);
-		if(site.car.velocity_totalgyro > 1)	Chassis_Velocity_Out(cos(shutdown_angle),-sin(shutdown_angle),0);
+		float shutdown_angle = atan2f(site.car.xfilter.velocity,site.car.yfilter.velocity);
+		if(site.car.velocity_totalenc > 1)	Chassis_Velocity_Out(cos(shutdown_angle),-sin(shutdown_angle),0);
 		else Self_Lock_Out("ShutDown");
 	}	
 	else if(chassis.flagof.gamepad.noheader)

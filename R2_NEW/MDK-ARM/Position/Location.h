@@ -17,7 +17,8 @@ struct Site{
 		float vy_enc;
 		float vx_gyro;
 		float vy_gyro;
-		float filter[3];
+		struct status_node_t xfilter;
+		struct status_node_t yfilter;
 	}field;
 	struct {
 		float r;
@@ -33,12 +34,13 @@ struct Site{
 		float accel_totalgyro;
 		float velocity_totalgyro;
 		float velocity_totalenc;
+		struct status_node_t xfilter;
+		struct status_node_t yfilter;
 	}car;
 	struct {
 		struct Point target;
 		struct Point enc;
 	}partial;
-	float filter[3];
 };
 
 extern struct Site site;

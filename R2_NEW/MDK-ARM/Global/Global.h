@@ -37,13 +37,24 @@
 #define Copy(a,b)   memcpy(&a,&b,sizeof(a))
 #define Zero(x)     {x = NONE;}
 #define SRAM __attribute__((section(".sram_data")))
-
+#ifdef __cplusplus
+    #define CPP_BEGIN extern "C" {
+    #define CPP_END   }
+#else
+    #define CPP_BEGIN
+    #define CPP_END
+#endif
 
 
 struct Point {
 	float x;
 	float y;
 	float r;
+};
+struct status_node_t {
+	float position;
+	float velocity;
+	float accel;
 };
 typedef union __attribute__((packed))
 {

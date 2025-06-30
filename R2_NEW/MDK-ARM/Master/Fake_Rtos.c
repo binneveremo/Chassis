@@ -14,6 +14,7 @@
 #include "RGB.h"
 #include "SPI_FDCAN.h"
 
+#include "Control.hpp"
 #include "HighTorque.h"
 #include "CPU_Load.h"
 #include "Interact.h"
@@ -42,33 +43,39 @@ void motor_control(void const * argument)
 		osDelay(4);
 	}
 }
-char in;
-float r,g,b;
-int color;
 void communication(void const * argument)
 {
   for(;;)
   {
+//		Send_Put_Data(0,site.now.x);
+//		Send_Put_Data(1,site.car.xfilter.position);
+//		Send_Put_Data(2,site.car.vx_enc);
+//		Send_Put_Data(3,site.car.xfilter.velocity);
+//		Send_Float_Data(4);
+		
 		GamePad_Data_Cla();
 	  Send_MessageToR1();
 		RGB_Show();
-		osDelay(10);
+		osDelay(15);
 	}
 }
 void location(void const * argument)
 {
   for(;;)
   {
+		//加速度计算
 	  Gyro_AX_AY_Cal();
-	  // 陀螺仪原始数据计算
+	  //陀螺仪原始数据计算
 	  Encoder_XY_VX_VY_Cal(2);
-	  // 获取陀螺仪加速度
+		//雷达坐标计算
+		Vision_Filed_Basket_XY_Cal(2);
+		//x轴数据融合滤波
+		KalmanX_Update(site.now.x,site.field.vx_enc,site.field.ax_gyro,&site.field.xfilter);
+		//y轴数据滤波
+		KalmanY_Update(site.now.y,site.field.vy_enc,site.field.ay_gyro,&site.field.yfilter);
+	  //选择你的定位英雄
 	  Location_Type_Choose();
-	  // 插帧得到篮筐和当前坐标的相关信息
-	  BasketPositionCal_AccordingVision(2);
-	  // 码盘线性插帧
-	  LadarPosInterpolation(2);
-	  
+		//隔一行知识为了好看
 	  osDelay(2);
   }
 }

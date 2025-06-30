@@ -44,26 +44,24 @@ void RGB_OutPut(void){
 	HAL_TIM_PWM_Stop_DMA(&ws2812_tim, ws2812_channel); 
 	HAL_TIM_PWM_Start_DMA(&ws2812_tim, ws2812_channel, (unsigned int *)send_buff, (LED_NUM+1)*24); 	
 }
-void RGB_Wave(int wavecolor,int backcolor,char dt){
+void RGB_Wave(int wavecolor,int backcolor){
 	static char last,dir;
 	RGB_Total(backcolor);
 	for(char i=0;i < 7;i++)
 		RGB_Cal_Color(led.flagof.wave.index_now + i,wavecolor);
-//	RGB_Cal_Color(led.flagof.wave.index_now - 1,backcolor);
-//	RGB_Cal_Color(led.flagof.wave.index_now + 3,backcolor);
 	led.flagof.wave.index_now += (dir == 0)?-1:dir;
 	if((led.flagof.wave.index_now == LED_NUM) || (led.flagof.wave.index_now == -1)) dir = !dir;
 	RGB_OutPut();
 	last = HAL_GetTick();
 }
 float ctest[12] = {15,25,10,3,15,25,45,4,2,27,10,12};
-
+//12 56 4 7 37 10
 
 void RGB_Show(void){
 	if(chassis.lock.flag == true)
-		RGB_Wave(RGB(ctest[0],ctest[1],ctest[2]),RGB(ctest[3],ctest[4],ctest[5]),2);
+		RGB_Wave(RGB(9,18,45),RGB(7,37,10));
 	else 
-		RGB_Wave(RGB(ctest[6],ctest[7],ctest[8]),RGB(ctest[9],ctest[10],ctest[11]),2);
+		RGB_Wave(RGB(45,4,2),RGB(27,10,12));
 }
 void RGB_Test(char index,unsigned int color){
 	RGB_Cal_Color(index,color);

@@ -49,26 +49,9 @@ void Get_Vision_Data(int header, unsigned char *data){
 	}
 	vision.header = header;
 }
-#define position_kalman_encinterp false
-#define position_liner_encinterp true
 
-struct EKF ladarx_interp = {
-	.q = 0.7,
-	.r = 1.8,
-};
-struct EKF ladary_interp = {
-	.q = 0.7,
-	.r = 1.8,
-};
-struct EKF ladarr_interp = {
-	.q = 0.002,
-	.r = 1.8,
-};
-
-void LadarPosInterpolation(int dt)
-{
+void Vision_Filed_Basket_XY_Cal(int dt){
 	Vision_DataDecode();
-#if position_liner_encinterp
 	static float dx, dy,dr;
 	if (vision.flagof.used_flag == false)
 	{
@@ -87,13 +70,10 @@ void LadarPosInterpolation(int dt)
 	
 	vision.field.carcenter_fieldinterp.x = vision.field.carcenter_field.x + dx;
 	vision.field.carcenter_fieldinterp.y = vision.field.carcenter_field.y + dy;
-#elif position_kalman_encinterp
-	vision.visual.car_visualinterp.x = EKF_Filter(&ladarx_interp, vision.basket.car_visual.x, basketlock.parameter.siteinterp_gain * basketlock.parameter.siteinterp_gain * dt * site.field.vx_enc);
-	vision.visual.car_visualinterp.y = EKF_Filter(&ladary_interp, vision.basket.car_visual.y, basketlock.parameter.siteinterp_gain * basketlock.parameter.siteinterp_gain * dt * site.field.vy_enc);
-	vision.visual.car_visualinterp.r = NormalizeAng_Single(EKF_Filter(&ladarr_interp,vision.visual.car_visual.r,basketlock.parameter.angleinterp_gain*ang2rad(site.gyro.omiga)));
-#endif
 	//计算锁自己篮框的角度
 	basketlock.protectselfbasket_angle = rad2ang(atan2f(vision.field.carcenter_field.y - self_basket_point.y,vision.field.carcenter_field.x - self_basket_point.x));
+	
+	BasketPositionCal_AccordingVision(dt);
 }
 
 

@@ -1,0 +1,276 @@
+#include <Eigen/Core>
+#include "Global.h"
+#undef Zero 
+
+Eigen::Matrix3f inverse3x3(Eigen::Matrix3f& A);
+
+CPP_BEGIN
+using namespace Eigen;
+struct Kalman3D{
+    Eigen::Vector3f xk_last; // k-1时刻状态 [位置, 速度, 加速度]
+    Eigen::Matrix3f P_last;  // 上一时刻协方差
+    Eigen::Vector3f xk_hat;  // 先验估计
+    Eigen::Matrix3f P_hat;   // 先验协方差
+    Eigen::Matrix3f A;       // 状态转移矩阵
+    Eigen::Matrix3f Q;       // 过程噪声
+    Eigen::Matrix3f R;       // 观测噪声
+    Eigen::Vector3f Z;       // 观测向量
+    Eigen::Matrix3f K;       // 卡尔曼增益
+};
+using namespace Eigen;
+__attribute__((section(".sram_data"))) struct Kalman3D kalmanx;
+__attribute__((section(".sram_data"))) struct Kalman3D kalmany;
+
+
+void Kalman_Init(void){
+    float dt = 0.002;
+    // 状态转移矩阵 (匀加速模型)
+    kalmanx.A << 1, dt, 0.5f * dt * dt,
+        0, 1, dt,
+        0, 0, 1;
+    // 初始状态设为0
+    kalmanx.xk_last = Eigen::Vector3f(0.0f, 0.0f, 0.0f);
+    // 初始协方差
+    kalmanx.P_last = Eigen::Matrix3f::Identity() * 0.1f;
+    // 过程噪声 (根据系统特性调整)
+    kalmanx.Q << 0.1, 0, 0,
+									0, 0.1, 0,
+									0, 0, 0.5;
+    // 观测噪声 (根据传感器精度调整)
+    kalmanx.R <<  4, 0.9, 0, // 位置观测噪声
+									0.9, 4, 0,             // 速度观测噪声
+									0,   0, 4;               // 加速度观测噪声
+    /////////////////////////////y方向kalman初始化/////////////////////
+    kalmany.A << 1, dt, 0.5f * dt * dt,
+									0, 1, dt,
+									0, 0, 1;
+    // 初始状态设为0
+    kalmany.xk_last = Eigen::Vector3f(0.0f, 0.0f, 0.0f);
+    // 初始协方差
+    kalmany.P_last = Eigen::Matrix3f::Identity() * 0.5f;
+    // 过程噪声 (根据系统特性调整)
+    kalmany.Q << 0.01, 0, 0,
+        0, 0.01, 0,
+        0, 0, 0.1;
+    // 观测噪声 (根据传感器精度调整)
+    kalmany.R << 0.15, 0.02, 0, // 位置观测噪声
+									0.02, 0.3, 0,             // 速度观测噪声
+									0, 0, 0.2;               // 加速度观测噪声
+}
+
+void KalmanX_Update(float position, float velocity, float acceleration,struct status_node_t * statusx){
+    // 设置观测值
+    kalmanx.Z << position / 1000, velocity, acceleration;
+    // ===== 预测阶段 =====
+    // 状态预测: x̂ₖ = A * xₖ₋₁
+    kalmanx.xk_hat = kalmanx.A * kalmanx.xk_last;
+    // 协方差预测: P̂ₖ = A * Pₖ₋₁ * Aᵀ + Q
+    kalmanx.P_hat = kalmanx.A * kalmanx.P_last * kalmanx.A.transpose() + kalmanx.Q;
+    // 确保协方差矩阵对称 (数值稳定性)
+    kalmanx.P_hat = 0.5f * (kalmanx.P_hat + kalmanx.P_hat.transpose());
+    // 计算卡尔曼增益: K = P̂ₖ * (P̂ₖ + R)⁻¹
+    // 使用LDLT分解提高效率和数值稳定性
+    Eigen::Matrix3f S = kalmanx.P_hat + kalmanx.R;
+    //kalmanx.K = kalmanx.P_hat * S.ldlt().solve(Eigen::Matrix3f::Identity());
+	  kalmanx.K = kalmanx.P_hat * inverse3x3(S);
+    // 状态更新: xₖ = x̂ₖ + K * (z - x̂ₖ)
+    kalmanx.xk_last = kalmanx.xk_hat + kalmanx.K * (kalmanx.Z - kalmanx.xk_hat);
+    // 协方差更新: Pₖ = (I - K) * P̂ₖ
+    kalmanx.P_last = (Eigen::Matrix3f::Identity() - kalmanx.K) * kalmanx.P_hat;
+    // 再次确保协方差对称
+    kalmanx.P_last = 0.5f * (kalmanx.P_last + kalmanx.P_last.transpose());
+
+    statusx->position = kalmanx.xk_last(0) * 1000;
+    statusx->velocity = kalmanx.xk_last(1);
+    statusx->accel    = kalmanx.xk_last(2);
+}
+void KalmanY_Update(float position, float velocity, float acceleration,struct status_node_t * statusy){
+    // 设置观测值
+    kalmany.Z << position / 1000, velocity, acceleration;
+    // ===== 预测阶段 =====
+    // 状态预测: x̂ₖ = A * xₖ₋₁
+    kalmany.xk_hat = kalmany.A * kalmany.xk_last;
+    // 协方差预测: P̂ₖ = A * Pₖ₋₁ * Aᵀ + Q
+    kalmany.P_hat = kalmany.A * kalmany.P_last * kalmany.A.transpose() + kalmany.Q;
+    // 确保协方差矩阵对称 (数值稳定性)
+    kalmany.P_hat = 0.5f * (kalmany.P_hat + kalmany.P_hat.transpose());
+    // 计算卡尔曼增益: K = P̂ₖ * (P̂ₖ + R)⁻¹
+    // 使用LDLT分解提高效率和数值稳定性
+    Eigen::Matrix3f S = kalmany.P_hat + kalmany.R;
+    //kalmany.K = kalmany.P_hat * S.ldlt().solve(Eigen::Matrix3f::Identity());
+	  kalmany.K = kalmany.P_hat * inverse3x3(S);
+    // 状态更新: xₖ = x̂ₖ + K * (z - x̂ₖ)
+    kalmany.xk_last = kalmany.xk_hat + kalmany.K * (kalmany.Z - kalmany.xk_hat);
+    // 协方差更新: Pₖ = (I - K) * P̂ₖ
+    kalmany.P_last = (Eigen::Matrix3f::Identity() - kalmany.K) * kalmany.P_hat;
+    // 再次确保协方差对称
+    kalmany.P_last = 0.5f * (kalmany.P_last + kalmany.P_last.transpose());
+
+    statusy->position = kalmany.xk_last(0) * 1000;
+    statusy->velocity = kalmany.xk_last(1);
+    statusy->accel    = kalmany.xk_last(2);
+}
+
+struct MPC_t {
+    // 系统矩阵（单精度）
+    Matrix3f A;
+    Vector3f B;
+    
+    // 权重参数
+    Vector3f Q;  // 状态权重向量
+    float R;     // 控制权重
+    
+    // 约束参数
+    float OutLimit;
+    char N;       // 预测步长
+    
+    // 预测矩阵（单精度）
+    MatrixXf Sx;  // 状态预测矩阵
+    MatrixXf Su;  // 控制预测矩阵
+    MatrixXf H;   // Hessian矩阵
+	
+	  float mass;
+	
+	  float dt;
+};
+
+struct MPC_t mpc;
+void MPC_Init(void){
+    mpc.dt = 0.004f;   // 时间步长
+		mpc.mass = 250;
+    
+    // 离散状态空间模型
+    mpc.A << 1,  mpc.dt, 0.5* mpc.dt* mpc.dt,
+             0,  1,  mpc.dt,
+             0,  0, 1;
+    
+    mpc.B << 0,  mpc.dt/ mpc.mass * 0.8,  mpc.dt/ mpc.mass * 0.2;
+    
+    // 权重设置
+    mpc.Q << 3.0f, 0.3f, 0.02f;  // 状态权重
+    mpc.R = 0.000f;               // 控制权重
+    mpc.OutLimit = 2000.0f;         // 控制量限幅
+    mpc.N = 7;                   // 预测步长
+
+    // 初始化预测矩阵（单精度）
+    mpc.Sx = MatrixXf::Zero(3 * mpc.N, 3);
+    mpc.Su = MatrixXf::Zero(3 * mpc.N, mpc.N);
+    
+    // 构建预测矩阵
+    mpc.Sx.block(0, 0, 3, 3) = mpc.A;
+    mpc.Su.block(0, 0, 3, 1) = mpc.B;
+    
+    // 递推构建预测矩阵
+    for (int i = 1; i < mpc.N; i++) {
+        // 状态传递
+        mpc.Sx.block(3*i, 0, 3, 3) = mpc.A * mpc.Sx.block(3*(i-1), 0, 3, 3);
+            
+        // 控制传递
+        mpc.Su.block(3*i, 0, 3, mpc.N) = mpc.A * mpc.Su.block(3*(i-1), 0, 3, mpc.N);
+        
+        // 添加当前控制
+        mpc.Su.block(3*i, i, 3, 1) += mpc.B;
+    }
+    
+    // 构建Hessian矩阵（单精度）
+    mpc.H = MatrixXf::Zero(mpc.N, mpc.N);
+    Matrix3f Qdiag = mpc.Q.asDiagonal();  // 向量转对角矩阵
+    
+    for (int i = 0; i < mpc.N; i++) {
+        // 提取当前控制影响
+        MatrixXf Su_i = mpc.Su.block(3*i, 0, 3, mpc.N);
+        
+        // H = Su^T * Q * Su + R*I
+        mpc.H += Su_i.transpose() * Qdiag * Su_i;
+        
+        // 对角线添加控制权重
+        mpc.H(i, i) += mpc.R;
+    }
+}
+
+float MPC_OutPut(Vector3f now,Vector3f target) {
+    // 计算梯度向量
+    VectorXf f = VectorXf::Zero(mpc.N);
+    Matrix3f Qdiag = mpc.Q.asDiagonal();
+    for (int i = 0; i < mpc.N; i++) {
+        // 状态预测误差
+        Vector3f err = mpc.Sx.block(3*i, 0, 3, 3) * target - now;
+        // 梯度项 f = Σ[Su_i^T * Q * err]
+        f += mpc.Su.block(3*i, 0, 3, mpc.N).transpose() * Qdiag * err;
+    }
+		//#define Limit(a,b,c) ((a<b)?b:((a>c)?c:a))
+		//return Limit(-mpc.H.ldlt().solve(f)(0),-mpc.OutLimit,mpc.OutLimit);
+		return 0;
+}
+void MPC_Calculate(struct Point last,struct Point next,float now_rad,float velocity_target,float * left,float * front){
+   // 1. 创建旋转矩阵
+    Matrix2f car_convertmatrix;
+    car_convertmatrix << cos(now_rad), sin(now_rad),
+                        -sin(now_rad), cos(now_rad); 
+    
+    // 2. 获取当前位置（使用一致的变量名）
+    float nowx = kalmanx.xk_last(0);
+    float nowy = kalmany.xk_last(0);
+    
+    // 3. 计算路径方向
+    Vector2f path_dir(next.x - last.x, next.y - last.y);
+    Vector2f norm_dir = path_dir.normalized();
+    
+    // 4. 计算当前状态在路径方向上的投影
+    Vector2f current_pos(nowx, nowy);
+    Vector2f last_pos(last.x, last.y);
+    
+    // 4.1 位置投影
+    Vector2f pos_vec = current_pos - last_pos;
+    float position_norm = pos_vec.dot(norm_dir);  // 移除.norm()
+    
+    // 4.2 速度投影
+    Vector2f velocity(kalmanx.xk_last(1), kalmany.xk_last(1));
+    float velocity_norm = velocity.dot(norm_dir);  // 移除.norm()
+    
+    // 4.3 加速度投影
+    Vector2f accel(kalmanx.xk_last(2), kalmany.xk_last(2));
+    float accel_norm = accel.dot(norm_dir);  // 移除.norm()
+    
+    // 5. 设置目标状态
+    float path_length = path_dir.norm();
+    Vector3f target(path_length, velocity_target, 0);
+    
+    // 6. 计算总加速度
+    float Total_Velocity = MPC_OutPut(Vector3f(position_norm, velocity_norm, accel_norm),target);
+    
+    // 7. 确定控制方向
+    float death = 200;
+    Vector2f car_dir = (hypot(next.x - nowx, next.y - nowy) < death?norm_dir:Vector2f(next.x - nowx, next.y - nowy).normalized());
+    // 8. 创建加速度向量并转换坐标系
+    Vector2f car_velocity = Total_Velocity * car_convertmatrix * car_dir;
+    
+    // 9. 输出结果
+    *front = car_velocity(0);  // 使用正确的分量访问语法
+    *left =  car_velocity(1);
+}
+
+
+CPP_END
+Eigen::Matrix3f inverse3x3(Eigen::Matrix3f& A){
+    // 计算行列式
+    float det = A(0,0) * (A(1,1)*A(2,2) - A(1,2)*A(2,1)) -
+                A(0,1) * (A(1,0)*A(2,2) - A(1,2)*A(2,0)) +
+                A(0,2) * (A(1,0)*A(2,1) - A(1,1)*A(2,0));
+    if (det == 0.0f) 
+        return Eigen::Matrix3f::Identity();
+    // 计算伴随矩阵
+    Eigen::Matrix3f adjugate;
+    adjugate(0,0) =  (A(1,1)*A(2,2) - A(1,2)*A(2,1));
+    adjugate(0,1) = -(A(0,1)*A(2,2) - A(0,2)*A(2,1));
+    adjugate(0,2) =  (A(0,1)*A(1,2) - A(0,2)*A(1,1));
+    adjugate(1,0) = -(A(1,0)*A(2,2) - A(1,2)*A(2,0));
+    adjugate(1,1) =  (A(0,0)*A(2,2) - A(0,2)*A(2,0));
+    adjugate(1,2) = -(A(0,0)*A(1,2) - A(0,2)*A(1,0));
+    adjugate(2,0) =  (A(1,0)*A(2,1) - A(1,1)*A(2,0));
+    adjugate(2,1) = -(A(0,0)*A(2,1) - A(0,1)*A(2,0));
+    adjugate(2,2) =  (A(0,0)*A(1,1) - A(0,1)*A(1,0));
+
+    // 返回逆矩阵：A⁻¹ = adj(A) / det(A)
+    return adjugate / det;
+}

@@ -11,9 +11,8 @@
 #define R1_Exchange_Baudrate 115200
 #endif
 
-__attribute__((section(".sram_data"))) struct Send send;
+struct Send send;
 void Send_Float_Data(char num){
-	//计算前几位的值
 	float total; 
 	for(unsigned char i = 0; i < num;i++)
 		total += send.convert.float_data[i];
@@ -46,11 +45,10 @@ void R1ExchangeData_Decode(UART_HandleTypeDef *huart){
 		flow.flagof.R1_Shooted = (send.R1_Exchange.receive[9] == 1)?true:flow.flagof.R1_Shooted;
 	}
 }
-
 unsigned char R1Data_Sum(void){
 	char sum = NONE;
 	for(unsigned char i=0;i < 10;i++)
-		sum += send.R1_Exchange.send[i];
+		sum += send.R1_Exchange.send[i];s
 	return sum;
 }
 void Send_MessageToR1(void){	
