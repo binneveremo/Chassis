@@ -107,9 +107,9 @@ INFINITE_LOOP_START
 			break;
 		case 1:
 			debugData_pkg.debug_data[0] = Char2float("LADA");
-			debugData_pkg.debug_data[1] = vision.visual.ladar_visual.x;
-			debugData_pkg.debug_data[2] = vision.visual.ladar_visual.y;
-			debugData_pkg.debug_data[3] = vision.visual.ladar_visual.r;
+			debugData_pkg.debug_data[1] = vision.visual.carzero_visual.x;
+			debugData_pkg.debug_data[2] = vision.visual.carzero_visual.y;
+			debugData_pkg.debug_data[3] = vision.visual.carzero_visual.r;
 			debugData_pkg.debug_data[4] = vision.field.height;
 			break;
 		case 2:

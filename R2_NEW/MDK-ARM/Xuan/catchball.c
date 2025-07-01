@@ -99,7 +99,7 @@ float Trq_Move_Down = 1.5;
 float Init_Pos = 1.219;
 float CatchBall_Pos = 12.7;
 float Defend_Pos = 122.94;
-float PreDunk_Pos = 12.7;
+float PreDunk_Pos = 14.7;
 float SelfCheck_Pos = 10;
 
 // Control Parameters for Position HOLDING (Mapped to Overall_States enum indices)
@@ -110,10 +110,10 @@ float Trq_Hold[7]=   {0,          1.0,          3.0,    3.5,     0,          0  
 float Pos_Target[7]= {1.219,      12.7,         122.94, 14.7,    1.219,      41  };
 
 // Control Parameters for Velocity MOVEMENT (Based on original SpdUp/SpdDown)
-float Spd_Move_Up = 80;
+float Spd_Move_Up = 130;
 float Spd_Move_Up_Defend = 150; 
 float Spd_Move_Up_Test = 30;
-float Spd_Move_Down = -80; 
+float Spd_Move_Down = -150; 
 float Kd_Move_Up = 3;
 float Kd_Move_Up_Test = 4;
 float Kd_Move_Down = 0.2; 

@@ -47,16 +47,15 @@ void communication(void const * argument)
 {
   for(;;)
   {
-//		Send_Put_Data(0,site.now.x);
-//		Send_Put_Data(1,site.car.xfilter.position);
-//		Send_Put_Data(2,site.car.vx_enc);
-//		Send_Put_Data(3,site.car.xfilter.velocity);
-//		Send_Float_Data(4);
+		Send_Put_Data(0,site.field.xfilter.velocity);
+		Send_Put_Data(1,site.field.yfilter.velocity);
+		Send_Put_Data(2,site.gyro.omiga);
+		Send_Float_Data(3);
 		
 		GamePad_Data_Cla();
 	  Send_MessageToR1();
 		RGB_Show();
-		osDelay(15);
+		osDelay(5);
 	}
 }
 void location(void const * argument)

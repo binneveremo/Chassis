@@ -45,7 +45,7 @@ void Back_Flow(void){
 		back.flagof.end = true,Self_Lock_Out("HomePoint");
 }
 /// @brief 运球流程  //stamp 1700 front v  3700
-struct dribble_t dribble = {.time.xuan_stamp = 1100,.time.wait = 700,.time.end = 2000,.parameter.dribble_front_velocity = 3600,.parameter.dribble_left_velocity = 120,};
+struct dribble_t dribble = {.time.xuan_stamp = 1400,.time.wait = 700,.time.end = 2000,.parameter.dribble_front_velocity = 4200,.parameter.dribble_left_velocity = -80,};
 void Dribble_Flow(void){
 	int now = HAL_GetTick();
 	switch(dribble.status){
@@ -123,7 +123,7 @@ struct skill_t skill = {
 	.param.lock_dis = 80,
 	.param.lock_angle = 8,
 	
-	.param.spot[0] = {.param.p = 3.8,	.param.i = 1,	.param.istart = 6,	.param.iend = 400,	.param.ilimit = 1000,	.param.outlimit = 11000, .param.fade_start = 430, .param.fade_end = 100},
+	.param.spot[0] = {.param.p = 4.0,	.param.i = 1,	.param.istart = 6,	.param.iend = 400,	.param.ilimit = 1000,	.param.outlimit = 11000, .param.fade_start = 430, .param.fade_end = 100},
 	.param.spot[1] = {.param.p = 3.8,	.param.i = 1,	.param.istart = 6,	.param.iend = 400,	.param.ilimit = 1000,	.param.outlimit = 11000, .param.fade_start = 430, .param.fade_end = 100},
 	.param.spot[2] = {.param.p = 3.8,	.param.i = 1,	.param.istart = 6,	.param.iend = 400,	.param.ilimit = 1000,	.param.outlimit = 11000, .param.fade_start = 430, .param.fade_end = 100},
 	.param.spot[3] = {.param.p = 3.8,	.param.i = 1,	.param.istart = 6,	.param.iend = 400,	.param.ilimit = 1000,	.param.outlimit = 11000, .param.fade_start = 430, .param.fade_end = 100},

@@ -18,11 +18,11 @@ void Vision_DataDecode(void){
 	vision.visual.ladar_visual.r = vision.convert.float_data[3] * rad2ang(1);
 
 	vision.field.carcenter_field.r = vision.convert.float_data[3] * rad2ang(1);
-	vision.field.carcenter_field.x = vision.convert.float_data[0] * 1000 - 264.07 * (sin(2 * PI * 0.16 * ang2rad(vision.visual.ladar_visual.r) + 1.54));
-	vision.field.carcenter_field.y = vision.convert.float_data[1] * 1000 - 261.97 * (sin(2 * PI * 0.16 * ang2rad(vision.visual.ladar_visual.r) - 0.01));
+	vision.field.carcenter_field.x = vision.convert.float_data[0] * 1000 - 275.22 * (sin(2 * PI * 0.16 * ang2rad(vision.visual.ladar_visual.r) + 1.63));
+	vision.field.carcenter_field.y = vision.convert.float_data[1] * 1000 - 275.17 * (sin(2 * PI * 0.16 * ang2rad(vision.visual.ladar_visual.r) + 0.06));
 	
-	vision.visual.carzero_visual.x = vision.convert.float_data[0] * 1000 - 264.07 * (sin(2 * PI * 0.16 * ang2rad(vision.field.carcenter_field.r) + 1.54) - sin(1.54));
-	vision.visual.carzero_visual.y = vision.convert.float_data[1] * 1000 - 261.97 * (sin(2 * PI * 0.16 * ang2rad(vision.field.carcenter_field.r) + 0.01) - sin(0.01));
+	vision.visual.carzero_visual.x = vision.convert.float_data[0] * 1000 - 275.22 * (sin(2 * PI * 0.16 * ang2rad(vision.field.carcenter_field.r) + 1.63) - sin(1.54));
+	vision.visual.carzero_visual.y = vision.convert.float_data[1] * 1000 - 275.17 * (sin(2 * PI * 0.16 * ang2rad(vision.field.carcenter_field.r) + 0.06) - sin(0.01));
 	vision.visual.carzero_visual.r = vision.convert.float_data[3] * rad2ang(1);
 	
 	if((vision.flagof.gyro_offset_angle_init == false) && (vision.header == position_id) && (vision.position.online_flag == true))

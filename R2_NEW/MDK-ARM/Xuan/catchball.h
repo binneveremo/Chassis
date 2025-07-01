@@ -16,7 +16,7 @@
 #define height_diff 0.72755  //net_height(center)[1.90755m] - shoot_height[1.18m]
 #define gravity_accel 9.7913
 #define shooter_to_center 0.24
-#define net_to_center 0.28974
+#define net_to_center 0.3223
 
 // --- Enums ---
 

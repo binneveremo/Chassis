@@ -148,7 +148,7 @@ int main(void)
 	Wireless_init();
   Gyro_Reset();
 	Kalman_Init();
-	//CPU_Usage_Init();
+	CPU_Usage_Init();
   /* USER CODE END 2 */
 
   /* Call init function for freertos objects (in cmsis_os2.c) */

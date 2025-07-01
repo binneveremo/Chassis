@@ -48,12 +48,12 @@ void R1ExchangeData_Decode(UART_HandleTypeDef *huart){
 unsigned char R1Data_Sum(void){
 	char sum = NONE;
 	for(unsigned char i=0;i < 10;i++)
-		sum += send.R1_Exchange.send[i];s
+		sum += send.R1_Exchange.send[i];
 	return sum;
 }
 void Send_MessageToR1(void){	
 	char net_Status = (interact.defend_status == defend)?1:0;
-	int net_offset = (interact.defend_status == defend)?289:80;
+	int net_offset = (interact.defend_status == defend)?322:40;
 	send.R1_Exchange.send[0] = 0xAA;
 	if((chassis.Control_Status == Auto_Control) && (flow.type == skill_flow)){
 		send.R1_Exchange.net.x = skill.target.point[skill.success_time].x + net_offset * cos(ang2rad(site.now.r));

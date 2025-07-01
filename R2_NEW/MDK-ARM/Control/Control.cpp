@@ -35,9 +35,9 @@ void Kalman_Init(void){
     // 过程噪声 (根据系统特性调整)
     kalmanx.Q << 0.1, 0, 0,
 									0, 0.1, 0,
-									0, 0, 0.5;
+									0, 0, 0.1;
     // 观测噪声 (根据传感器精度调整)
-    kalmanx.R <<  4, 0.9, 0, // 位置观测噪声
+    kalmanx.R <<  5, 0.9, 0, // 位置观测噪声
 									0.9, 4, 0,             // 速度观测噪声
 									0,   0, 4;               // 加速度观测噪声
     /////////////////////////////y方向kalman初始化/////////////////////
@@ -49,13 +49,13 @@ void Kalman_Init(void){
     // 初始协方差
     kalmany.P_last = Eigen::Matrix3f::Identity() * 0.5f;
     // 过程噪声 (根据系统特性调整)
-    kalmany.Q << 0.01, 0, 0,
-        0, 0.01, 0,
+    kalmany.Q << 0.1, 0, 0,
+        0, 0.1, 0,
         0, 0, 0.1;
     // 观测噪声 (根据传感器精度调整)
-    kalmany.R << 0.15, 0.02, 0, // 位置观测噪声
-									0.02, 0.3, 0,             // 速度观测噪声
-									0, 0, 0.2;               // 加速度观测噪声
+    kalmany.R <<  5, 0.9, 0, // 位置观测噪声
+									0.9, 4, 0,             // 速度观测噪声
+									0, 0, 4;               // 加速度观测噪声
 }
 
 void KalmanX_Update(float position, float velocity, float acceleration,struct status_node_t * statusx){

@@ -69,6 +69,8 @@ void Encoder_XY_VX_VY_Cal(int dt){
 	////与定位系统交互
 	site.car.vx_enc = dx_car / dt;
 	site.car.vy_enc = dy_car / dt;
+	site.car.vy_enc -= site.gyro.omiga / 855;
+	
 	site.car.velocity_totalenc = hypot(site.car.vx_enc,site.car.vy_enc);
 	//与定位系统交互
 	site.field.x_enc = odometer.x_field;
@@ -76,6 +78,7 @@ void Encoder_XY_VX_VY_Cal(int dt){
 	//计算位置微分 也就是速度
 	site.field.vx_enc = odometer.dx_field / dt;
 	site.field.vy_enc = odometer.dy_field / dt;
+	
 	//计算行驶过的累计历程
 	odometer.xdis += fabs(odometer.dx_field);
 	odometer.ydis += fabs(odometer.dy_field);
