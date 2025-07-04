@@ -10,6 +10,7 @@ struct Flow {
 	struct {
 		char stick_ball;
 		char R1_Shooted;
+		char pole_top;
 	}flagof;
 	enum
 	{
@@ -47,9 +48,10 @@ struct dunk_t {
 	struct {
 		char init;
 		char end;
+		char confirm;
+		char net_ok;
 	}flagof;
 	enum{
-		init,
 		goto_dunkpoint,
 		jump,
 		end

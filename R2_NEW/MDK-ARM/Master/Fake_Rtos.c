@@ -19,9 +19,9 @@
 #include "CPU_Load.h"
 #include "Interact.h"
 #include "Basket.h"
-
-
-
+struct Point last = {0,0,0};
+struct Point next = {4000,-4000,0};
+float front,left;
 void motor_control(void const * argument)
 {
    for(;;)
@@ -34,9 +34,12 @@ void motor_control(void const * argument)
 			case Auto_Control:
 				Auto_Flow();
 			break;
-			case Debug_Control:				
+			case Debug_Control:
+				
 			break;  
 		}
+		//MPC_Calculate(last,next,ang2rad(site.now.r),0.5,&front,&left);
+		ControlStatus_Detect();
 	  VectorWheel_SetAngle();
 		VectorWheel_SetSpeed();
 		VectorWheel_LockCheck();
@@ -47,15 +50,11 @@ void communication(void const * argument)
 {
   for(;;)
   {
-		Send_Put_Data(0,site.field.xfilter.velocity);
-		Send_Put_Data(1,site.field.yfilter.velocity);
-		Send_Put_Data(2,site.gyro.omiga);
-		Send_Float_Data(3);
-		
 		GamePad_Data_Cla();
 	  Send_MessageToR1();
 		RGB_Show();
-		osDelay(5);
+		Send_BasketDis();
+		osDelay(10);
 	}
 }
 void location(void const * argument)

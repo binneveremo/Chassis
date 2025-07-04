@@ -1,4 +1,3 @@
-#include "Kalman.h"
 #include "Global.h"
 #include "Gyro.h"
 #include "usart.h"

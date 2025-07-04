@@ -1,6 +1,7 @@
 #include "catchball.h"
 #include "cmsis_os.h"
 #include "math.h" 
+#include "Television.h"
 
 // --- Global Variables and Parameters ---
 
@@ -17,7 +18,7 @@ CatchControlStatus_t catch_status = {
     .in_move_to_pre_dunk = false,
     .in_move_to_back_to_fold = false,
 		.in_move_to_test = false,
-		.in_move_to_moving = false,
+		.in_move_to_midcatch = false,
 		.in_oscillate = false,
     .move_start_time_ms = 0,
     .last_feedback_time_ms = 0
@@ -68,33 +69,6 @@ float LowPassFilter2nd(float input, float* prev_output, float* prev_output_2nd, 
 	return second_stage;
 }
 
-#ifdef R2_Fifth
-// Target Positions
-float Init_Pos = 16;
-float CatchBall_Pos = 30.5; //in fact: 29.5
-float Defend_Pos = 123;
-float PreDunk_Pos = 36;
-float SelfCheck_Pos = 40;
-
-// Control Parameters for Position HOLDING (Mapped to Overall_States enum indices)
-// Indices:          {Initialize, CatchingBall, Defend, PreDunk, BackToFold, Test,   Moving}  
-float Kp_Hold[8] =   {0,          0.55,         0.55,   0.4,     0.023,      0.55,   0.65 }; 
-float Kd_Hold[8] =   {0,          0.04,         0.05,   0.06,    0,          0.05,   0.04 };      
-float Trq_Hold[8]=   {0,          3.5,          3.0,    1.0,     0,          0,      0    };           
-float Pos_Target[8]= {16,         30.5,         123,    36,      16,         123,    17   };
-
-// Control Parameters for Velocity MOVEMENT (Based on original SpdUp/SpdDown)
-float Spd_Move_Up = 80;
-float Spd_Move_Up_Defend = 150; 
-float Spd_Move_Up_Test = 30;
-float Spd_Move_Down = -100; 
-float Kd_Move_Up = 3;
-float Kd_Move_Up_Test = 4;
-float Kd_Move_Down = 0.2; 
-float Trq_Move_Up = 1;  
-float Trq_Move_Down = 1.5;
-
-#else
 // Target Positions
 float Init_Pos = 1.219;
 float CatchBall_Pos = 12.7;
@@ -103,11 +77,11 @@ float PreDunk_Pos = 14.7;
 float SelfCheck_Pos = 10;
 
 // Control Parameters for Position HOLDING (Mapped to Overall_States enum indices)
-// Indices:          {Initialize, CatchingBall, Defend, PreDunk, BackToFold, Test}
-float Kp_Hold[7] =   {0.023,      0.4,          0.55,   0.45,     0.023,      0.55 }; 
-float Kd_Hold[7] =   {0,          0.06,         0.05,   0.04,    0,          0.05 };      
-float Trq_Hold[7]=   {0,          1.0,          3.0,    3.5,     0,          0    };           
-float Pos_Target[7]= {1.219,      12.7,         122.94, 14.7,    1.219,      41  };
+// Indices:          {Initialize, CatchingBall, Defend, PreDunk, BackToFold, Test, MidCatch}
+float Kp_Hold[7] =   {0,          0.4,          0.55,   0.45,    0.023,      0.55, 0.45 }; 
+float Kd_Hold[7] =   {0,          0.06,         0.05,   0.04,    0,          0.05, 0.04 };      
+float Trq_Hold[7]=   {0,          1.0,          3.0,    3.5,     0,          0,    1.0  };           
+float Pos_Target[7]= {1.219,      12.7,         122.94, 14.7,    1.219,      41,   20   };
 
 // Control Parameters for Velocity MOVEMENT (Based on original SpdUp/SpdDown)
 float Spd_Move_Up = 130;
@@ -119,47 +93,7 @@ float Kd_Move_Up_Test = 4;
 float Kd_Move_Down = 0.2; 
 float Trq_Move_Up = 0;  
 float Trq_Move_Down = 0.5;
-#endif
 
-
-
-//for fitting
-const float P1 = 30.9641;
-const float P2 = -134.5229;
-const float P3 = 189.8266;
-const float P4 = -50.3691;
-const float P5 = -91.0828;
-const float P6 = 51.6721;
-const float P7 = 6.4051;
-const float P8 = -5.0984;
-const float P9 = 2.7639;
-const float P10 = 7.3333;
-
-const float X_MEAN = 48.81;
-const float X_STD = 47.12;
-
-float Feedforward_Torque(float raw_pos)
-{
-//	float filtered_pos_2nd = LowPassFilter2nd(raw_pos, &filtered_pos, &filtered_pos_2nd, 0.1);
-	
-	 filtered_pos = LowPassFilter(HighTorque[0].fdbk.pos, filtered_pos, 0.02);
-	 filtered_pos_2nd = LowPassFilter(filtered_pos, filtered_pos_2nd, 0.1);
-	 float normalized_pos = (filtered_pos_2nd - X_MEAN) / X_STD;
-	
-	 float np2 = normalized_pos * normalized_pos;
-	 float np3 = np2 * normalized_pos;
-	 float np4 = np2 * np2;
-	 float np5 = np2 * np3;
-	 float np6 = np3 * np3;
-	 float np7 = np3 * np4;
-	 float np8 = np4 * np4;
-	 float np9 = np4 * np5;
-	
-	 float feedforward_trq = P1 * np9 + P2 * np8 + P3 * np7 + P4 * np6 + P5 * np5 + P6 * np4 + P7 * np3 + P8 * np2 + P9 * normalized_pos + P10;
-	
-	return feedforward_trq;
-		
-}
 
 
 bool IsAtTargetPositionSettled(float target_pos)
@@ -204,7 +138,8 @@ float TwoCar_Dis_Calc()
 uint32_t CatchTimeCal()
 {
 	uint32_t catch_delay_time;
-	catch_delay_time = sqrtf((2 * TwoCar_Dis_Calc() * tanf(ang2rad(65)) - height_diff) / gravity_accel);
+//	catch_delay_time = sqrtf((2 * TwoCar_Dis_Calc() * tanf(ang2rad(65)) - height_diff) / gravity_accel);
+	catch_delay_time = -0.009626 * TwoCar_Dis_Calc() * TwoCar_Dis_Calc() + 0.248 * TwoCar_Dis_Calc() + 0.4607;
 	return catch_delay_time;
 }
 
@@ -223,7 +158,7 @@ void HandleError(ErrorCode_t error_code) {
     catch_status.in_move_to_defend = false;
     catch_status.in_move_to_pre_dunk = false;
     catch_status.in_move_to_back_to_fold = false;
-		catch_status.in_move_to_moving = false;
+		catch_status.in_move_to_midcatch = false;
     
     // Reset control commands
     State_Pos = 0;
@@ -266,8 +201,8 @@ void RecoverFromError(void) {
         case STATE_BACK_TO_FOLD: 
             catch_status.in_move_to_back_to_fold = true; 
             break;
-				case STATE_MOVING:
-						catch_status.in_move_to_moving = true;
+				case STATE_MIDCATCH:
+						catch_status.in_move_to_midcatch = true;
 						break;
         default: 
             break;
@@ -283,14 +218,6 @@ void Single_Control()
         HandleError(ERROR_CODE_COMM_LOST);
         return;
     }
-//		filtered_trq = LowPassFilter(HighTorque[0].fdbk.trq, filtered_trq, 0.02);
-//		filtered_trq_2nd = LowPassFilter(filtered_trq, filtered_trq_2nd, 0.1);
-//		
-//		Compensation_trq = Feedforward_Torque(filtered_pos_2nd);
-//		Compensation_trq = fmaxf(fminf(Compensation_trq, 0.0f), 16.0f);
-//		
-//		State_Trq = Compensation_trq;
-		
 
     // Update feedback timestamp if feedback data has changed
     static float last_pos = 0.0f;
@@ -318,7 +245,6 @@ void Single_Control()
 			}}
 
     // Check for critical errors
-//    if (fabsf(HighTorque[0].fdbk.trq) > 30.0f || HighTorque[0].fdbk.temp > 50.0f) 
 		if(HighTorque[0].fdbk.temp > 50.0f)
 		{
 				interact.wrongcode.HT_Error = 1;
@@ -425,21 +351,6 @@ void Overall_Control()
                 
                 State_Kp = 0; // Velocity control
 
-#ifdef R2_Fifth
-                // Determine movement direction and set parameters
-                if (HighTorque[0].fdbk.pos > target_pos + POS_THRESHOLD_MOVE_DONE)
-                {
-                    State_Spd = Spd_Move_Down;
-                    State_Kd = Kd_Move_Down;
-                    State_Trq = Trq_Move_Down; //Trq_Move_Down
-                } 
-                else if (HighTorque[0].fdbk.pos < target_pos - POS_THRESHOLD_MOVE_DONE) 
-                {
-                    State_Spd = Spd_Move_Up;
-                    State_Kd = Kd_Move_Up;
-                    State_Trq = Trq_Move_Up; //Trq_Move_Up
-                }
-#else
                 // Determine movement direction and set parameters
                 if (HighTorque[0].fdbk.pos > target_pos + POS_THRESHOLD_MOVE_DONE)
                 {
@@ -453,7 +364,6 @@ void Overall_Control()
                     State_Kd = Kd_Move_Up;
                     State_Trq = Trq_Move_Up; //
                 }
-#endif
 
                 else 
                 {
@@ -480,18 +390,7 @@ void Overall_Control()
                     break;
                 }
                 State_Kp = 0; // Velocity control
-#ifdef R2_Fifth
-                // Determine movement direction and set parameters
-                if (HighTorque[0].fdbk.pos > target_pos + POS_THRESHOLD_MOVE_DONE) {
-                    State_Spd = Spd_Move_Down;
-                    State_Kd = Kd_Move_Down;
-                    State_Trq = Trq_Move_Down;
-                } else if (HighTorque[0].fdbk.pos < target_pos - POS_THRESHOLD_MOVE_DONE) {
-                    State_Spd = Spd_Move_Up_Defend;
-                    State_Kd = Kd_Move_Up;
-                    State_Trq = Trq_Move_Up;
-                } 
-#else
+
                 // Determine movement direction and set parameters
                 if (HighTorque[0].fdbk.pos > target_pos + POS_THRESHOLD_MOVE_DONE) {
                     State_Spd = Spd_Move_Down;
@@ -502,7 +401,6 @@ void Overall_Control()
                     State_Kd = Kd_Move_Up;
                     State_Trq = Trq_Move_Up;
                 }
-#endif
 
                 else {
                     State_Spd = 0; // Stop velocity command
@@ -528,18 +426,7 @@ void Overall_Control()
                     break;
                 }
                  State_Kp = 0; // Velocity control
-#ifdef R2_Fifth
-                // Determine movement direction and set parameters
-                 if (HighTorque[0].fdbk.pos > target_pos + POS_THRESHOLD_PREDUNK) {
-                    State_Spd = Spd_Move_Down;
-                    State_Kd = Kd_Move_Down;
-                    State_Trq = Trq_Move_Down;
-                } else if (HighTorque[0].fdbk.pos < target_pos - POS_THRESHOLD_PREDUNK) {
-                    State_Spd = Spd_Move_Up;
-                    State_Kd = Kd_Move_Up;
-                    State_Trq = Trq_Move_Up;
-                } 
-#else
+
                 // Determine movement direction and set parameters
                  if (HighTorque[0].fdbk.pos > target_pos + POS_THRESHOLD_PREDUNK) {
                     State_Spd = Spd_Move_Down;
@@ -550,7 +437,6 @@ void Overall_Control()
                     State_Kd = Kd_Move_Up;
                     State_Trq = Trq_Move_Up;
                 }
-#endif
                 
                 else {
                     State_Spd = 0; // Stop velocity command
@@ -576,18 +462,7 @@ void Overall_Control()
                     break;
                 }
                  State_Kp = 0; // Velocity control
-#ifdef R2_Fifth
-                // Determine movement direction and set parameters
-                 if (HighTorque[0].fdbk.pos > target_pos + POS_THRESHOLD_MOVE_DONE) {
-                    State_Spd = Spd_Move_Down;
-                    State_Kd = Kd_Move_Down;
-                    State_Trq = Trq_Move_Down - 2;
-                } else if (HighTorque[0].fdbk.pos < target_pos - POS_THRESHOLD_MOVE_DONE) {
-                    State_Spd = Spd_Move_Up;
-                    State_Kd = Kd_Move_Up;
-                    State_Trq = Trq_Move_Up;
-                } 
-#else
+
                 // Determine movement direction and set parameters
                  if (HighTorque[0].fdbk.pos > target_pos + POS_THRESHOLD_MOVE_DONE) {
                     State_Spd = Spd_Move_Down;
@@ -598,7 +473,6 @@ void Overall_Control()
                     State_Kd = Kd_Move_Up;
                     State_Trq = Trq_Move_Up;
                 }
-#endif
 
                 else {
                     State_Spd = 0; // Stop velocity command
@@ -617,31 +491,16 @@ void Overall_Control()
             break; }
 
 				
-				case STATE_MOVING: {
-					float target_pos = Pos_Target[STATE_MOVING];
+				case STATE_MIDCATCH: {
+					float target_pos = Pos_Target[STATE_MIDCATCH];
 
-            if (catch_status.in_move_to_moving) {
-                if(CheckMoveTimeout(STATE_MOVING)) {
+            if (catch_status.in_move_to_midcatch) {
+                if(CheckMoveTimeout(STATE_MIDCATCH)) {
                     break; 
                 }
                 
                 State_Kp = 0; // Velocity control
 
-#ifdef R2_Fifth
-                // Determine movement direction and set parameters
-                if (HighTorque[0].fdbk.pos > target_pos + POS_THRESHOLD_MOVE_DONE)
-                {
-                    State_Spd = Spd_Move_Down;
-                    State_Kd = Kd_Move_Down;
-                    State_Trq = Trq_Move_Down;
-                } 
-                else if (HighTorque[0].fdbk.pos < target_pos - POS_THRESHOLD_MOVE_DONE) 
-                {
-                    State_Spd = Spd_Move_Up;
-                    State_Kd = Kd_Move_Up;
-                    State_Trq = Trq_Move_Up;
-                }
-#else
                 // Determine movement direction and set parameters
                 if (HighTorque[0].fdbk.pos > target_pos + POS_THRESHOLD_MOVE_DONE)
                 {
@@ -655,19 +514,18 @@ void Overall_Control()
                     State_Kd = Kd_Move_Up;
                     State_Trq = Trq_Move_Up; //
                 }
-#endif
 
                 else 
                 {
                     State_Spd = 0; // Stop velocity command
-                    catch_status.in_move_to_moving = false;
+                    catch_status.in_move_to_midcatch = false;
                 }
 
             } else {
                 State_Pos = target_pos;
-                State_Kp = Kp_Hold[STATE_MOVING];
-                State_Kd = Kd_Hold[STATE_MOVING];
-                State_Trq = Trq_Hold[STATE_MOVING];
+                State_Kp = Kp_Hold[STATE_MIDCATCH];
+                State_Kd = Kd_Hold[STATE_MIDCATCH];
+                State_Trq = Trq_Hold[STATE_MIDCATCH];
                 State_Spd = 0;
 
                 IsAtTargetPositionSettled(target_pos);
@@ -687,56 +545,6 @@ void Overall_Control()
 //                }
                 State_Kp = 0; // Velocity control
 
-#ifdef R2_Fifth
-				if(current_pos > target_pos + POS_THRESHOLD_MOVE_DONE)
-				{
-					State_Spd = Spd_Move_Down;
-										
-					if(distance_from_start <= 25.0f)
-					{
-						State_Kd = 0.2f;
-					}
-					else if(distance_from_start <= 70.0f)
-					{
-						State_Kd = 0.5f;
-					}
-				    else if(distance_from_start <= 100.0f)
-					{
-						State_Kd = 0.4f;
-					}
-					else
-					{
-						State_Kd = Kd_Move_Down;
-					}
-					State_Trq = 0;//Trq_Move_Down
-					}
-				else if(current_pos < target_pos - POS_THRESHOLD_MOVE_DONE)
-				{
-					State_Spd = Spd_Move_Up_Test;
-					if(distance_from_start <= 25.0f)
-					{
-						State_Kd = 4.0f;
-					}
-					else if(distance_from_start <= 70.0f)
-					{
-						State_Kd = 7.5f;
-					}
-					else if(distance_from_start <= 100.0f)
-					{
-						State_Kd = 6.0f;
-					}
-					else
-					{
-						State_Kd = Kd_Move_Up_Test;
-					}
-					State_Trq = Trq_Move_Up;
-				}
-				else
-				{
-					State_Spd = 0;
-					catch_status.in_move_to_test = false;
-				}
-#else
         if(current_pos > target_pos + POS_THRESHOLD_MOVE_DONE)
 				{
 					State_Spd = Spd_Move_Down;
@@ -785,8 +593,6 @@ void Overall_Control()
 					State_Spd = 0;
 					catch_status.in_move_to_test = false;
 				}
-
-#endif
 
             } else {
                 State_Pos = target_pos;
@@ -839,22 +645,17 @@ void Loop_Judgement()
     OverallState_t next_state = current_state; // Assume stay in current state by default
 
     // Check for R1_Shooted timing
-    if (flow.flagof.R1_Shooted) {
+    if (interact.flagof.R1_shooted) {
         if (shoot_start_time == 0) {
             shoot_start_time = HAL_GetTick();  // Start timing when flag is set
         } else if (HAL_GetTick() - shoot_start_time >= CatchTimeCal() * 1000) {  // Convert seconds to milliseconds
             interact.defend_status = catch_ball;  // Switch to catch state
-						flow.flagof.R1_Shooted = false;
+						interact.flagof.R1_shooted = false;
             shoot_start_time = 0;  // Reset timer
         }
     } else {
         shoot_start_time = 0;  // Reset timer if flag is cleared
     }
-
-    // Don't process state transitions if in error state
-//    if (IsInErrorState()) {
-//        return;
-//    }
 
     // If in recovery period, check if we should end it
     if (catch_status.in_recovery_period) {
@@ -867,11 +668,6 @@ void Loop_Judgement()
             return; // Skip state transition during recovery period
         }
     }
-		
-//		if(flow.flagof.stick_ball == true){
-//			interact.defend_status = predunk;
-//			flow.flagof.stick_ball = false;}
-		
 
     if(next_state != STATE_ERROR)
     {
@@ -902,8 +698,8 @@ void Loop_Judgement()
                 next_state = STATE_TEST;
                 break;
 						
-						case moving:
-							  next_state = STATE_MOVING;
+						case midcatch:
+							  next_state = STATE_MIDCATCH;
 								break;
 						
 						case oscillate:
@@ -924,7 +720,7 @@ void Loop_Judgement()
          catch_status.in_move_to_pre_dunk = false;
          catch_status.in_move_to_back_to_fold = false;
 				 catch_status.in_move_to_test = false;
-				 catch_status.in_move_to_moving = false;
+				 catch_status.in_move_to_midcatch = false;
 				 catch_status.in_oscillate = false;
 
          // Apply the new state
@@ -954,8 +750,8 @@ void Loop_Judgement()
 						 case STATE_TEST:
 							 catch_status.in_move_to_test = true;
 								break;
-						 case STATE_MOVING:
-							 catch_status.in_move_to_moving = true;
+						 case STATE_MIDCATCH:
+							 catch_status.in_move_to_midcatch = true;
 							  break;
 						 case STATE_OSCILLATE:
 							 catch_status.in_oscillate = true;
@@ -967,6 +763,4 @@ void Loop_Judgement()
                 break;
          }
     }
-
 }
-

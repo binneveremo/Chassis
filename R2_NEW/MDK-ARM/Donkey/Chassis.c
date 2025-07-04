@@ -78,10 +78,10 @@ void GamePad_Velocity_Control(void)
 			rout = Rocker_GainR * rocker_r;
 		break;
 		case R1:
-			rout = Angle_Lock(site.gyro.r,send.R1_Exchange.pos.r,&cr_skill);
+			rout = Angle_Lock(site.now.r,send.R1_Exchange.pos.r,&cr_skill);
 		break;
 		case self_basket:
-			rout = Angle_Lock(site.gyro.r,basketlock.protectselfbasket_angle,&cr_skill);
+			rout = Angle_Lock(site.now.r,basketlock.protectselfbasket_angle,&cr_skill);
 		break;
 		case forward:
 			rout = Angle_Lock(site.now.r,NONE,&cr_skill);
@@ -103,6 +103,24 @@ void GamePad_Velocity_Control(void)
 	if((fabs((float)GamePad_Data.rocker[0]) <= 1) && (fabs((float)GamePad_Data.rocker[1]) <= 1) && (fabs(GamePad_Data.rocker[2]) <= 5))
 		Self_Lock_Out("GamePad");
 }
+void Chassis_Basket_Noheader(void){
+	float rocker_x, rocker_y, r = site.now.r;
+	rocker_x = -GamePad_Data.rocker[0];
+	rocker_y = GamePad_Data.rocker[1];
+	float y = (float)rocker_y * cos(ang2rad(r) - basketlock.position.ladar2basketangle) + rocker_x * sin(ang2rad(r) - basketlock.position.ladar2basketangle);
+	float x = (float)rocker_x * cos(ang2rad(r) - basketlock.position.ladar2basketangle) - rocker_y * sin(ang2rad(r) - basketlock.position.ladar2basketangle);
+	float rout = Angle_Lock(site.now.r,rad2ang(basketlock.position.ladar2basketangle),&cr_basket);
+	float Rocker_GainT = 70;
+	Chassis_Velocity_Out(x * Rocker_GainT,y * Rocker_GainT, rout);
+	
+
+
+}
+
+
+
+
+
 bool TurnMotor_InPosition(void)
 {
 #define TurnMotorDiffAngle(x) (fabs(chassis.motor.turn[x].target_angle - chassis.motor.turn[x].angle_now))
@@ -125,7 +143,7 @@ bool TurnMotor_InTurnPosition(void)
 ///////////////角度与跑点PID
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////跑点相关///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////三种跑法：1.位置PID 2.速度PID 3.位置PID+速度PID////////////////////////////////////////////////////////////////////////////////////
-struct correct_angle_t cr_basket = {.p = 25, .d = 0.03, .i = 0.6, .ilimit = 700, .istart = 1, .iend = 15, .outlimit = 6000, .accel_gain = 1.4, .velocity_gain = 0.2,.fade_max = 5, .fade_min = 1.5 ,.lock_angle = 3};
+struct correct_angle_t cr_basket = {.p = 25, .d = 0.05, .i = 1, .ilimit = 700,  .istart = 2, .iend = 15, .outlimit = 6000, .accel_gain = 1.4, .velocity_gain = 0.2,.fade_max = 7, .fade_min = 2 ,.lock_angle = 3};
 struct correct_angle_t cr_skill  = {.p = 35, .d = 0.03, .i = 0.6, .ilimit = 1000, .istart = 6, .iend = 15, .outlimit = 6000, .accel_gain = 1.4, .velocity_gain = 0.2,.fade_max = 5, .fade_min = 1.5 ,.lock_angle = 8};
 float Angle_Lock(float now,float target,struct correct_angle_t * cr){
 	cr->error = NormalizeAng_Single(target - now);
@@ -134,6 +152,7 @@ float Angle_Lock(float now,float target,struct correct_angle_t * cr){
 	float dynamic_gain = Limit(cr->velocity_gain * site.car.velocity_totalenc + cr->accel_gain * site.car.accel_totalgyro, 1, 4);
 	float fade_gain = Normalize_Pow(cr->fade_min,cr->fade_max,cr->error,2);
 	cr->itotal = ((fabs(cr->error) > cr->istart) && (fabs(cr->error) < cr->iend)) ? Limit(cr->itotal + cr->i * cr->error, -cr->ilimit, cr->ilimit) : cr->itotal;
+	cr->itotal = ((fabs(cr->error) < cr->istart))?NONE:cr->itotal;
 	return Limit(dynamic_gain* fade_gain * p + cr->itotal + d, -cr->outlimit, cr->outlimit);
 }
 ///////////////////////////////////////新型PID 测试使用

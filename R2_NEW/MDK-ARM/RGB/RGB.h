@@ -24,8 +24,9 @@
 #define NavyBlue ((int)0x0F0FA0)
 
 
-//#define RGB(r,g,b) ((unsigned int)((((unsigned char)((float)r * 255.0 / 101.0) / 2 * 2) << 16) + (((unsigned char)((float)g * 255.0 / 101.0) / 2 * 2) << 8) + ((unsigned char)((float)b * 255.0 / 101.0) / 2 * 2)))
-unsigned int RGB(float r,float g,float b);
+#define RGB(r,g,b) ((unsigned int)((((unsigned char)((float)r * 255.0 / 101.0) / 2 * 2) << 16) + (((unsigned char)((float)g * 255.0 / 101.0) / 2 * 2) << 8) + ((unsigned char)((float)b * 255.0 / 101.0) / 2 * 2)))
+#define Faded(color,bright) ((unsigned int)(((unsigned char)((float)(((color)>>0x10) * bright / 100.0)) << 16) + ((unsigned char)((float)((color)>>0x08) * bright / 100.0) << 8) + ((unsigned char)((float)((color)>>0x00) * bright / 100.0))))
+
 struct LED_t{
 	enum{
 		breath,

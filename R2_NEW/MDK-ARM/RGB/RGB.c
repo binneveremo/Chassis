@@ -12,16 +12,8 @@
 #include "gyro.h"
 
 
-char RGB_Switch;
 struct LED_t led;
 unsigned int send_buff[LED_NUM+1][24];		
-unsigned int RGB(float r,float g,float b){
-	r = (unsigned char)(r * 255.0 / 101.0) / 2 * 2;
-	g = (unsigned char)(g * 255.0 / 101.0) / 2 * 2;
-	b = (unsigned char)(b * 255.0 / 101.0) / 2 * 2;
-	
-	return (unsigned int)(((unsigned char)r << 16) + ((unsigned char)g << 8) + (unsigned char)b);
-}
 void RGB_Init(void){
 	HAL_TIM_Base_Stop_IT(&ws2812_tim);
 	HAL_TIM_Base_Stop(&ws2812_tim);
@@ -51,20 +43,44 @@ void RGB_Wave(int wavecolor,int backcolor){
 		RGB_Cal_Color(led.flagof.wave.index_now + i,wavecolor);
 	led.flagof.wave.index_now += (dir == 0)?-1:dir;
 	if((led.flagof.wave.index_now == LED_NUM) || (led.flagof.wave.index_now == -1)) dir = !dir;
-	RGB_OutPut();
 	last = HAL_GetTick();
 }
-float ctest[12] = {15,25,10,3,15,25,45,4,2,27,10,12};
-//12 56 4 7 37 10
+void RGB_BreathProcessingBar(float percent,unsigned int color){
+	static float bright;
+	bright = (bright > 100)?0:bright + 8;
+	char RGB_Calnum = percent * LED_NUM / 200;
+	for(char i= -RGB_Calnum;i < RGB_Calnum;i++)
+		RGB_Cal_Color(LED_NUM / 2 + i,color);
+}
+
 
 void RGB_Show(void){
-	if(chassis.lock.flag == true)
-		RGB_Wave(RGB(9,18,45),RGB(7,37,10));
-	else 
-		RGB_Wave(RGB(45,4,2),RGB(27,10,12));
+	RGB_Total(Black);
+#define Lock (chassis.lock.flag == true)
+	switch(chassis.Control_Status){
+		case GamePad_Control:
+			RGB_Wave(Lock?RGB(9,18,45):RGB(45,4,2),Lock?RGB(7,37,10):RGB(27,10,12));
+		break;
+		case Auto_Control:
+			switch(flow.type){
+				case dribble_flow:
+					
+				break;
+				case dunk_flow:					
+					basketlock.position.percent>100?RGB_BreathProcessingBar(200 - basketlock.position.percent,RGB(45,34,2)):RGB_BreathProcessingBar(basketlock.position.percent,RGB(34,23,45));
+					if(basketlock.position.percent < 83) RGB_Total(RGB(30,8,6));
+				break;
+				default:
+				break;
+			}
+		break;
+		default:
+		break;
+	}
+	RGB_OutPut();
 }
 void RGB_Test(char index,unsigned int color){
-	RGB_Cal_Color(index,color);
+	RGB_Total(color);
 	RGB_OutPut();
 
 

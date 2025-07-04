@@ -1276,11 +1276,6 @@
               <FileType>1</FileType>
               <FilePath>.\Master\Flow.c</FilePath>
             </File>
-            <File>
-              <FileName>Flow.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\Master\Flow.h</FilePath>
-            </File>
           </Files>
         </Group>
         <Group>
@@ -1300,6 +1295,11 @@
               <FileName>Gyro.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Position\Gyro.c</FilePath>
+            </File>
+            <File>
+              <FileName>Flow.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Master\Flow.h</FilePath>
             </File>
             <File>
               <FileName>Gyro.h</FileName>
@@ -1345,21 +1345,6 @@
               <FileName>Television.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\Communication\Television.h</FilePath>
-            </File>
-          </Files>
-        </Group>
-        <Group>
-          <GroupName>Filter</GroupName>
-          <Files>
-            <File>
-              <FileName>Kalman.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Filter\Kalman.c</FilePath>
-            </File>
-            <File>
-              <FileName>Kalman.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\Filter\Kalman.h</FilePath>
             </File>
           </Files>
         </Group>
@@ -1694,16 +1679,6 @@
               <FileName>Control.hpp</FileName>
               <FileType>8</FileType>
               <FilePath>.\Control\Control.hpp</FilePath>
-            </File>
-            <File>
-              <FileName>Kalman.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Control\Kalman.c</FilePath>
-            </File>
-            <File>
-              <FileName>Kalman.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\Control\Kalman.h</FilePath>
             </File>
           </Files>
         </Group>

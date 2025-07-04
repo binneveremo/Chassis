@@ -5,7 +5,6 @@
 #include "stdbool.h"
 #include "HighTorque.h"
 #include "Global.h"
-#include "Flow.h"
 
 #ifdef Carbon_Car
 //#define R2_Fifth
@@ -29,7 +28,7 @@ typedef enum
     STATE_PRE_DUNK = 3,
     STATE_BACK_TO_FOLD = 4,
 		STATE_TEST = 5,
-		STATE_MOVING = 6,
+		STATE_MIDCATCH = 6,
 		STATE_OSCILLATE = 7,
 		STATE_ERROR = 8,
     
@@ -65,7 +64,7 @@ typedef struct
     bool in_move_to_pre_dunk;
     bool in_move_to_back_to_fold;
 		bool in_move_to_test;
-	  bool in_move_to_moving;
+	  bool in_move_to_midcatch;
 		bool in_oscillate;
 
     // Timing
@@ -83,7 +82,7 @@ extern CatchControlStatus_t catch_status;
       (st) == STATE_DEFEND ? 8000 : \
       (st) == STATE_PRE_DUNK ? 30000 : \
       (st) == STATE_BACK_TO_FOLD ? 5000 : \
-			(st) == STATE_MOVING ? 4000 : 0)
+			(st) == STATE_MIDCATCH ? 4000 : 0)
 
 extern float filtered_pos;
 extern float filtered_trq;

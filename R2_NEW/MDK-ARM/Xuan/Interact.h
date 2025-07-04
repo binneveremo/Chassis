@@ -12,12 +12,17 @@ struct Interact{
 		predunk = 3,
 		fold = 4,
 		test = 5,
-		moving = 6,
+		midcatch = 6,
 		oscillate = 7
 	}defend_status;
 	struct {
 		char HT_Error;
 	}wrongcode;
+	struct {
+		char R1_shooted;
+	}flagof;
+	
+	
 };
 extern struct Interact interact;
 

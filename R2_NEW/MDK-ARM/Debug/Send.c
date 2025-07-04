@@ -43,6 +43,7 @@ void R1ExchangeData_Decode(UART_HandleTypeDef *huart){
 		send.R1_Exchange.pos.y = send.convert.float_data[1] * 1000;
 		send.R1_Exchange.pos.r = rad2ang(atan2f(send.R1_Exchange.pos.y - site.now.y,send.R1_Exchange.pos.x - site.now.x)) + 180;
 		flow.flagof.R1_Shooted = (send.R1_Exchange.receive[9] == 1)?true:flow.flagof.R1_Shooted;
+		interact.flagof.R1_shooted = (send.R1_Exchange.receive[9] == 1)?true:interact.flagof.R1_shooted;
 	}
 }
 unsigned char R1Data_Sum(void){

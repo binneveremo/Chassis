@@ -2,7 +2,6 @@
 #define __BASKET_H
 
 #include "Television.h"
-#include "Kalman.h"
 #include "Global.h"
 #include "stdbool.h"
 #include "math.h"
@@ -19,13 +18,9 @@ struct Basket_Lock_t{
 	}target;
 	struct
 	{
-		float ladar_offsetrad;
 		float basketdis;
 		float anglebetween_ladarandpole;
 		float limitzoneanglimit;
-		float siteinterp_gain;
-		float angleinterp_gain;
-		int Time_Threshold;
 	} parameter;
 	struct
 	{
@@ -33,6 +28,7 @@ struct Basket_Lock_t{
 		float ladar2baskety;
 		float ladar2basketdis;
 		float ladar2basketangle;
+		float percent;
 	} position;
 	float protectselfbasket_angle;
 };

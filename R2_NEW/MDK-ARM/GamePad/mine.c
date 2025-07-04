@@ -39,7 +39,6 @@ void GamePad_Data_Cla(void){
 		flow_begin, flow.type = skill_flow;
 	else if(GamePadKey_FallingCheck(18) && (Reuse_Witch == 1) && (chassis.Control_Status == Auto_Control))
 		skill.success_time++;
-#undef flow_begin
 #undef Reuse_Witch
 	
 	if((chassis.Control_Status == Auto_Control) && (flow.type == skill_flow) && (GamePadKey_FallingCheck(20) == 1))
@@ -68,7 +67,7 @@ void GamePad_Data_Cla(void){
 	if(GamePad_Data.key[5] == 1)
  		Tell_Yao_Xuan("predunk");
 	if(GamePad_Data.key[4] == 1)
- 		Tell_Yao_Xuan("defend");
+ 		Tell_Yao_Xuan("midcatch");
 	
 	if(GamePad_Data.key[15] == 1)
  		Tell_Yao_Xuan("down");
@@ -77,7 +76,7 @@ void GamePad_Data_Cla(void){
 	if(GamePad_Data.key[8] == 1)
  		Tell_Yao_Xuan("down");
 	if(GamePad_Data.key[9] == 1)
- 		Tell_Yao_Xuan("stick");
+ 		Tell_Yao_Xuan("polecheck");
 	if(GamePad_Data.key[10] == 1)
  		Tell_Yao_Xuan("lift");
 	//更改Debug界面
@@ -85,19 +84,17 @@ void GamePad_Data_Cla(void){
 	//无线串口
 	send.Debug.send_flag = GamePad_Data.witch[1];
 	//加速和减速相关
-	
+#define Confirm (GamePad_Data.witch[2] == true)
 	//自动旋转开关
-	if(GamePadKey_FallingCheck(21) == 1)
-		chassis.flagof.gamepad.rotate = true;
-	
-#define Stop_Rotate (chassis.flagof.gamepad.rotate = false)
-	if(GamePadKey_FallingCheck(20) == 1)
-		Stop_Rotate;
+	if((GamePadKey_FallingCheck(21) == 1) && Confirm)
+		flow_begin, flow.type = dunk_flow;
+	if((GamePadKey_FallingCheck(20) == 1) && Confirm)
+		dunk.flagof.confirm = true;
 	
 	if(GamePad_Data.key[23] == 1)
-		Stop_Rotate,chassis.opposite = self_basket;
+		chassis.opposite = self_basket;
 	else if(GamePad_Data.key[22] == 1)
-		Stop_Rotate,chassis.opposite = forward;
+		chassis.opposite = forward;
 	else
 		chassis.opposite = none;
 

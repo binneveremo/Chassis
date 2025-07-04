@@ -1,5 +1,8 @@
+#include <Eigen/Cholesky>
 #include <Eigen/Core>
 #include "Global.h"
+
+
 #undef Zero 
 
 Eigen::Matrix3f inverse3x3(Eigen::Matrix3f& A);
@@ -21,7 +24,7 @@ using namespace Eigen;
 __attribute__((section(".sram_data"))) struct Kalman3D kalmanx;
 __attribute__((section(".sram_data"))) struct Kalman3D kalmany;
 
-
+ 
 void Kalman_Init(void){
     float dt = 0.002;
     // 状态转移矩阵 (匀加速模型)
@@ -71,8 +74,9 @@ void KalmanX_Update(float position, float velocity, float acceleration,struct st
     // 计算卡尔曼增益: K = P̂ₖ * (P̂ₖ + R)⁻¹
     // 使用LDLT分解提高效率和数值稳定性
     Eigen::Matrix3f S = kalmanx.P_hat + kalmanx.R;
-    //kalmanx.K = kalmanx.P_hat * S.ldlt().solve(Eigen::Matrix3f::Identity());
-	  kalmanx.K = kalmanx.P_hat * inverse3x3(S);
+	  
+		//kalmanx.K = S.ldlt().solve(kalmanx.P_hat);
+		kalmanx.K = kalmanx.P_hat * inverse3x3(S);
     // 状态更新: xₖ = x̂ₖ + K * (z - x̂ₖ)
     kalmanx.xk_last = kalmanx.xk_hat + kalmanx.K * (kalmanx.Z - kalmanx.xk_hat);
     // 协方差更新: Pₖ = (I - K) * P̂ₖ
@@ -97,8 +101,9 @@ void KalmanY_Update(float position, float velocity, float acceleration,struct st
     // 计算卡尔曼增益: K = P̂ₖ * (P̂ₖ + R)⁻¹
     // 使用LDLT分解提高效率和数值稳定性
     Eigen::Matrix3f S = kalmany.P_hat + kalmany.R;
-    //kalmany.K = kalmany.P_hat * S.ldlt().solve(Eigen::Matrix3f::Identity());
-	  kalmany.K = kalmany.P_hat * inverse3x3(S);
+    
+		//kalmanx.K = S.ldlt().solve(kalmanx.P_hat.transpose()).transpose();;
+		kalmany.K = kalmany.P_hat * inverse3x3(S);
     // 状态更新: xₖ = x̂ₖ + K * (z - x̂ₖ)
     kalmany.xk_last = kalmany.xk_hat + kalmany.K * (kalmany.Z - kalmany.xk_hat);
     // 协方差更新: Pₖ = (I - K) * P̂ₖ
@@ -111,6 +116,11 @@ void KalmanY_Update(float position, float velocity, float acceleration,struct st
     statusy->accel    = kalmany.xk_last(2);
 }
 
+constexpr int N = 4;
+using Matrix12x3f = Matrix<float, 12, 3>;  // 3*N x 3 = 12x3
+using Matrix12x4f = Matrix<float, 12, N>;  // 3*N x N = 12x4
+using Vector12f	  = Matrix<float, 12, 1>;
+
 struct MPC_t {
     // 系统矩阵（单精度）
     Matrix3f A;
@@ -122,65 +132,65 @@ struct MPC_t {
     
     // 约束参数
     float OutLimit;
-    char N;       // 预测步长
     
-    // 预测矩阵（单精度）
-    MatrixXf Sx;  // 状态预测矩阵
-    MatrixXf Su;  // 控制预测矩阵
-    MatrixXf H;   // Hessian矩阵
-	
-	  float mass;
-	
-	  float dt;
+    // 预测矩阵（固定大小）
+    Matrix12x3f Sx;  // 状态预测矩阵 12x3
+    Matrix12x4f Su;  // 控制预测矩阵 12x4
+    
+    // Hessian矩阵（固定大小）
+    Matrix4f H;      // 4x4
+    
+    float mass;
+    float dt;
 };
 
 struct MPC_t mpc;
-void MPC_Init(void){
+
+void MPC_Init(void) {
     mpc.dt = 0.004f;   // 时间步长
-		mpc.mass = 250;
+    mpc.mass = 25;
     
     // 离散状态空间模型
-    mpc.A << 1,  mpc.dt, 0.5* mpc.dt* mpc.dt,
-             0,  1,  mpc.dt,
-             0,  0, 1;
+    mpc.A << 1,  mpc.dt, 0.5f * mpc.dt * mpc.dt,
+             0,  1,      mpc.dt,
+             0,  0,      1;
     
-    mpc.B << 0,  mpc.dt/ mpc.mass * 0.8,  mpc.dt/ mpc.mass * 0.2;
+    mpc.B << 0,  0,  mpc.dt / mpc.mass;
     
     // 权重设置
-    mpc.Q << 3.0f, 0.3f, 0.02f;  // 状态权重
-    mpc.R = 0.000f;               // 控制权重
-    mpc.OutLimit = 2000.0f;         // 控制量限幅
-    mpc.N = 7;                   // 预测步长
+    mpc.Q << 5.0f, 0.05f, 0.1f;  // 状态权重
+    mpc.R =  0.001f;               // 控制权重
+    mpc.OutLimit = 2000.0f;       // 控制量限幅
 
-    // 初始化预测矩阵（单精度）
-    mpc.Sx = MatrixXf::Zero(3 * mpc.N, 3);
-    mpc.Su = MatrixXf::Zero(3 * mpc.N, mpc.N);
+    // 初始化预测矩阵（全部置零）
+    mpc.Sx.setZero();
+    mpc.Su.setZero();
     
     // 构建预测矩阵
-    mpc.Sx.block(0, 0, 3, 3) = mpc.A;
-    mpc.Su.block(0, 0, 3, 1) = mpc.B;
+    mpc.Sx.block<3, 3>(0, 0) = mpc.A;
+    mpc.Su.block<3, 1>(0, 0) = mpc.B;
     
-    // 递推构建预测矩阵
-    for (int i = 1; i < mpc.N; i++) {
-        // 状态传递
-        mpc.Sx.block(3*i, 0, 3, 3) = mpc.A * mpc.Sx.block(3*(i-1), 0, 3, 3);
-            
-        // 控制传递
-        mpc.Su.block(3*i, 0, 3, mpc.N) = mpc.A * mpc.Su.block(3*(i-1), 0, 3, mpc.N);
+    // 递推构建预测矩阵（N=4）
+    for (int i = 1; i < N; i++) {
+        // 状态传递 (3x3 block)
+        mpc.Sx.block<3, 3>(3*i, 0) = mpc.A * mpc.Sx.block<3, 3>(3*(i-1), 0);
+        
+        // 控制传递 (3x4 block)
+        mpc.Su.block<3, 4>(3*i, 0) = mpc.Su.block<3, 4>(3*(i-1), 0);
         
         // 添加当前控制
-        mpc.Su.block(3*i, i, 3, 1) += mpc.B;
+        mpc.Su.block<3, 1>(3*i, i) += mpc.B;
     }
     
-    // 构建Hessian矩阵（单精度）
-    mpc.H = MatrixXf::Zero(mpc.N, mpc.N);
+    // 构建Hessian矩阵（固定大小4x4）
+    mpc.H.setZero();
     Matrix3f Qdiag = mpc.Q.asDiagonal();  // 向量转对角矩阵
     
-    for (int i = 0; i < mpc.N; i++) {
-        // 提取当前控制影响
-        MatrixXf Su_i = mpc.Su.block(3*i, 0, 3, mpc.N);
+    for (int i = 0; i < N; i++) {
+        // 提取当前控制影响 (3x4 block)
+        auto Su_i = mpc.Su.block<3, 4>(3*i, 0);
         
-        // H = Su^T * Q * Su + R*I
+        // H += Su_i^T * Q * Su_i
         mpc.H += Su_i.transpose() * Qdiag * Su_i;
         
         // 对角线添加控制权重
@@ -188,66 +198,77 @@ void MPC_Init(void){
     }
 }
 
-float MPC_OutPut(Vector3f now,Vector3f target) {
-    // 计算梯度向量
-    VectorXf f = VectorXf::Zero(mpc.N);
+float MPC_OutPut(Vector3f now, Vector3f target) {
+    // 计算梯度向量（固定大小4x1）
+    Vector4f f = Vector4f::Zero();
     Matrix3f Qdiag = mpc.Q.asDiagonal();
-    for (int i = 0; i < mpc.N; i++) {
-        // 状态预测误差
-        Vector3f err = mpc.Sx.block(3*i, 0, 3, 3) * target - now;
-        // 梯度项 f = Σ[Su_i^T * Q * err]
-        f += mpc.Su.block(3*i, 0, 3, mpc.N).transpose() * Qdiag * err;
-    }
-		//#define Limit(a,b,c) ((a<b)?b:((a>c)?c:a))
-		//return Limit(-mpc.H.ldlt().solve(f)(0),-mpc.OutLimit,mpc.OutLimit);
-		return 0;
-}
-void MPC_Calculate(struct Point last,struct Point next,float now_rad,float velocity_target,float * left,float * front){
-   // 1. 创建旋转矩阵
-    Matrix2f car_convertmatrix;
-    car_convertmatrix << cos(now_rad), sin(now_rad),
-                        -sin(now_rad), cos(now_rad); 
     
-    // 2. 获取当前位置（使用一致的变量名）
+    for (int i = 0; i < N; i++) {
+        // 状态预测误差
+        Vector3f predicted = mpc.Sx.block<3, 3>(3*i, 0) * now;
+			
+				Vector3f err = predicted - target;
+        
+        // 梯度项 f += Su_i^T * Q * err
+        f += mpc.Su.block<3, 4>(3*i, 0).transpose() * Qdiag * err;
+    }
+    
+    // 求解线性系统 H * u = -f
+    Vector4f u = mpc.H.ldlt().solve(-f);
+    
+    // 返回第一个控制量并限幅
+    return Limit(u(0), -mpc.OutLimit, mpc.OutLimit);
+}
+
+// 辅助函数：数值安全限幅
+
+void MPC_Calculate(struct Point last, struct Point next,float now_rad, float velocity_target,float* left, float* front) {
+    // 1. 创建旋转矩阵
+    Matrix2f car_convertmatrix;
+    float cos_r = cosf(now_rad);
+    float sin_r = sinf(now_rad);
+    car_convertmatrix << cos_r, sin_r,
+                        -sin_r, cos_r; 
+    
+    // 2. 获取当前位置（假设已定义kalmanx, kalmany）
     float nowx = kalmanx.xk_last(0);
     float nowy = kalmany.xk_last(0);
     
     // 3. 计算路径方向
     Vector2f path_dir(next.x - last.x, next.y - last.y);
-    Vector2f norm_dir = path_dir.normalized();
+    float path_len = path_dir.norm();
+    Vector2f norm_dir = path_dir / (path_len > 1e-6f ? path_len : 1.0f);
     
     // 4. 计算当前状态在路径方向上的投影
     Vector2f current_pos(nowx, nowy);
     Vector2f last_pos(last.x, last.y);
-    
-    // 4.1 位置投影
     Vector2f pos_vec = current_pos - last_pos;
-    float position_norm = pos_vec.dot(norm_dir);  // 移除.norm()
     
-    // 4.2 速度投影
-    Vector2f velocity(kalmanx.xk_last(1), kalmany.xk_last(1));
-    float velocity_norm = velocity.dot(norm_dir);  // 移除.norm()
-    
-    // 4.3 加速度投影
-    Vector2f accel(kalmanx.xk_last(2), kalmany.xk_last(2));
-    float accel_norm = accel.dot(norm_dir);  // 移除.norm()
+    // 投影计算
+    float position_norm = pos_vec.dot(norm_dir);
+    float velocity_norm = Vector2f(kalmanx.xk_last(1), kalmany.xk_last(1)).dot(norm_dir);
+    float accel_norm = Vector2f(kalmanx.xk_last(2), kalmany.xk_last(2)).dot(norm_dir);
     
     // 5. 设置目标状态
-    float path_length = path_dir.norm();
-    Vector3f target(path_length, velocity_target, 0);
+    Vector3f target(path_len, velocity_target, 0);
     
     // 6. 计算总加速度
-    float Total_Velocity = MPC_OutPut(Vector3f(position_norm, velocity_norm, accel_norm),target);
+    Vector3f current_state(position_norm, velocity_norm, accel_norm);
+    float Total_Velocity = MPC_OutPut(current_state, target);
     
     // 7. 确定控制方向
     float death = 200;
-    Vector2f car_dir = (hypot(next.x - nowx, next.y - nowy) < death?norm_dir:Vector2f(next.x - nowx, next.y - nowy).normalized());
+    Vector2f to_target(next.x - nowx, next.y - nowy);
+    float dist = to_target.norm();
+    Vector2f car_dir = (dist < death) ? norm_dir : to_target / dist;
+    
     // 8. 创建加速度向量并转换坐标系
-    Vector2f car_velocity = Total_Velocity * car_convertmatrix * car_dir;
+    Vector2f accel_vec = Total_Velocity * car_dir;
+    Vector2f car_accel = car_convertmatrix * accel_vec;
     
     // 9. 输出结果
-    *front = car_velocity(0);  // 使用正确的分量访问语法
-    *left =  car_velocity(1);
+    *front = -car_accel(0);
+    *left  = -car_accel(1);
 }
 
 

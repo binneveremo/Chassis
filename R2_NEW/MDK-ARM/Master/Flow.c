@@ -15,26 +15,12 @@ struct Point home_point = {
 };
 struct dunk_t dunk;
 void Dunk_Flow(void){
-	switch(dunk.state){
-		case init:
-			BasketPoint_Init(&dunk.flagof.init);
-			dunk.state = goto_dunkpoint;
-			break;
-		case goto_dunkpoint:
-			BasketPosition_Lock();
-			Tell_Yao_Xuan("defend");
-			if(chassis.lock.flag == 1)  dunk.state = jump;
-		break;
-		case jump:
-			Self_Lock_Out("BasketFlow");
-			Tell_Yao_Xuan("lift");          
-			Tell_Yao_Xuan("defend");		
-			dunk.state = end;
-		break;
-		case end:
-			Self_Lock_Out("BasketFlow");
-			dunk.flagof.end = true;
-		break;
+	Chassis_Basket_Noheader();
+	if(dunk.flagof.confirm == true){
+		if(dunk.flagof.net_ok == false)
+			 ChooseCatchBall_StatusAuto(),dunk.flagof.net_ok = true;
+		if(flow.flagof.R1_Shooted == true)
+			Tell_Yao_Xuan("jump"),dunk.flagof.confirm = false,dunk.flagof.end = true;
 	}
 }
 /// @brief 回家流程
@@ -44,7 +30,7 @@ void Back_Flow(void){
 	if(Point_Distance(site.now,site.target) < 500) 
 		back.flagof.end = true,Self_Lock_Out("HomePoint");
 }
-/// @brief 运球流程  //stamp 1700 front v  3700
+/// @brief 运球流程  
 struct dribble_t dribble = {.time.xuan_stamp = 1400,.time.wait = 700,.time.end = 2000,.parameter.dribble_front_velocity = 4200,.parameter.dribble_left_velocity = -80,};
 void Dribble_Flow(void){
 	int now = HAL_GetTick();
@@ -56,7 +42,7 @@ void Dribble_Flow(void){
 				interact.defend_status = ((interact.defend_status == initial) || (interact.defend_status == fold))?catch_ball:interact.defend_status;
 				dribble.flagof.prepared = true;
 			}
-			if(flow.flagof.stick_ball == true){
+			if(flow.flagof.pole_top == true){
 				dribble.time.begin = now;
 				dribble.status = dribble_begin;
 			}
@@ -95,13 +81,13 @@ struct skill_t skill = {
 	.target.point[5] = {.x = 788, .y = 3042,.r = -25},
 	.target.point[6] = {.x = 134, .y = 2106,.r = -45},
 #elif true
-	.target.point[0] = {.x = 2760,.y = -5284,.r = -61},
-	.target.point[1] = {.x = 3423,.y = -5874,.r = -58},
-	.target.point[2] = {.x = 4466,.y = -6059,.r = -49},
-	.target.point[3] = {.x = 4546,.y = -4041,.r = -42},
-	.target.point[4] = {.x = 4516,.y = -1902,.r = -28},
-	.target.point[5] = {.x = 3608,.y = -1948,.r = -23},
-	.target.point[6] = {.x = 2795,.y = -2693,.r = -42},
+	.target.point[0] = {.x = 2709,.y = -5266,.r = -61},
+	.target.point[1] = {.x = 3527,.y = -6060,.r = -58},
+	.target.point[2] = {.x = 5140,.y = -6015,.r = -49},
+	.target.point[3] = {.x = 5095,.y = -4030,.r = -42},
+	.target.point[4] = {.x = 5135,.y = -1972,.r = -28},
+	.target.point[5] = {.x = 3485,.y = -1970,.r = -23},
+	.target.point[6] = {.x = 2725,.y = -2730,.r = -42},
 #endif
 
 	.param.catch_advanced_dis[0] = 200,
@@ -120,14 +106,14 @@ struct skill_t skill = {
 	.param.shoot_advanced_dis[5] = 50,
 	.param.shoot_advanced_dis[6] = 50,
 
-	.param.lock_dis = 80,
+	.param.lock_dis = 100,
 	.param.lock_angle = 8,
 	
-	.param.spot[0] = {.param.p = 4.0,	.param.i = 1,	.param.istart = 6,	.param.iend = 400,	.param.ilimit = 1000,	.param.outlimit = 11000, .param.fade_start = 430, .param.fade_end = 100},
-	.param.spot[1] = {.param.p = 3.8,	.param.i = 1,	.param.istart = 6,	.param.iend = 400,	.param.ilimit = 1000,	.param.outlimit = 11000, .param.fade_start = 430, .param.fade_end = 100},
-	.param.spot[2] = {.param.p = 3.8,	.param.i = 1,	.param.istart = 6,	.param.iend = 400,	.param.ilimit = 1000,	.param.outlimit = 11000, .param.fade_start = 430, .param.fade_end = 100},
+	.param.spot[0] = {.param.p = 5.0,	.param.i = 1,	.param.istart = 6,	.param.iend = 400,	.param.ilimit = 1000,	.param.outlimit = 11000, .param.fade_start = 180, .param.fade_end = 100},
+	.param.spot[1] = {.param.p = 3.5,	.param.i = 0,	.param.istart = 6,	.param.iend = 400,	.param.ilimit = 1000,	.param.outlimit = 11000, .param.fade_start = 250, .param.fade_end = 100},
+	.param.spot[2] = {.param.p = 3.8,	.param.i = 1,	.param.istart = 6,	.param.iend = 400,	.param.ilimit = 1000,	.param.outlimit = 11000, .param.fade_start = 180, .param.fade_end = 100},
 	.param.spot[3] = {.param.p = 3.8,	.param.i = 1,	.param.istart = 6,	.param.iend = 400,	.param.ilimit = 1000,	.param.outlimit = 11000, .param.fade_start = 430, .param.fade_end = 100},
-	.param.spot[4] = {.param.p = 3.8,	.param.i = 1,	.param.istart = 6,	.param.iend = 400,	.param.ilimit = 1000,	.param.outlimit = 11000, .param.fade_start = 430, .param.fade_end = 100},
+	.param.spot[4] = {.param.p = 3.8,	.param.i = 1,	.param.istart = 6,	.param.iend = 400,	.param.ilimit = 1000,	.param.outlimit = 11000, .param.fade_start = 200, .param.fade_end = 100},
 	.param.spot[5] = {.param.p = 3.8,	.param.i = 1,	.param.istart = 6,	.param.iend = 400,	.param.ilimit = 1000,	.param.outlimit = 11000, .param.fade_start = 430, .param.fade_end = 100},
 	.param.spot[6] = {.param.p = 3.8,	.param.i = 1,	.param.istart = 6,	.param.iend = 400,	.param.ilimit = 1000,	.param.outlimit = 11000, .param.fade_start = 430, .param.fade_end = 100},
 		
@@ -147,7 +133,7 @@ void Skill_Flow(void){
 		case begin:
 			PositionWithAngle_Lock(site.now,Merge_Point(skill.target.point[index],send.R1_Exchange.pos),&skill.param.spot[index],&cr_skill);
 			if((Point_Distance(site.now,skill.target.point[index]) < skill.param.catch_advanced_dis[index]) && (skill.flagof.net_catched == false))
-				skill.flagof.net_catched = true,Tell_Yao_Xuan((index > 6)?"catch":"defend");
+				skill.flagof.net_catched = true,Tell_Yao_Xuan((index == 3)?"catch":"defend");
 			if((Point_Distance(site.now,skill.target.point[index]) < skill.param.lock_dis))
 				Self_Lock_Out("SkillFlow"),send.R1_Exchange.request_flag = true;
 			else 
@@ -206,7 +192,8 @@ void Auto_Flow(void){
 #undef Rocker_Move
 }
 void ControlStatus_Detect(void){
-
+	if((vision.basketlock.online_flag == true) && (basketlock.position.ladar2basketdis < 1200) && (chassis.Control_Status == GamePad_Control) && (GamePad_Data.witch[7] == true))
+		chassis.Control_Status = Auto_Control,flow.type = dribble_flow; 
 }
 
 
