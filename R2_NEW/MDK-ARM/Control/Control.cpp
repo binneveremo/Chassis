@@ -270,6 +270,14 @@ void MPC_Calculate(struct Point last, struct Point next,float now_rad, float vel
     *front = -car_accel(0);
     *left  = -car_accel(1);
 }
+//shear 切向 normal 法向
+//假设每个舵轮角度向前为0度 向左角度增加
+
+
+
+
+
+
 
 
 CPP_END

@@ -119,6 +119,7 @@ struct Chassis{
 		struct VESC  drive[VESC_NUM];
 		struct HO7213 turn[TURN_NUM];
 	}motor;
+	struct VectorWheel_Status_t except_status;
 	struct{
 		struct{
 			char slow;
@@ -205,7 +206,7 @@ bool TurnMotor_InTurnPosition(void);
 void Chassis_Basket_Noheader(void);
 
 void Debug_Test(void);
-
+void CarStatusExcept_AccordVectorWheel(void);
 
 
 

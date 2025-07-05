@@ -61,12 +61,14 @@ void location(void const * argument)
 {
   for(;;)
   {
+		//计算期望状态
+		CarStatusExcept_AccordVectorWheel();
 		//加速度计算
 	  Gyro_AX_AY_Cal();
 	  //陀螺仪原始数据计算
-	  Encoder_XY_VX_VY_Cal(2);
+	  Encoder_XY_VX_VY_Cal(4);
 		//雷达坐标计算
-		Vision_Filed_Basket_XY_Cal(2);
+		Vision_Filed_Basket_XY_Cal(4);
 		//x轴数据融合滤波
 		KalmanX_Update(site.now.x,site.field.vx_enc,site.field.ax_gyro,&site.field.xfilter);
 		//y轴数据滤波
@@ -74,7 +76,7 @@ void location(void const * argument)
 	  //选择你的定位英雄
 	  Location_Type_Choose();
 		//隔一行知识为了好看
-	  osDelay(2);
+	  osDelay(4);
   }
 }
 void Detect(void const * argument)

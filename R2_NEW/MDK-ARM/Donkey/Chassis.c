@@ -225,23 +225,39 @@ void Turn_Motor_Decode(int id, unsigned char *data)
 	else
 		return;
 }
+
 void Get_VESC_Data(int id, unsigned char *data)
 {
-#define ID_Decode(id) (id & 0x00FF)
+#define ID_Decode(id) ((id >> 8) & 0x0000FF)
+	struct  __attribute__((packed)) VESC_FORMAT {
+		int rpm;
+		short current;
+		short duty_cycle;
+	};
+	struct __attribute__((packed)) VESC_FORMAT format;
+	memcpy((unsigned char *)&format, data, sizeof(format));
 	char ID = ID_Decode(id);
 	switch (ID)
 	{
 	case front_drive_id:
 		chassis.motor.drive[front_wheel].online_flag = true;
+		chassis.motor.drive[front_wheel].rpm = format.rpm / RPM_SCALE;
+		chassis.motor.drive[front_wheel].current = format.current / CURRENT_SCALE;
 		break;
 	case left_drive_id:
 		chassis.motor.drive[left_wheel].online_flag = true;
+		chassis.motor.drive[left_wheel].rpm = format.rpm / RPM_SCALE;
+		chassis.motor.drive[left_wheel].current = format.current / CURRENT_SCALE;
 		break;
 	case right_drive_id:
 		chassis.motor.drive[right_wheel].online_flag = true;
+		chassis.motor.drive[right_wheel].rpm = format.rpm / RPM_SCALE;
+		chassis.motor.drive[right_wheel].current = format.current / CURRENT_SCALE;
 		break;
 	case behind_drive_id:
 		chassis.motor.drive[behind_wheel].online_flag = true;
+		chassis.motor.drive[behind_wheel].rpm = format.rpm / RPM_SCALE;
+		chassis.motor.drive[behind_wheel].current = format.current / CURRENT_SCALE;
 		break;
 	default:
 		break;
@@ -250,12 +266,37 @@ void Get_VESC_Data(int id, unsigned char *data)
 void Debug_Test(void){
 	if(Rocker_Move() == true)
 		Chassis_Velocity_Out(0,10000,0);
-	else 
+	else 	
 		Chassis_Velocity_Out(0,10,0);
 }
+struct VectorWheeel_Param_t{
+	float translation_ratio;
+	float rotate_ratio;
+};
+struct VectorWheeel_Param_t VectorWheeel_Param = {.translation_ratio = 1, .rotate_ratio = 1};
 
+void CarStatusExcept_AccordVectorWheel(void){
+#define Motor_Angle(index)    (ang2rad(chassis.motor.turn[index].angle_now))
+#define Motor_Velocity(index) (chassis.motor.drive[index].velocity)
+#define Motor_Current(index) (chassis.motor.drive[index].current)
 
+	float front_speed_total = Motor_Velocity(front_wheel) * cos(Motor_Angle(front_wheel)) + Motor_Velocity(left_wheel) * cos(Motor_Angle(left_wheel)) + Motor_Velocity(behind_wheel) * cos(Motor_Angle(behind_wheel)) + Motor_Velocity(right_wheel) * cos(Motor_Angle(right_wheel));
+	float left_speed_total = Motor_Velocity(front_wheel) * sin(Motor_Angle(front_wheel)) + Motor_Velocity(left_wheel) * sin(Motor_Angle(left_wheel)) + Motor_Velocity(behind_wheel) * sin(Motor_Angle(behind_wheel)) + Motor_Velocity(right_wheel) * sin(Motor_Angle(right_wheel));
+	float rotate_speed_total = Motor_Velocity(front_wheel) * sin(Motor_Angle(front_wheel)) - Motor_Velocity(left_wheel) * cos(Motor_Angle(left_wheel)) - Motor_Velocity(behind_wheel) * sin(Motor_Angle(behind_wheel)) + Motor_Velocity(right_wheel) * cos(Motor_Angle(right_wheel));
 
+	float front_accel_total = Motor_Current(front_wheel) * cos(Motor_Angle(front_wheel)) + Motor_Current(left_wheel) * cos(Motor_Angle(left_wheel)) + Motor_Current(behind_wheel) * cos(Motor_Angle(behind_wheel)) + Motor_Current(right_wheel) * cos(Motor_Angle(right_wheel));
+	float left_accel_total = Motor_Current(front_wheel) * sin(Motor_Angle(front_wheel)) + Motor_Current(left_wheel) * sin(Motor_Angle(left_wheel)) + Motor_Current(behind_wheel) * sin(Motor_Angle(behind_wheel)) + Motor_Current(right_wheel) * sin(Motor_Angle(right_wheel));
+	float rotate_accel_total = Motor_Current(front_wheel) * sin(Motor_Angle(front_wheel)) - Motor_Current(left_wheel) * cos(Motor_Angle(left_wheel)) - Motor_Current(behind_wheel) * sin(Motor_Angle(behind_wheel)) + Motor_Current(right_wheel) * cos(Motor_Angle(right_wheel));
+
+	chassis.except_status.front_velocity = front_speed_total * VectorWheeel_Param.translation_ratio;
+	chassis.except_status.left_velocity = left_speed_total *VectorWheeel_Param.translation_ratio;
+
+	chassis.except_status.front_accel = front_accel_total * VectorWheeel_Param.translation_ratio;
+	chassis.except_status.left_accel = left_accel_total *VectorWheeel_Param.translation_ratio;
+
+	chassis.except_status.rotate_velocity = rotate_speed_total * VectorWheeel_Param.rotate_ratio;
+	chassis.except_status.rotate_accel = rotate_accel_total *VectorWheeel_Param.rotate_ratio;
+}
 
 
 

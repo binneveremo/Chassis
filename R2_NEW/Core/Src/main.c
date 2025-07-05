@@ -288,15 +288,16 @@ void HAL_FDCAN_RxFifo0Callback(FDCAN_HandleTypeDef *hfdcan, uint32_t RxFifo0ITs)
 		Car_State_Decode(RxHeader.Identifier, Row_Data);
 	}
 }
+unsigned char SPI_Data[8];
 void SPI_FDCANCallback(int header,unsigned char * Row_Data){
+	memcpy(SPI_Data,Row_Data,8);
 	Get_VESC_Data(header, Row_Data);
 }
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
   if(GPIO_Pin == GPIO_PIN_5)
 		Get_SPIFDCAN_Data();
-//  if (GPIO_Pin == GPIO_PIN_4)
-//		Get_SPIFDCAN_Data();
-	
+  if (GPIO_Pin == GPIO_PIN_4)
+		Get_SPIFDCAN_Data();
 }
 
 /* USER CODE END 4 */

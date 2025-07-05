@@ -293,72 +293,47 @@
         <Ww>
           <count>26</count>
           <WinNumber>1</WinNumber>
-          <ItemText>spot_basket</ItemText>
+          <ItemText>spot_skill</ItemText>
         </Ww>
         <Ww>
           <count>27</count>
           <WinNumber>1</WinNumber>
-          <ItemText>spot_skill</ItemText>
+          <ItemText>CPU_USAGE_PERCENT</ItemText>
         </Ww>
         <Ww>
           <count>28</count>
           <WinNumber>1</WinNumber>
-          <ItemText>CPU_USAGE_PERCENT</ItemText>
+          <ItemText>cr_basket</ItemText>
         </Ww>
         <Ww>
           <count>29</count>
           <WinNumber>1</WinNumber>
-          <ItemText>cr_basket</ItemText>
+          <ItemText>dunk</ItemText>
         </Ww>
         <Ww>
           <count>30</count>
           <WinNumber>1</WinNumber>
-          <ItemText>dunk</ItemText>
+          <ItemText>basketlock</ItemText>
         </Ww>
         <Ww>
           <count>31</count>
           <WinNumber>1</WinNumber>
-          <ItemText>basketlock</ItemText>
+          <ItemText>vision</ItemText>
         </Ww>
         <Ww>
           <count>32</count>
           <WinNumber>1</WinNumber>
-          <ItemText>vision</ItemText>
+          <ItemText>send_buff</ItemText>
         </Ww>
         <Ww>
           <count>33</count>
           <WinNumber>1</WinNumber>
-          <ItemText>send_buff</ItemText>
+          <ItemText>skill</ItemText>
         </Ww>
         <Ww>
           <count>34</count>
           <WinNumber>1</WinNumber>
-          <ItemText>skill</ItemText>
-        </Ww>
-        <Ww>
-          <count>35</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>R</ItemText>
-        </Ww>
-        <Ww>
-          <count>36</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>G</ItemText>
-        </Ww>
-        <Ww>
-          <count>37</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>B</ItemText>
-        </Ww>
-        <Ww>
-          <count>38</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>front</ItemText>
-        </Ww>
-        <Ww>
-          <count>39</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>left</ItemText>
+          <ItemText>SPI_Data</ItemText>
         </Ww>
       </WatchWindow1>
       <WatchWindow2>

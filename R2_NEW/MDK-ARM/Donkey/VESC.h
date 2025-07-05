@@ -15,6 +15,9 @@ struct VESC {
 	float rpm;
 	int dir;
 	bool online_flag;
+	float velocity;
+	float current;
+
 };
 
 #define VESC_CAN hfdcan4

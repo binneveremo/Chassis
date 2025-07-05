@@ -56,6 +56,15 @@ struct status_node_t {
 	float velocity;
 	float accel;
 };
+struct VectorWheel_Status_t{
+	float left_velocity;
+	float left_accel;
+	float front_velocity;
+	float front_accel;
+	float rotate_velocity;
+	float rotate_accel;
+};
+
 typedef union __attribute__((packed))
 {
 	float float_data[8];
