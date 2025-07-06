@@ -5,6 +5,9 @@
 #include "string.h"
 #include "math.h"
 #include "fdcan.h"
+#include "Chassis.h"
+
+
 struct YIS506 yis506;
 void Gyro_AX_AY_Cal(void){
 	YIS506_Decode();
@@ -65,7 +68,15 @@ void Gyro_Reset(void){
 	yis506.euler.yaw_offset = yis506.euler.yaw;
 	yis506.reset_flag = true;
 }
+void Identify_Accel_Abrupt(void){
+	//计算历史数据的方差
+	
+	
+	
+	
 
+
+}
 
 
 

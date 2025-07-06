@@ -69,7 +69,7 @@ void Encoder_XY_VX_VY_Cal(int dt){
 	////与定位系统交互
 	site.car.vx_enc = dx_car / dt;
 	site.car.vy_enc = dy_car / dt;
-	site.car.vy_enc -= site.gyro.omiga / 855;
+	//site.car.vy_enc -= site.gyro.omiga / 855;
 	
 	site.car.velocity_totalenc = hypot(site.car.vx_enc,site.car.vy_enc);
 	//与定位系统交互

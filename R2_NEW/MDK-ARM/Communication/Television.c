@@ -1,7 +1,7 @@
 #include "Television.h"
 #include "Gyro.h"
 
-struct Vision vision = {.param.basket_xoffset = 300,.param.ladar2siteangleoffset = -2.4};
+SRAM struct Vision vision = {.param.basket_xoffset = 300,.param.ladar2siteangleoffset = -2.4};
 #define OLD_COMMUNICATION false
 
 void Vision_DataDecode(void){	
@@ -76,7 +76,11 @@ void Vision_Filed_Basket_XY_Cal(int dt){
 	BasketPositionCal_AccordingVision(dt);
 }
 
-
+float Easy_Filter(float x){
+	static float xpre;
+	xpre = 0.9 * xpre + 0.1 * x;
+	return xpre;
+}
 
 
 

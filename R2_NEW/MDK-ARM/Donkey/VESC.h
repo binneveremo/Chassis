@@ -12,15 +12,17 @@
 struct VESC {
 	float front;
 	float left;
-	float rpm;
+	int rpm;
 	int dir;
 	bool online_flag;
 	float velocity;
 	float current;
-
 };
 
-#define VESC_CAN hfdcan4
+
+
+
+#define VESC_CAN hfdcan3
 #define CLAMP(x, lower, upper) (x >= upper ? upper : (x <= lower ? lower : x))
 
 #define ALL_VESC 255    

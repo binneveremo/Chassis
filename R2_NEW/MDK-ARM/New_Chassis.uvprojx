@@ -1276,6 +1276,11 @@
               <FileType>1</FileType>
               <FilePath>.\Master\Flow.c</FilePath>
             </File>
+            <File>
+              <FileName>Flow.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Master\Flow.h</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -1295,11 +1300,6 @@
               <FileName>Gyro.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Position\Gyro.c</FilePath>
-            </File>
-            <File>
-              <FileName>Flow.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\Master\Flow.h</FilePath>
             </File>
             <File>
               <FileName>Gyro.h</FileName>

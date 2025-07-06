@@ -17,7 +17,7 @@
 #define online_id 0xA3
 
 #define Vision_Flag_Clear() {vision.basketlock.online_flag  = false,vision.position.online_flag = false;}
-#define Vision_Reset() {FDCAN_Send(&hfdcan3,vision_reset_id,"STD",NULL,"FD",4,"OFF");}
+#define Vision_Reset() {FDCAN_Send(&hfdcan4,vision_reset_id,"STD",NULL,"FD",4,"OFF");}
 
 struct Vision{
 	struct {
@@ -72,6 +72,10 @@ void Get_Vision_Data(int header,unsigned char * data);
 void Ladar_Decode(void);
 void Send_Velocity_Vision(void);
 void Vision_Filed_Basket_XY_Cal(int dt);
+float Easy_Filter(float x);
+
+
+
 #endif
 
 

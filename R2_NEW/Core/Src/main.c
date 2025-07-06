@@ -92,7 +92,6 @@ void MX_FREERTOS_Init(void);
   */
 int main(void)
 {
-
   /* USER CODE BEGIN 1 */
 
 
@@ -272,31 +271,28 @@ void PeriphCommonClock_Config(void)
 unsigned char Row_Data[64];
 void HAL_FDCAN_RxFifo0Callback(FDCAN_HandleTypeDef *hfdcan, uint32_t RxFifo0ITs)
 {   
+#define header RxHeader.Identifier
 	if(hfdcan->Instance == FDCAN1){
 		HAL_FDCAN_GetRxMessage(&hfdcan1,FDCAN_RX_FIFO0,&RxHeader,Row_Data);
-		Turn_Motor_Decode(RxHeader.Identifier,Row_Data);
+		Turn_Motor_Decode(header,Row_Data);
 		HighTorque_getFedback(&RxHeader, Row_Data);
 	}
 	if(hfdcan->Instance == FDCAN2){
 		HAL_FDCAN_GetRxMessage(&hfdcan2,FDCAN_RX_FIFO0,&RxHeader,Row_Data);
-		Get_Encoder_Data(RxHeader.Identifier,Row_Data);
-		Get_Gyro_Data(RxHeader.Identifier,Row_Data);
+		Get_Encoder_Data(header,Row_Data);
+		Get_Gyro_Data(header,Row_Data);
 	}
 	if(hfdcan->Instance == FDCAN3){
 		HAL_FDCAN_GetRxMessage(&hfdcan3,FDCAN_RX_FIFO0,&RxHeader,Row_Data);
-		Get_Vision_Data(RxHeader.Identifier,Row_Data);
-		Car_State_Decode(RxHeader.Identifier, Row_Data);
+		Get_VESC_Data(header, Row_Data);
 	}
+#undef header
 }
-unsigned char SPI_Data[8];
 void SPI_FDCANCallback(int header,unsigned char * Row_Data){
-	memcpy(SPI_Data,Row_Data,8);
-	Get_VESC_Data(header, Row_Data);
+	Get_Vision_Data(header,Row_Data);
+	Car_State_Decode(header, Row_Data);
 }
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
-  if(GPIO_Pin == GPIO_PIN_5)
-		Get_SPIFDCAN_Data();
-  if (GPIO_Pin == GPIO_PIN_4)
 		Get_SPIFDCAN_Data();
 }
 

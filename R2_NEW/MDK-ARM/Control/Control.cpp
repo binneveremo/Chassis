@@ -101,8 +101,6 @@ void KalmanY_Update(float position, float velocity, float acceleration,struct st
     // 计算卡尔曼增益: K = P̂ₖ * (P̂ₖ + R)⁻¹
     // 使用LDLT分解提高效率和数值稳定性
     Eigen::Matrix3f S = kalmany.P_hat + kalmany.R;
-    
-		//kalmanx.K = S.ldlt().solve(kalmanx.P_hat.transpose()).transpose();;
 		kalmany.K = kalmany.P_hat * inverse3x3(S);
     // 状态更新: xₖ = x̂ₖ + K * (z - x̂ₖ)
     kalmany.xk_last = kalmany.xk_hat + kalmany.K * (kalmany.Z - kalmany.xk_hat);
@@ -115,6 +113,19 @@ void KalmanY_Update(float position, float velocity, float acceleration,struct st
     statusy->velocity = kalmany.xk_last(1);
     statusy->accel    = kalmany.xk_last(2);
 }
+void KalmanFilter_UpDate(struct Point field_position,float car_velocity_x,float car_velocity_y,float car_accel_x,float car_accel_y){
+
+
+
+
+
+}
+
+
+
+
+
+
 
 constexpr int N = 4;
 using Matrix12x3f = Matrix<float, 12, 3>;  // 3*N x 3 = 12x3

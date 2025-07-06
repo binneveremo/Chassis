@@ -5,7 +5,7 @@
 #include "Flow.h"
 
 // 跑点以及底盘状态的结构体
-__attribute__((section(".sram_data"))) struct Chassis chassis;
+SRAM struct Chassis chassis;
 /////////////////////////////////////////////舵轮输出相关
 void VectorWheel_SetSpeed(void)
 {
@@ -225,39 +225,45 @@ void Turn_Motor_Decode(int id, unsigned char *data)
 	else
 		return;
 }
-
 void Get_VESC_Data(int id, unsigned char *data)
 {
-#define ID_Decode(id) ((id >> 8) & 0x0000FF)
-	struct  __attribute__((packed)) VESC_FORMAT {
-		int rpm;
-		short current;
-		short duty_cycle;
-	};
-	struct __attribute__((packed)) VESC_FORMAT format;
-	memcpy((unsigned char *)&format, data, sizeof(format));
+#define VESC_RPM(buffer) ((int)(((unsigned char)buffer[0] << 24) |((unsigned char)buffer[1] << 16) | ((unsigned char)buffer[2] << 8) | ((unsigned char)buffer[3] << 0)))
+#define VESC_DUTY(buffer)  ((signed short)((data[6]) << 8 | (data[7])))
+#define VESC_CURRENT(buffer)  ((signed short)((data[4]) << 8 | (data[5])))
+
+#define ID_Decode(id) (id & 0xFF)
+
+	if(((id >> 8) & 0xFF) != 9)
+		return;
 	char ID = ID_Decode(id);
+	int VELOCITY = VESC_RPM(data);
+	float CURRENT = VESC_CURRENT(data) / 10;
+	float VELOCITY_DIR = (VELOCITY < 0)?-1:1;
+	float CURRENT_DIR  = (CURRENT  < 0)?-1:1;
+	float ACCEL_DIR = VELOCITY_DIR * CURRENT_DIR;
+	
+	
 	switch (ID)
 	{
 	case front_drive_id:
 		chassis.motor.drive[front_wheel].online_flag = true;
-		chassis.motor.drive[front_wheel].rpm = format.rpm / RPM_SCALE;
-		chassis.motor.drive[front_wheel].current = format.current / CURRENT_SCALE;
+		chassis.motor.drive[front_wheel].velocity = VELOCITY;
+		chassis.motor.drive[front_wheel].current = CURRENT_DIR * CURRENT;
 		break;
 	case left_drive_id:
 		chassis.motor.drive[left_wheel].online_flag = true;
-		chassis.motor.drive[left_wheel].rpm = format.rpm / RPM_SCALE;
-		chassis.motor.drive[left_wheel].current = format.current / CURRENT_SCALE;
+		chassis.motor.drive[left_wheel].velocity = VELOCITY;
+		chassis.motor.drive[left_wheel].current = CURRENT_DIR * CURRENT;
 		break;
 	case right_drive_id:
 		chassis.motor.drive[right_wheel].online_flag = true;
-		chassis.motor.drive[right_wheel].rpm = format.rpm / RPM_SCALE;
-		chassis.motor.drive[right_wheel].current = format.current / CURRENT_SCALE;
+		chassis.motor.drive[right_wheel].velocity = VELOCITY;
+		chassis.motor.drive[right_wheel].current = CURRENT_DIR * CURRENT;
 		break;
 	case behind_drive_id:
 		chassis.motor.drive[behind_wheel].online_flag = true;
-		chassis.motor.drive[behind_wheel].rpm = format.rpm / RPM_SCALE;
-		chassis.motor.drive[behind_wheel].current = format.current / CURRENT_SCALE;
+		chassis.motor.drive[behind_wheel].velocity = VELOCITY;
+		chassis.motor.drive[behind_wheel].current = CURRENT_DIR * CURRENT;
 		break;
 	default:
 		break;

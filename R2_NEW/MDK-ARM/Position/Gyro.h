@@ -44,10 +44,10 @@ void Gyro_AX_AY_Cal(void);
 extern struct YIS506 yis506;
 void Get_Gyro_Data(int header,unsigned char * data);
 void YIS506_Decode(void);
-void Angle_Delta_Fuse_Get_Do_Dt(void);
-void Angle_Delta_Fuse_Get_Da_Dt(void);
 void YIS506_Fuse_With_Ladar_Angle(int time);
 void Gyro_Reset(void);
+
+void Identify_Accel_Abrupt(void);
 #endif
 
 

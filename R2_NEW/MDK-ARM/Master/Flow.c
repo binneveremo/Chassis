@@ -31,7 +31,7 @@ void Back_Flow(void){
 		back.flagof.end = true,Self_Lock_Out("HomePoint");
 }
 /// @brief 运球流程  
-struct dribble_t dribble = {.time.xuan_stamp = 1400,.time.wait = 700,.time.end = 2000,.parameter.dribble_front_velocity = 4200,.parameter.dribble_left_velocity = -80,};
+struct dribble_t dribble = {.time.xuan_stamp = 1400,.time.wait = 650,.time.end = 2000,.parameter.dribble_front_velocity = 3700,.parameter.dribble_left_velocity = -80,};
 void Dribble_Flow(void){
 	int now = HAL_GetTick();
 	switch(dribble.status){
@@ -151,6 +151,35 @@ void Skill_Flow(void){
 		break;
 	}
 }
+void Catch_Flow(void){
+	
+	
+	
+	
+	
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 /// @brief 返回手柄控制
 void Back_GamePadControl(void){

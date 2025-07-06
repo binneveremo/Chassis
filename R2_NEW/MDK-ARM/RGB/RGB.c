@@ -13,7 +13,7 @@
 
 
 struct LED_t led;
-unsigned int send_buff[LED_NUM+1][24];		
+SRAM unsigned int send_buff[LED_NUM+1][24];		
 void RGB_Init(void){
 	HAL_TIM_Base_Stop_IT(&ws2812_tim);
 	HAL_TIM_Base_Stop(&ws2812_tim);

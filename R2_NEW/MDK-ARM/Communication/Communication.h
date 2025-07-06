@@ -7,9 +7,11 @@
 #include "Interact.h"
 #include "catchball.h"
 
+#define Com_Can hfdcan4
+
+
 #define stickball_id_recv 0xB2
 #define pole_top_id_recv 0xB3
-#define Com_Can hfdcan3
 #define poledown_id_send 0xCA
 #define dribble_id_send 0xCB
 #define lift_id_send 0xCC
