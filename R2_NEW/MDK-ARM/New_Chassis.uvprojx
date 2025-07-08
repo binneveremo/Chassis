@@ -341,7 +341,7 @@
               <MiscControls></MiscControls>
               <Define>USE_HAL_DRIVER,STM32H723xx,USE_PWR_LDO_SUPPLY</Define>
               <Undefine></Undefine>
-              <IncludePath>../Core/Inc;../Drivers/STM32H7xx_HAL_Driver/Inc;../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy;../Middlewares/Third_Party/FreeRTOS/Source/include;../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS;../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F;../Drivers/CMSIS/Device/ST/STM32H7xx/Include;../Drivers/CMSIS/Include;./Can;./Carrot;./Donkey;./GamePad;./Global;./Master;./CPU;./Position;./Communication;./Filter;./Correct;./Debug;./RGB;./Guard;./Xuan;./Basket;./SPI_FDCAN;../lib/eigen;./Control</IncludePath>
+              <IncludePath>../Core/Inc;../Drivers/STM32H7xx_HAL_Driver/Inc;../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy;../Middlewares/Third_Party/FreeRTOS/Source/include;../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS;../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F;../Drivers/CMSIS/Device/ST/STM32H7xx/Include;../Drivers/CMSIS/Include;./Can;./Carrot;./Donkey;./GamePad;./Global;./Master;./CPU;./Position;./Communication;./Filter;./Correct;.\Wireless;./RGB;./Guard;./Xuan;./Basket;./SPI_FDCAN;../lib/eigen;./Control</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -1281,6 +1281,11 @@
               <FileType>5</FileType>
               <FilePath>.\Master\Flow.h</FilePath>
             </File>
+            <File>
+              <FileName>流程图.txt</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Master\流程图.txt</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -1364,17 +1369,17 @@
           </Files>
         </Group>
         <Group>
-          <GroupName>UART</GroupName>
+          <GroupName>WireLess</GroupName>
           <Files>
             <File>
-              <FileName>Send.c</FileName>
+              <FileName>NetWork.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\Debug\Send.c</FilePath>
+              <FilePath>.\Wireless\NetWork.c</FilePath>
             </File>
             <File>
-              <FileName>Send.h</FileName>
+              <FileName>NetWork.h</FileName>
               <FileType>5</FileType>
-              <FilePath>.\Debug\Send.h</FilePath>
+              <FilePath>.\Wireless\NetWork.h</FilePath>
             </File>
           </Files>
         </Group>

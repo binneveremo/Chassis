@@ -53,8 +53,7 @@ void GamePad_Data_Cla(void){
 	chassis.flagof.gamepad.standard = GamePad_Data.witch[0];
 	chassis.flagof.gamepad.noheader = !chassis.flagof.gamepad.standard;
 	chassis.flagof.gamepad.accel  = GamePad_Data.key[2];
-	chassis.flagof.gamepad.slow = GamePad_Data.key[1];
-	chassis.flagof.gamepad.shutdown  = GamePad_Data.key[0];
+	chassis.flagof.gamepad.shutdown  = GamePad_Data.key[1];
 	//通信方面
 	if(GamePad_Data.key[12] == 1)
  		Tell_Yao_Xuan("fold");
@@ -71,8 +70,10 @@ void GamePad_Data_Cla(void){
 	
 	if(GamePad_Data.key[15] == 1)
  		Tell_Yao_Xuan("down");
+	
 	if(GamePad_Data.key[14] == 1)
  		Tell_Yao_Xuan("jump");
+	
 	if(GamePad_Data.key[8] == 1)
  		Tell_Yao_Xuan("down");
 	if(GamePad_Data.key[9] == 1)
@@ -81,15 +82,15 @@ void GamePad_Data_Cla(void){
  		Tell_Yao_Xuan("lift");
 	//更改Debug界面
 	DebugPage_Change(GamePadKey_FallingCheck(11));
-	//无线串口
-	send.Debug.send_flag = GamePad_Data.witch[1];
 	//加速和减速相关
 #define Confirm (GamePad_Data.witch[2] == true)
 	//自动旋转开关
 	if((GamePadKey_FallingCheck(21) == 1) && Confirm)
 		flow_begin, flow.type = dunk_flow;
 	if((GamePadKey_FallingCheck(20) == 1) && Confirm)
-		dunk.flagof.confirm = true;
+		flow_begin, flow.type = attack_flow;
+	if((GamePad_Data.key[1] == 1) && Confirm)
+ 		Tell_Yao_Xuan("jump");
 	
 	if(GamePad_Data.key[23] == 1)
 		chassis.opposite = self_basket;
@@ -104,6 +105,10 @@ void GamePad_Data_Cla(void){
 	if(GamePadKey_FallingCheck(16) == 1)
  		Odometer_Clear("default"),Gyro_Reset();
 
+	if(GamePadKey_FallingCheck(3) == 1)
+		flow.flagof.receive_ball_bygyro = false,flow.flagof.R1_Shooted = false;
+	if(GamePadKey_FallingCheck(2) == 1)
+		Send_ReceiveBallMessage();
 #elif SLHD
 #define flow_begin (chassis.Control_Status = Auto_Control)
 	

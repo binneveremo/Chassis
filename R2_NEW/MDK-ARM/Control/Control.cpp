@@ -38,11 +38,11 @@ void Kalman_Init(void){
     // 过程噪声 (根据系统特性调整)
     kalmanx.Q << 0.1, 0, 0,
 									0, 0.1, 0,
-									0, 0, 0.1;
+									0, 0, 0.02;
     // 观测噪声 (根据传感器精度调整)
     kalmanx.R <<  5, 0.9, 0, // 位置观测噪声
-									0.9, 4, 0,             // 速度观测噪声
-									0,   0, 4;               // 加速度观测噪声
+									0.9, 2, 0,             // 速度观测噪声
+									0,   0, 2;               // 加速度观测噪声
     /////////////////////////////y方向kalman初始化/////////////////////
     kalmany.A << 1, dt, 0.5f * dt * dt,
 									0, 1, dt,
@@ -54,11 +54,11 @@ void Kalman_Init(void){
     // 过程噪声 (根据系统特性调整)
     kalmany.Q << 0.1, 0, 0,
         0, 0.1, 0,
-        0, 0, 0.1;
+        0, 0, 0.02;
     // 观测噪声 (根据传感器精度调整)
     kalmany.R <<  5, 0.9, 0, // 位置观测噪声
-									0.9, 4, 0,             // 速度观测噪声
-									0, 0, 4;               // 加速度观测噪声
+									0.9, 2, 0,             // 速度观测噪声
+									0, 0, 2;               // 加速度观测噪声
 }
 
 void KalmanX_Update(float position, float velocity, float acceleration,struct status_node_t * statusx){
@@ -72,9 +72,7 @@ void KalmanX_Update(float position, float velocity, float acceleration,struct st
     // 确保协方差矩阵对称 (数值稳定性)
     kalmanx.P_hat = 0.5f * (kalmanx.P_hat + kalmanx.P_hat.transpose());
     // 计算卡尔曼增益: K = P̂ₖ * (P̂ₖ + R)⁻¹
-    // 使用LDLT分解提高效率和数值稳定性
     Eigen::Matrix3f S = kalmanx.P_hat + kalmanx.R;
-	  
 		//kalmanx.K = S.ldlt().solve(kalmanx.P_hat);
 		kalmanx.K = kalmanx.P_hat * inverse3x3(S);
     // 状态更新: xₖ = x̂ₖ + K * (z - x̂ₖ)
@@ -113,14 +111,6 @@ void KalmanY_Update(float position, float velocity, float acceleration,struct st
     statusy->velocity = kalmany.xk_last(1);
     statusy->accel    = kalmany.xk_last(2);
 }
-void KalmanFilter_UpDate(struct Point field_position,float car_velocity_x,float car_velocity_y,float car_accel_x,float car_accel_y){
-
-
-
-
-
-}
-
 
 
 

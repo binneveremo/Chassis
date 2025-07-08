@@ -121,8 +121,8 @@ INFINITE_LOOP_START
 			break;
 		case 3:
 			debugData_pkg.debug_data[0] = Char2float("DEBG");
-			debugData_pkg.debug_data[1] = chassis.motor.drive[0].current;
-			debugData_pkg.debug_data[2] = chassis.motor.drive[1].current;
+			debugData_pkg.debug_data[1] = send.R1_Exchange.ball_fly_time;
+			debugData_pkg.debug_data[2] = send.R1_Exchange.distance;
 			debugData_pkg.debug_data[3] = chassis.motor.drive[2].current;
 			debugData_pkg.debug_data[4] = chassis.motor.drive[3].current;
 			

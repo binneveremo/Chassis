@@ -6,7 +6,7 @@
 
 //#include "Config.h"
 #include "mngCommu.h"
-#include "Send.h"
+#include "NetWork.h"
 
 myUartStruct *UartStruct[5];
 uint8_t Uart_num = 0;

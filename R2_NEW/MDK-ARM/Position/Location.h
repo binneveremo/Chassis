@@ -7,7 +7,6 @@
 struct Site{
 	struct Point target;
 	struct Point now;
-	//编码器计算出来的单独的位置以及速度
 	struct {
 		float x_enc;
 		float y_enc;
@@ -15,8 +14,6 @@ struct Site{
 		float ay_gyro;
 		float vx_enc;
 		float vy_enc;
-		float vx_gyro;
-		float vy_gyro;
 		struct status_node_t xfilter;
 		struct status_node_t yfilter;
 	}field;
@@ -27,8 +24,6 @@ struct Site{
 	struct {
 		float ax_gyro;
 		float ay_gyro;
-		float vx_gyro;
-		float vy_gyro;
 		float vx_enc;
 		float vy_enc;
 		float accel_totalgyro;
@@ -37,13 +32,19 @@ struct Site{
 		struct status_node_t xfilter;
 		struct status_node_t yfilter;
 	}car;
-	struct {
-		struct Point target;
-		struct Point enc;
-	}partial;
 };
-
+#define theta ang2rad(site.now.r)
 extern struct Site site;
+#define Car2Field(fieldx,fieldy,carx,cary) {				 \
+	*fieldx = *carx * cos(theta) - *cary * sin(theta); \
+	*fieldy = *carx * sin(theta) + *cary * cos(theta); \
+}                                                     
+#define Field2Car(carx,cary,fieldx,fieldy) {				 \
+	*carx = *fieldx * cos(theta) + *fieldy * sin(theta);   \
+	*cary =-*fieldx * sin(theta) + *fieldy * cos(theta);   \
+}    
+
+
 
 void Location_Type_Choose(void);
 void Enc_VXVY_Fuse_With_Gyro_AXAY(float dt);

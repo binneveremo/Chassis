@@ -13,7 +13,7 @@
 
 
 struct LED_t led;
-SRAM unsigned int send_buff[LED_NUM+1][24];		
+unsigned int send_buff[LED_NUM+1][24];		
 void RGB_Init(void){
 	HAL_TIM_Base_Stop_IT(&ws2812_tim);
 	HAL_TIM_Base_Stop(&ws2812_tim);
@@ -66,6 +66,7 @@ void RGB_Show(void){
 				case dribble_flow:
 					
 				break;
+				case attack_flow:
 				case dunk_flow:					
 					basketlock.position.percent>100?RGB_BreathProcessingBar(200 - basketlock.position.percent,RGB(45,34,2)):RGB_BreathProcessingBar(basketlock.position.percent,RGB(34,23,45));
 					if(basketlock.position.percent < 83) RGB_Total(RGB(30,8,6));
@@ -74,9 +75,12 @@ void RGB_Show(void){
 				break;
 			}
 		break;
-		default:
+		case Debug_Control:
+			
 		break;
 	}
+	if(GamePad_Data.witch[1] && (flow.flagof.receive_ball_bygyro == true))
+		RGB_Total(RGB(34,8,2));
 	RGB_OutPut();
 }
 void RGB_Test(char index,unsigned int color){

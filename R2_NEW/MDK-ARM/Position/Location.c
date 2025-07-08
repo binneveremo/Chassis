@@ -8,17 +8,13 @@
 
 struct Site site;
 void Location_Type_Choose(void){
-	Copy(site.now,vision.field.carcenter_fieldinterp);
+	site.now.x = site.field.xfilter.position;
+	site.now.y = site.field.yfilter.position;
 	site.now.r = site.gyro.r;
+	
+	Field2Car(&site.car.xfilter.accel,&site.car.yfilter.accel,&site.field.xfilter.accel,&site.field.yfilter.accel);
+	Field2Car(&site.car.xfilter.velocity,&site.car.yfilter.velocity,&site.field.xfilter.velocity,&site.field.yfilter.velocity);
 }
-///////////////////////////////////////////////////////码盘与陀螺仪速度融合计算///////////////////////////////////////////////////////////////
-//码盘的y轴是陀螺仪的-x轴
-void Enc_VXVY_Fuse_With_Gyro_AXAY(float dt){
-	site.car.velocity_totalgyro = hypot(site.car.vx_gyro,site.car.vy_gyro);
-	site.field.vx_gyro  = site.car.vx_gyro * cos(ang2rad(site.now.r)) - site.car.vy_gyro * sin(ang2rad(site.now.r));
-	site.field.vy_gyro  = site.car.vx_gyro * sin(ang2rad(site.now.r)) + site.car.vy_gyro * cos(ang2rad(site.now.r));
-}
-
 
 
 

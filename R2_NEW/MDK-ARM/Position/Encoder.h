@@ -10,29 +10,21 @@ struct Odometer {
 	int o2_pre;
 	int o1_row;
 	int o2_row;
-	/*需要包含以下变量
-	1.每个码盘的dx dy也就是原生数据的dx dy
-	2.计算到场地坐标系的dx dy
-	3.补偿之后的dx dy
-	*//////////////////////////////
-	
+	//码盘的差值
 	float do1;
 	float do2;
+	//场地坐标系的插值
 	float dx_field;
 	float dy_field;
-	float x_field;
-	float y_field;
-	float offset_angle;
-	
-	float vx_car;
-	float vy_car;
-	
-	//x轴行驶过的里程
-	float xdis;
-	float ydis;
-	bool xenc_online;
-	bool yenc_online;
-	bool reset_flag;
+	//码盘的场地坐标
+	float enc_x_field;
+	float enc_y_field;
+	//车体的场地坐标
+	float car_x_field;
+	float car_y_field;
+	//上线标志位
+	char xenc_online;
+	char yenc_online;
 };
 extern struct Odometer odometer;
 void Encoder_XY_VX_VY_Cal(int dt);

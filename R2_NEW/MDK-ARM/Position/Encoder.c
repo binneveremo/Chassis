@@ -48,43 +48,34 @@ void Set_ZeroPoint(unsigned char ID){
 	FDCAN_Send(&odo_can,ID,"STD",encoder_send,"CLASSIC",4,"OFF"); 
 }
 void Encoder_XY_VX_VY_Cal(int dt){
+	static float car_x_field_last,car_y_field_last;
+
   Diff_Odometer();
-	//计算车体速度
+	//计算车体码盘                          
 	float dy_car = ( odometer.do1  * 0.70710678 - odometer.do2  * 0.70710678) / ratio;
 	float dx_car = (-odometer.do2  * 0.70710678 - odometer.do1  * 0.70710678) / ratio;
-	//计算速度补偿
-	odometer.vx_car = dx_car / dt;
-	odometer.vy_car = dy_car / dt;
-	
 	//计算车体坐标系的速度
-	//初步计算场地坐标系的dx dy
-	float dx_field = dx_car* cos(ang2rad(site.now.r)) - dy_car*sin(ang2rad(site.now.r));
-	float dy_field = dx_car* sin(ang2rad(site.now.r)) + dy_car*cos(ang2rad(site.now.r));
-	//计算误差角度之后的dx dy
-	odometer.dx_field = dx_field* cos(odometer.offset_angle) - dy_field*sin(odometer.offset_angle);
-	odometer.dy_field = dy_field* cos(odometer.offset_angle) + dx_field*sin(odometer.offset_angle);
-	//对 dx dy 进行积分
-	odometer.x_field = odometer.dx_field + odometer.x_field;
-	odometer.y_field = odometer.dy_field + odometer.y_field;
-	////与定位系统交互
-	site.car.vx_enc = dx_car / dt;
-	site.car.vy_enc = dy_car / dt;
-	//site.car.vy_enc -= site.gyro.omiga / 855;
+	odometer.dx_field = dx_car* cos(ang2rad(site.now.r)) - dy_car*sin(ang2rad(site.now.r));
+	odometer.dy_field = dx_car* sin(ang2rad(site.now.r)) + dy_car*cos(ang2rad(site.now.r));
+	//计算出场地坐标
+	odometer.enc_x_field = odometer.dx_field + odometer.enc_x_field;
+	odometer.enc_y_field = odometer.dy_field + odometer.enc_y_field;
+	//计算出车体中心的场地坐标
+	odometer.car_x_field = odometer.enc_x_field -  96.77 * (sin(2 * PI * 0.16 * theta + 1.54));
+	odometer.car_y_field = odometer.enc_y_field - 103.82 * (sin(2 * PI * 0.16 * theta -0.05));
+	//根据坐标中心计算出真实的场地速度
+	site.field.vx_enc = (odometer.car_x_field - car_x_field_last) / dt;
+	site.field.vy_enc = (odometer.car_y_field - car_y_field_last) / dt;
+	//保留上一次码盘中心坐标的值
+	car_x_field_last = odometer.car_x_field;
+	car_y_field_last = odometer.car_y_field;
+	
+	Field2Car(&site.car.vx_enc,&site.car.vy_enc,&site.field.vx_enc,&site.field.vy_enc);
+	
+	site.field.x_enc = odometer.car_x_field;
+	site.field.y_enc = odometer.car_y_field;
 	
 	site.car.velocity_totalenc = hypot(site.car.vx_enc,site.car.vy_enc);
-	//与定位系统交互
-	site.field.x_enc = odometer.x_field;
-	site.field.y_enc = odometer.y_field;
-	//计算位置微分 也就是速度
-	site.field.vx_enc = odometer.dx_field / dt;
-	site.field.vy_enc = odometer.dy_field / dt;
-	
-	//计算行驶过的累计历程
-	odometer.xdis += fabs(odometer.dx_field);
-	odometer.ydis += fabs(odometer.dy_field);
-	//辅助坐标系的计算
-	site.partial.enc.x += odometer.dx_field;
-	site.partial.enc.y += odometer.dy_field;
 }
 void Encoder_Init(void){
 	Set_ZeroPoint(0x01);
@@ -93,18 +84,16 @@ void Encoder_Init(void){
 	HAL_Delay(100);
 	Encoder_XY_VX_VY_Cal(1);
 	Odometer_Clear("armor");
-	odometer.offset_angle = 0;
 }
 void Odometer_Clear(char * ifarmor){
 	if(strcmp(ifarmor,"armor") == 0){
-		odometer.x_field =  450;
-		odometer.y_field = -425;
+		odometer.car_x_field =  450;
+		odometer.car_y_field = -425;
 	}
 	else {
-		odometer.x_field =  410;
-		odometer.y_field = -385;
+		odometer.car_x_field =  410;
+		odometer.car_y_field = -385;
 	}
-	odometer.reset_flag = true;
 }
 
 

@@ -5,25 +5,22 @@
 #include "Flow.h"
 
 // 跑点以及底盘状态的结构体
-SRAM struct Chassis chassis;
+struct Chassis chassis;
 /////////////////////////////////////////////舵轮输出相关
-void VectorWheel_SetSpeed(void)
-{
+void VectorWheel_SetSpeed(void){
 	VESC_SetRPM(chassis.motor.drive[front_wheel].dir * chassis.motor.drive[front_wheel].rpm, front_drive_id);
 	VESC_SetRPM(chassis.motor.drive[left_wheel].dir * chassis.motor.drive[left_wheel].rpm, left_drive_id);
 	VESC_SetRPM(chassis.motor.drive[right_wheel].dir * chassis.motor.drive[right_wheel].rpm, right_drive_id);
 	VESC_SetRPM(chassis.motor.drive[behind_wheel].dir * chassis.motor.drive[behind_wheel].rpm, behind_drive_id);
 }
-void VectorWheel_SetAngle(void)
-{
+void VectorWheel_SetAngle(void){
 	// Motor_Control_byFDCN(id,力矩, 速度 , 位置, 模式 , 使能, p, d, )
 	Motor_Control_byFDCN(front_turn_send_id, 2.5, 30, chassis.motor.turn[front_wheel].target_angle + chassis.motor.turn[front_wheel].offset_angle, 2, 1, chassis.motor.turn[front_wheel].param.p, chassis.motor.turn[front_wheel].param.d, &hfdcan1);
 	Motor_Control_byFDCN(left_turn_send_id, 2.5, 30,  chassis.motor.turn[left_wheel].target_angle + chassis.motor.turn[left_wheel].offset_angle, 2, 1, chassis.motor.turn[left_wheel].param.p, chassis.motor.turn[left_wheel].param.d, &hfdcan1);
 	Motor_Control_byFDCN(right_turn_send_id, 2.5, 30, chassis.motor.turn[right_wheel].target_angle + chassis.motor.turn[right_wheel].offset_angle, 2, 1, chassis.motor.turn[right_wheel].param.p, chassis.motor.turn[right_wheel].param.d, &hfdcan1);
 	Motor_Control_byFDCN(behind_turn_send_id, 2.5, 30, chassis.motor.turn[behind_wheel].target_angle + chassis.motor.turn[behind_wheel].offset_angle, 2, 1, chassis.motor.turn[behind_wheel].param.p, chassis.motor.turn[behind_wheel].param.d, &hfdcan1);
 }
-void Min_Angle_Cal(struct HO7213 *turn, struct VESC *drive, float target)
-{
+void Min_Angle_Cal(struct HO7213 *turn, struct VESC *drive, float target){
 	float delta = turn->angle_now - target;
 	int k = (int)floor((delta + 100.00) / 180.0f);
 	float target_temp = target + 180.0f * k;
@@ -68,9 +65,11 @@ void GamePad_Velocity_Control(void)
 	// 陀螺仪逆时针为正
 	float Rocker_GainT = chassis.flagof.gamepad.slow ? 12 : (chassis.flagof.gamepad.accel ? 108 : 82);
 	float Rocker_GainR = chassis.flagof.gamepad.slow ? 5 : (chassis.flagof.gamepad.accel ? 35 : 32);
-	float r = (chassis.flagof.gamepad.inverse == 1) ? site.now.r + 90 : site.now.r + 0.01 * site.gyro.omiga ;
+	float r = (chassis.flagof.gamepad.inverse == 1) ? site.now.r + 90 : site.now.r + 0.01 * site.gyro.omiga;	
+	
 	float y = (float)rocker_y * cos(ang2rad(r)) + rocker_x * sin(ang2rad(r));
 	float x = (float)rocker_x * cos(ang2rad(r)) - rocker_y * sin(ang2rad(r));
+	
 	//计算锁的方向
 	float rout;
 	switch(chassis.opposite){
@@ -112,9 +111,6 @@ void Chassis_Basket_Noheader(void){
 	float rout = Angle_Lock(site.now.r,rad2ang(basketlock.position.ladar2basketangle),&cr_basket);
 	float Rocker_GainT = 70;
 	Chassis_Velocity_Out(x * Rocker_GainT,y * Rocker_GainT, rout);
-	
-
-
 }
 
 
@@ -157,7 +153,7 @@ float Angle_Lock(float now,float target,struct correct_angle_t * cr){
 }
 ///////////////////////////////////////新型PID 测试使用
 struct Spot_t spot_skill  = {.param.p = 3.8,	.param.i = 1,	.param.istart = 6,	.param.iend = 400,	.param.ilimit = 1000,	.param.outlimit = 11000, .param.fade_start = 430, .param.fade_end = 100, .param.lock_dis = 30};
-struct Spot_t spot_basket = {.param.p = 4.3,	.param.i = 1,	.param.istart = 6,	.param.iend = 400,	.param.ilimit = 1000,	.param.outlimit = 12000, .param.fade_start = 250, .param.fade_end = 150, .param.lock_dis = 40};
+struct Spot_t spot_basket = {.param.p = 4.3,	.param.i = 3,	.param.istart = 6,	.param.iend = 700,	.param.ilimit = 1000,	.param.outlimit = 12000, .param.fade_start = 150, .param.fade_end = 50,  .param.lock_dis = 15};
 void PositionWithAngle_Lock(struct Point now,struct Point target,struct Spot_t * spot,struct correct_angle_t * cr){
 	float xerror = target.x - now.x;
 	float yerror = target.y - now.y;
@@ -248,22 +244,22 @@ void Get_VESC_Data(int id, unsigned char *data)
 	case front_drive_id:
 		chassis.motor.drive[front_wheel].online_flag = true;
 		chassis.motor.drive[front_wheel].velocity = VELOCITY;
-		chassis.motor.drive[front_wheel].current = CURRENT_DIR * CURRENT;
+		chassis.motor.drive[front_wheel].current = ACCEL_DIR * fabs(CURRENT);
 		break;
 	case left_drive_id:
 		chassis.motor.drive[left_wheel].online_flag = true;
 		chassis.motor.drive[left_wheel].velocity = VELOCITY;
-		chassis.motor.drive[left_wheel].current = CURRENT_DIR * CURRENT;
+		chassis.motor.drive[left_wheel].current = ACCEL_DIR * fabs(CURRENT);
 		break;
 	case right_drive_id:
 		chassis.motor.drive[right_wheel].online_flag = true;
 		chassis.motor.drive[right_wheel].velocity = VELOCITY;
-		chassis.motor.drive[right_wheel].current = CURRENT_DIR * CURRENT;
+		chassis.motor.drive[right_wheel].current = ACCEL_DIR * fabs(CURRENT);
 		break;
 	case behind_drive_id:
 		chassis.motor.drive[behind_wheel].online_flag = true;
 		chassis.motor.drive[behind_wheel].velocity = VELOCITY;
-		chassis.motor.drive[behind_wheel].current = CURRENT_DIR * CURRENT;
+		chassis.motor.drive[behind_wheel].current = ACCEL_DIR * fabs(CURRENT);
 		break;
 	default:
 		break;
@@ -294,14 +290,14 @@ void CarStatusExcept_AccordVectorWheel(void){
 	float left_accel_total = Motor_Current(front_wheel) * sin(Motor_Angle(front_wheel)) + Motor_Current(left_wheel) * sin(Motor_Angle(left_wheel)) + Motor_Current(behind_wheel) * sin(Motor_Angle(behind_wheel)) + Motor_Current(right_wheel) * sin(Motor_Angle(right_wheel));
 	float rotate_accel_total = Motor_Current(front_wheel) * sin(Motor_Angle(front_wheel)) - Motor_Current(left_wheel) * cos(Motor_Angle(left_wheel)) - Motor_Current(behind_wheel) * sin(Motor_Angle(behind_wheel)) + Motor_Current(right_wheel) * cos(Motor_Angle(right_wheel));
 
-	chassis.except_status.front_velocity = front_speed_total * VectorWheeel_Param.translation_ratio;
-	chassis.except_status.left_velocity = left_speed_total *VectorWheeel_Param.translation_ratio;
+	chassis.expect_status.front_velocity = front_speed_total * VectorWheeel_Param.translation_ratio;
+	chassis.expect_status.left_velocity = left_speed_total *VectorWheeel_Param.translation_ratio;
 
-	chassis.except_status.front_accel = front_accel_total * VectorWheeel_Param.translation_ratio;
-	chassis.except_status.left_accel = left_accel_total *VectorWheeel_Param.translation_ratio;
+	chassis.expect_status.front_accel = front_accel_total * VectorWheeel_Param.translation_ratio;
+	chassis.expect_status.left_accel = left_accel_total *VectorWheeel_Param.translation_ratio;
 
-	chassis.except_status.rotate_velocity = rotate_speed_total * VectorWheeel_Param.rotate_ratio;
-	chassis.except_status.rotate_accel = rotate_accel_total *VectorWheeel_Param.rotate_ratio;
+	chassis.expect_status.rotate_velocity = rotate_speed_total * VectorWheeel_Param.rotate_ratio;
+	chassis.expect_status.rotate_accel = rotate_accel_total *VectorWheeel_Param.rotate_ratio;
 }
 
 

@@ -6,6 +6,9 @@
 #include "string.h"
 #include "Basket.h"
 #include "Flow.h"
+#define Flow_End() (flow.flagof.end = true)
+
+
 
 struct Flow flow;
 struct Point home_point = {                              
@@ -20,7 +23,7 @@ void Dunk_Flow(void){
 		if(dunk.flagof.net_ok == false)
 			 ChooseCatchBall_StatusAuto(),dunk.flagof.net_ok = true;
 		if(flow.flagof.R1_Shooted == true)
-			Tell_Yao_Xuan("jump"),dunk.flagof.confirm = false,dunk.flagof.end = true;
+			Tell_Yao_Xuan("jump"),dunk.flagof.confirm = false,Flow_End();
 	}
 }
 /// @brief 回家流程
@@ -31,7 +34,7 @@ void Back_Flow(void){
 		back.flagof.end = true,Self_Lock_Out("HomePoint");
 }
 /// @brief 运球流程  
-struct dribble_t dribble = {.time.xuan_stamp = 1400,.time.wait = 650,.time.end = 2000,.parameter.dribble_front_velocity = 3700,.parameter.dribble_left_velocity = -80,};
+struct dribble_t dribble = {.time.xuan_stamp = 1650,.time.wait = 650,.time.end = 2000,.parameter.dribble_front_velocity = 4850,.parameter.dribble_left_velocity = -80,};
 void Dribble_Flow(void){
 	int now = HAL_GetTick();
 	switch(dribble.status){
@@ -57,7 +60,7 @@ void Dribble_Flow(void){
 			else 
 				Tell_Yao_Xuan("fold");
 			if(now - dribble.time.begin > dribble.time.end)
-				dribble.flagof.end = true;
+				Flow_End();
 		break;
 	}
 }
@@ -157,8 +160,28 @@ void Catch_Flow(void){
 	
 	
 	
+	
+	
 }
 
+
+struct attack_t attack;
+void Attack_Flow(void){
+	switch(attack.status){
+		case attack_init:
+			BasketPoint_Init();
+			attack.status = attack_runp;
+		break;
+		case attack_runp:
+			PositionWithAngle_Lock(basketlock.now.global,basketlock.target.global,&spot_basket,&cr_basket);
+			//if(flow.flagof.R1_Shooted == true) attack.status = attack_jump;
+		break;
+		case attack_jump:
+			Tell_Yao_Xuan("lift");
+			Flow_End();
+		break;
+	}
+}
 
 
 
@@ -192,6 +215,8 @@ void Back_GamePadControl(void){
 	Zero(dribble.status);
 	Clear(dribble.flagof);
 	
+	Zero(attack.status);
+	
 	Clear(back.flagof);
 	Clear(flow.flagof);
 	
@@ -215,14 +240,82 @@ void Auto_Flow(void){
 		case skill_flow:
 			Skill_Flow();
 		break;
+		case attack_flow:
+			Attack_Flow();
+		break;
 	}
-	if((dribble.flagof.end == true) || (dunk.flagof.end == true) || (back.flagof.end == true) || (Rocker_Move() == true) || (skill.flagof.end == true))
-		Back_GamePadControl();
+	if(flow.flagof.end == true)
+		Back_GamePadControl(),flow.flagof.end = false;
 #undef Rocker_Move
 }
 void ControlStatus_Detect(void){
 	if((vision.basketlock.online_flag == true) && (basketlock.position.ladar2basketdis < 1200) && (chassis.Control_Status == GamePad_Control) && (GamePad_Data.witch[7] == true))
 		chassis.Control_Status = Auto_Control,flow.type = dribble_flow; 
 }
+
+
+
+float Variance,Variance_Threshold = 0.1;
+int last_time;
+void Receive_BallCheck(void){
+#define NUM 4
+	Variance = 0;
+	static float gyro_history[NUM];
+	for(unsigned char i = 0; i< NUM - 1; i++)
+		gyro_history[i] = gyro_history[i + 1];
+	gyro_history[NUM - 1] = site.car.xfilter.accel;
+	/////计算方差/////////////
+	float total = 0;
+	for(unsigned char i = 0; i < NUM ; i++)
+		total += gyro_history[i];
+	float mean = total / NUM;
+	for(unsigned char i = 0;i < NUM;i++)
+		Variance += pow(fabs(gyro_history[i] - mean),2);
+	Variance = Variance / NUM;
+	if((Variance > Variance_Threshold) && (HAL_GetTick() - last_time > 1500) && (chassis.lock.flag == true) && (flow.flagof.R1_Shooted == true))
+		send.R1_Exchange.ball_fly_time = HAL_GetTick() - send.R1_Exchange.shoot_begin,last_time = HAL_GetTick(),flow.flagof.receive_ball_bygyro = true;
+	//&& (flow.flagof.R1_Shooted == true)
+}
+void Send_ReceiveBallMessage(void){
+	for(unsigned char i = 0; i < 5; i++){
+		Send_Put_Data(0,send.R1_Exchange.ball_fly_time);
+		Send_Put_Data(1,send.R1_Exchange.distance);
+		Send_Put_Data(2,send.R1_Exchange.shoot_rpm);
+		Send_Float_Data(3);
+		osDelay(10);
+	}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 

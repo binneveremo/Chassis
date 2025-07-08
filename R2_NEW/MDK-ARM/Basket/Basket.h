@@ -35,8 +35,7 @@ struct Basket_Lock_t{
 
 
 extern struct Basket_Lock_t basketlock;
-
-void BasketPoint_Init(char * flag);
+void BasketPoint_Init(void);
 void BasketPositionCal_AccordingVision(float dt);
 void BasketPosition_Lock(void);
 

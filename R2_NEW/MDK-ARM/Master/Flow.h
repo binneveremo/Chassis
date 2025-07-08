@@ -4,13 +4,15 @@
 #include "Chassis.h"
 
 #include "Basket.h"
-#include "Send.h"
+#include "NetWork.h"
 
 struct Flow {
 	struct {
+		char end;
+		char pole_top;
 		char stick_ball;
 		char R1_Shooted;
-		char pole_top;
+		char receive_ball_bygyro;
 	}flagof;
 	enum
 	{
@@ -18,9 +20,20 @@ struct Flow {
 		dunk_flow,
 		back_flow,
 		skill_flow,
+		attack_flow,
 	}type;
 };
 extern struct Flow flow;
+
+
+
+
+
+
+
+
+
+
 struct dribble_t {
 	enum{
 		prepare,
@@ -39,25 +52,51 @@ struct dribble_t {
 	struct {
 		char prepared;
 		char drrbbled;
-		char end;
 		char init;
 	}flagof;
 };
 extern struct dribble_t dribble;
+
 struct dunk_t {
-	struct {
-		char init;
-		char end;
-		char confirm;
-		char net_ok;
-	}flagof;
 	enum{
 		goto_dunkpoint,
 		jump,
 		end
 	}state;
+	struct {
+		char init;
+		char confirm;
+		char net_ok;
+	}flagof;
 };
 extern struct dunk_t dunk;
+
+struct attack_t {
+	enum{
+		attack_init,
+		attack_runp,
+		attack_jump,
+	}status;
+	struct {
+		
+	
+	
+	}flagof;
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 struct back_t{
 	struct {
 		char end;
@@ -95,7 +134,7 @@ void ControlStatus_Detect(void);
 void Back_GamePadControl(void);
 void Auto_Flow(void);
 struct Point SkillFlow_R2PositionToR1(struct Point point);
-
+void Receive_BallCheck(void);
 #endif
 
 

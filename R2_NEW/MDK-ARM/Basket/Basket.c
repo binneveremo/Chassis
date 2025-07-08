@@ -14,12 +14,12 @@ struct Point self_basket_point = {
 	.x = 1500,
 	.y = -4000,
 	.r = 0};
-// 选择篮筐定位方式
+// 选择篮筐定位方式 局部坐标 或者 全局坐标
 #define GLOBAL_BASKETLOCK_POSITION false
 #define PARTIAL_BASKETLOCK_POSITION !GLOBAL_BASKETLOCK_POSITION
-
+// 选择篮筐定位方式 局部坐标 或者 全局坐标
 #define GLOBAL_BASKETLOCK_ANGLE false
-#define PARTIAL_BASKETLOCK_ANGLE !GLOBAL_BASKETLOCK_ANGLE
+#define PARTIAL_BASKETLOCK_ANGLE !GLOBAL_BASKETLOCK_ANG
 //////////////////////根据马盘插帧的定位计算篮框的位置以及相对于自身的距离
 void BasketPositionCal_AccordingVision(float dt)
 {
@@ -33,13 +33,12 @@ void BasketPositionCal_AccordingVision(float dt)
 	basketlock.now.partial.y += site.field.vy_enc * dt;
 	basketlock.now.partial.r = site.gyro.r;
 	
+	Copy(basketlock.now.global,vision.visual.carzero_visualinterp);
+	
 	basketlock.position.percent = basketlock.position.ladar2basketdis / basketlock.parameter.basketdis * 100;
 }
 ///////////////////////返回的是锁篮筐角度PID的输出
-void BasketPoint_Init(char * flag)
-{
-	if(*flag == true)
-		return;
+void BasketPoint_Init(void){
 	basketlock.target.global.r = Limit(rad2ang(atan2f(basketlock.position.ladar2baskety, basketlock.position.ladar2basketx)), -basketlock.parameter.limitzoneanglimit, basketlock.parameter.limitzoneanglimit);
 	basketlock.target.global.x = vision.visual.basket_visual.x - basketlock.parameter.basketdis * cos(ang2rad(basketlock.target.global.r));
 	basketlock.target.global.y = vision.visual.basket_visual.y - basketlock.parameter.basketdis * sin(ang2rad(basketlock.target.global.r));
@@ -51,8 +50,7 @@ void BasketPoint_Init(char * flag)
 	
 	basketlock.target.partial.x = basketlock.target.global.x - vision.visual.carzero_visualinterp.x;
 	basketlock.target.partial.y = basketlock.target.global.y - vision.visual.carzero_visualinterp.y;
-	basketlock.target.partial.r = basketlock.target.global.r;
-	*flag = true;                             
+	basketlock.target.partial.r = basketlock.target.global.r;                   
 }
 void BasketPosition_Lock(void){
 #if GLOBAL_BASKETLOCK_POSITION

@@ -68,15 +68,7 @@ void Gyro_Reset(void){
 	yis506.euler.yaw_offset = yis506.euler.yaw;
 	yis506.reset_flag = true;
 }
-void Identify_Accel_Abrupt(void){
-	//计算历史数据的方差
-	
-	
-	
-	
 
-
-}
 
 
 

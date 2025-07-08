@@ -47,7 +47,6 @@ void YIS506_Decode(void);
 void YIS506_Fuse_With_Ladar_Angle(int time);
 void Gyro_Reset(void);
 
-void Identify_Accel_Abrupt(void);
 #endif
 
 

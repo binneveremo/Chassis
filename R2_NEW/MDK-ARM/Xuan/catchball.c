@@ -139,7 +139,7 @@ uint32_t CatchTimeCal()
 {
 	uint32_t catch_delay_time;
 //	catch_delay_time = sqrtf((2 * TwoCar_Dis_Calc() * tanf(ang2rad(65)) - height_diff) / gravity_accel);
-	catch_delay_time = -0.009626 * TwoCar_Dis_Calc() * TwoCar_Dis_Calc() + 0.248 * TwoCar_Dis_Calc() + 0.4607;
+	catch_delay_time = -0.009572 * TwoCar_Dis_Calc() * TwoCar_Dis_Calc() + 0.2574 * TwoCar_Dis_Calc() + 0.4732;
 	return catch_delay_time;
 }
 

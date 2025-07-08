@@ -8,7 +8,7 @@
 #include "Global.h"
 #include "Flow.h"
 #include "mine.h"
-#include "Send.h"
+#include "NetWork.h"
 #include "stdio.h"
 #include "Gyro.h"
 #include "RGB.h"
@@ -19,9 +19,7 @@
 #include "CPU_Load.h"
 #include "Interact.h"
 #include "Basket.h"
-struct Point last = {0,0,0};
-struct Point next = {4000,-4000,0};
-float front,left;
+
 void motor_control(void const * argument)
 {
    for(;;)
@@ -35,7 +33,8 @@ void motor_control(void const * argument)
 				Auto_Flow();
 			break;
 			case Debug_Control:
-				
+				GamePad_Velocity_Control(); 
+				Receive_BallCheck();
 			break;  
 		}
 		//MPC_Calculate(last,next,ang2rad(site.now.r),0.5,&front,&left);
@@ -50,19 +49,22 @@ void communication(void const * argument)
 {
   for(;;)
   {
-		Send_Put_Data(0,chassis.except_status.front_velocity / 1000 * 6);
-		Send_Put_Data(1,site.field.xfilter.velocity);
-		Send_Put_Data(2,chassis.except_status.front_accel);
-		Send_Put_Data(3,site.field.xfilter.accel);
-		Send_Put_Data(4,chassis.except_status.rotate_velocity);
-		Send_Put_Data(5,site.gyro.omiga);
-		Send_Float_Data(6);
+//		Send_Put_Data(0,site.car.xfilter.accel);
+//		Send_Put_Data(1,site.car.ax_gyro);
+//		Send_Put_Data(2,chassis.except_status.front_accel);
+//		Send_Float_Data(3);
 		
+//		Send_Put_Data(0,chassis.except_status.front_velocity / 1000 * 6);
+//		Send_Put_Data(1,site.field.xfilter.velocity);
+//		Send_Put_Data(2,Easy_Filter(chassis.except_status.front_accel));
+//		Send_Put_Data(3,site.field.xfilter.accel);
+//		Send_Put_Data(4,chassis.except_status.rotate_velocity);
+//		Send_Put_Data(5,site.gyro.omiga);
 		GamePad_Data_Cla();
-	  //Send_MessageToR1();
+	  Send_MessageToR1();
 		RGB_Show();
 		Send_BasketDis();
-		osDelay(5);
+		osDelay(10);
 	}
 }
 void location(void const * argument)
@@ -73,16 +75,16 @@ void location(void const * argument)
 		//加速度计算
 	  Gyro_AX_AY_Cal();
 		//识别加速度突变
-		Identify_Accel_Abrupt();
+		Receive_BallCheck();
 	  //陀螺仪原始数据计算
 	  Encoder_XY_VX_VY_Cal(2);
 		//雷达坐标计算
 		Vision_Filed_Basket_XY_Cal(2);
 		//x轴数据融合滤波
-		KalmanX_Update(site.now.x,site.field.vx_enc,site.field.ax_gyro,&site.field.xfilter);
+		KalmanX_Update(vision.field.carcenter_fieldinterp.x,site.field.vx_enc,site.field.ax_gyro,&site.field.xfilter);
 		//y轴数据滤波
-		KalmanY_Update(site.now.y,site.field.vy_enc,site.field.ay_gyro,&site.field.yfilter);
-	  //选择你的定位英雄
+		KalmanY_Update(vision.field.carcenter_fieldinterp.y,site.field.vy_enc,site.field.ay_gyro,&site.field.yfilter);
+	  //将场地坐标系的三个状态计算到车体坐标系下
 	  Location_Type_Choose();
 		//隔一行知识为了好看
 	  osDelay(2);

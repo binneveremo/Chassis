@@ -119,7 +119,7 @@ struct Chassis{
 		struct VESC  drive[VESC_NUM];
 		struct HO7213 turn[TURN_NUM];
 	}motor;
-	struct VectorWheel_Status_t except_status;
+	struct VectorWheel_Status_t expect_status;
 	struct{
 		struct{
 			char slow;
