@@ -62,7 +62,7 @@ void R1ExchangeData_Decode(UART_HandleTypeDef *huart){
 	/////////识别发射//////////////////////
 	if((HAL_GetTick() - shoot.deal.shoot_begin > 2000) && (flow.flagof.R1_Shooted == true))
 		shoot.deal.shoot_begin = HAL_GetTick(),BallTime_Cal();
-	interact.flagof.R1_shooted = (shoot.receive.shoot_flag == 1)?true:flow.flagof.R1_Shooted;
+	interact.flagof.R1_shooted = (shoot.receive.shoot_flag == 1)?true:interact.flagof.R1_shooted;
 }
 unsigned char R1Data_Sum(unsigned char * data){
 	unsigned char sum = NONE;
@@ -168,48 +168,6 @@ double Polynomial_4ExpectBallTotalTime(float distance){
 	return Polynomial_4ExpectBallFlyingTime(distance) + Polynomial_4ExpectBallIncarTime(distance);
 }
 
-
-//void Send_MessageToR1(void){
-//#define Request_Flag 2
-//#define NetHigh_Flag 1
-//#define NetLow_Flag 0
-//	struct __attribute__((packed)){
-//		char header;
-//		float netx;
-//		float nety;
-//		float basketx;
-//		float baskety;
-//		char flag;
-//		unsigned char check;	
-//	}R1_Send;
-//	
-//	char net_Status = (interact.defend_status == defend)?1:0;
-//	int net_offset = (interact.defend_status == defend)?322:40;
-//	float netx = net_offset * cos(ang2rad(site.now.r));
-//	float nety = net_offset * sin(ang2rad(site.now.r));
-//	
-//	R1_Send.header = 0xAA;
-//	if((chassis.Control_Status == Auto_Control) && (flow.type == skill_flow)){
-//		R1_Send.netx = skill.target.point[skill.success_time].x + netx;
-//		R1_Send.nety = skill.target.point[skill.success_time].y + nety;
-//		R1_Send.flag = (send.R1_Exchange.request_flag == true)?Request_Flag:net_Status;
-//	}
-//	else if((chassis.Control_Status == Auto_Control) && (flow.type == attack_flow)){
-//		R1_Send.netx = basketlock.target.global.x + netx;
-//		R1_Send.nety = basketlock.target.global.y + nety;
-//		R1_Send.flag = (send.R1_Exchange.request_flag == true)?Request_Flag:net_Status;
-//	}
-//	else{
-//		R1_Send.netx = vision.field.carcenter_fieldinterp.x + netx;
-//		R1_Send.nety = vision.field.carcenter_fieldinterp.y + nety;
-//		R1_Send.flag = net_Status;
-//	}
-//	R1_Send.basketx = vision.visual.basket_visual.x;
-//	R1_Send.baskety = vision.visual.basket_visual.y;
-//	R1_Send.check = R1Data_Sum();
-//	memcpy(&send.R1_Exchange.send,(unsigned char *)&R1_Send,R1_Data_Num);
-//	HAL_UART_Transmit(&R1_Exchange_Usart, send.R1_Exchange.send, R1_Data_Num, HAL_MAX_DELAY);
-//}
 
 
 

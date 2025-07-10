@@ -51,7 +51,7 @@ void Back_Flow(void){
 
 
 ///////////////////////////////////////////////////////////////////////运球流程//////////////////////////////////////////////////////////////////////////////
-struct dribble_t dribble = {.time.xuan_stamp = 1800,.time.wait = 650,.time.end = 2000,.parameter.dribble_front_velocity = 4850,.parameter.dribble_left_velocity = -80,};
+struct dribble_t dribble = {.time.xuan_stamp = 1850,.time.wait = 650,.time.end = 2000,.parameter.dribble_front_velocity = 6800,.parameter.dribble_left_velocity = -80,};
 void Dribble_Flow(void){
 	int now = HAL_GetTick();
 	switch(dribble.status){
@@ -72,7 +72,7 @@ void Dribble_Flow(void){
 				Chassis_Velocity_Out(dribble.parameter.dribble_left_velocity,dribble.parameter.dribble_front_velocity,0);
 			else
 				Self_Lock_Out("WaitDribble");
-			if(now - dribble.time.begin > dribble.time.xuan_stamp)
+			if(now - dribble.time.begin > dribble.time.xuan_stamp || now - dribble.time.begin < (dribble.time.wait + 500))
 				Tell_Yao_Xuan("catch");
 			else 
 				Tell_Yao_Xuan("fold");

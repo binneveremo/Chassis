@@ -57,9 +57,9 @@ void communication(void const * argument)
 //		Send_Put_Data(3,site.field.xfilter.accel);
 //		Send_Put_Data(4,chassis.except_status.rotate_velocity);
 //		Send_Put_Data(5,site.gyro.omiga);
-    Send_Put_Data(0,chassis.expect_status.front_accel);
-		Send_Put_Data(1,site.field.xfilter.accel);
-		Send_Float_Data(2);
+//    Send_Put_Data(0,chassis.expect_status.front_accel);
+//		Send_Put_Data(1,site.field.xfilter.accel);
+//		Send_Float_Data(2);
 		
 		GamePad_Data_Cla();
 		Set_SendMode(site.now,"real",false);

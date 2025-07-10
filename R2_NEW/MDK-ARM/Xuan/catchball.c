@@ -643,6 +643,7 @@ void Loop_Judgement()
     static uint32_t shoot_start_time;  // Track when R1_Shooted was set
     OverallState_t current_state = catch_status.current_state; // Read current state
     OverallState_t next_state = current_state; // Assume stay in current state by default
+	  static uint32_t dunk_begin;
 
     // Check for R1_Shooted timing
     if (interact.flagof.R1_shooted) {
@@ -656,6 +657,21 @@ void Loop_Judgement()
     } else {
         shoot_start_time = 0;  // Reset timer if flag is cleared
     }
+		
+		if(interact.flagof.dunk){
+			interact.defend_status = fold;
+			if(dunk_begin == 0){
+				dunk_begin = HAL_GetTick();
+			}
+			else if(HAL_GetTick() - dunk_begin >= 2500){
+				interact.defend_status = catch_ball;
+				interact.flagof.dunk = 0;
+				dunk_begin = 0;
+			}
+		}
+		else{
+			dunk_begin = 0;
+		}
 
     // If in recovery period, check if we should end it
     if (catch_status.in_recovery_period) {
