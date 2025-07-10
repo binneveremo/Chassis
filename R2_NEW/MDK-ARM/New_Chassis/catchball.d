@@ -45,13 +45,4 @@
   ..\Middlewares\Third_Party\FreeRTOS\Source\include\timers.h \
   ..\Middlewares\Third_Party\FreeRTOS\Source\include\queue.h \
   ..\Middlewares\Third_Party\FreeRTOS\Source\include\semphr.h \
-  ..\Middlewares\Third_Party\FreeRTOS\Source\include\event_groups.h \
-  Communication\Television.h Position\Location.h Donkey\Chassis.h \
-  Communication\Communication.h Can\Can_Bsp.h SPI_FDCAN\SPI_FDCAN.h \
-  SPI_FDCAN\drv_spi.h ..\Core\Inc\spi.h ..\Core\Inc\gpio.h \
-  SPI_FDCAN\drv_canfdspi_api.h SPI_FDCAN\drv_canfdspi_defines.h \
-  SPI_FDCAN\drv_canfdspi_register.h Donkey\HO7213.h ..\Core\Inc\usart.h \
-  GamePad\mine.h GamePad\mngCommu.h GamePad\recDecode.h \
-  GamePad\mySerial.h GamePad\zigbee.h GamePad\Nrf.h Donkey\VESC.h \
-  Guard\Guard.h Master\Flow.h Basket\Basket.h Wireless\NetWork.h \
-  Master\Fake_Rtos.h
+  ..\Middlewares\Third_Party\FreeRTOS\Source\include\event_groups.h

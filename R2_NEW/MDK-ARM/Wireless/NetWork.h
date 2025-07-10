@@ -66,15 +66,19 @@ void Wireless_init(void);
 void R1ExchangeData_Decode(UART_HandleTypeDef *huart);
 void Send_MessageToR1(void);
 void Send_Float_Data(char num);
-double Polynomial_4ExpectBallFlyingTime(float distance);
-double Polynomial_4ExpectBallIncarTime(float distance);
+
 void Exchange_With_R1(void);
 void Set_SendMode(struct Point target,char * mode,bool request);
 void BallTime_Cal(void);
+
+
+
+
 void Send_ReceiveBallMessage(void);
-
-
-
+//////////////拟合的函数////////////////////////
+double Polynomial_4ExpectBallFlyingTime(float distance);
+double Polynomial_4ExpectBallIncarTime(float distance);
+double Polynomial_4ExpectBallTotalTime(float distance);
 
 
 

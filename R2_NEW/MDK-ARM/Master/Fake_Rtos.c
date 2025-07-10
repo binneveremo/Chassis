@@ -62,6 +62,7 @@ void communication(void const * argument)
 		Send_Float_Data(2);
 		
 		GamePad_Data_Cla();
+		Set_SendMode(site.now,"real",false);
 		Send_MessageToR1();
 		RGB_Show();
 		Send_BasketDis();

@@ -69,7 +69,7 @@ void RGB_Show(void){
 				case attack_flow:
 				case dunk_flow:					
 					basketlock.position.percent>100?RGB_BreathProcessingBar(200 - basketlock.position.percent,RGB(45,34,2)):RGB_BreathProcessingBar(basketlock.position.percent,RGB(34,23,45));
-					if(basketlock.position.percent < 83) RGB_Total(RGB(30,8,6));
+					if((basketlock.position.percent < 83) || (basketlock.position.percent > 125)) RGB_Total(RGB(30,8,6));
 				break;
 				default:
 				break;

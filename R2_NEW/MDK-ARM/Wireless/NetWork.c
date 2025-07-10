@@ -58,15 +58,15 @@ void R1ExchangeData_Decode(UART_HandleTypeDef *huart){
 	//////////计算部分///////////////////
 	shoot.deal.opposite_angle = rad2ang(atan2f(shoot.receive.shoot_pos.y - site.now.y,shoot.receive.shoot_pos.x - site.now.x)) + 180;
 	shoot.deal.distance = hypot(shoot.receive.shoot_pos.y - site.now.y,shoot.receive.shoot_pos.x - site.now.x);
-	flow.flagof.R1_Shooted = (shoot.receive.shoot_flag)?true:flow.flagof.R1_Shooted;
+	flow.flagof.R1_Shooted = (shoot.receive.shoot_flag == 1)?true:flow.flagof.R1_Shooted;
 	/////////识别发射//////////////////////
 	if((HAL_GetTick() - shoot.deal.shoot_begin > 2000) && (flow.flagof.R1_Shooted == true))
 		shoot.deal.shoot_begin = HAL_GetTick(),BallTime_Cal();
-	interact.flagof.R1_shooted = (shoot.receive.shoot_flag)?true:flow.flagof.R1_Shooted;
+	interact.flagof.R1_shooted = (shoot.receive.shoot_flag == 1)?true:flow.flagof.R1_Shooted;
 }
 unsigned char R1Data_Sum(unsigned char * data){
-	char sum = NONE;
-	for(unsigned char i=0;i < R1_Data_Num - 1;i++)
+	unsigned char sum = NONE;
+	for(unsigned char i = 0;i < R1_Data_Num - 1;i++)
 		sum += data[i];
 	return sum;
 }
@@ -83,6 +83,8 @@ void Send_MessageToR1(void){
 		unsigned char header;
 		float net_x;
 		float net_y;
+		float basket_x;
+		float basket_y;
 		unsigned char flag;
 		unsigned char check;
 	}format;
@@ -96,7 +98,9 @@ void Send_MessageToR1(void){
 	float nety = net_offset * sin(ang2rad(site.now.r));
 	format.header = 0xAA;
 	format.net_x = shoot.send.target.x + netx;
-	format.net_x = shoot.send.target.x + netx;
+	format.net_y = shoot.send.target.y + nety;
+	format.basket_x = vision.visual.basket_visual.x;
+	format.basket_y = vision.visual.basket_visual.y;
 	format.flag = (shoot.send.flagof.request == true)?Request_Flag:net_Status;
 	format.check = R1Data_Sum((unsigned char *)&format);
 	memcpy(shoot.send.buffer,(unsigned char *)&format,R1_Data_Num);
@@ -160,7 +164,9 @@ double Polynomial_4ExpectBallIncarTime(float distance){
 #define P4 404.6825
 	return P1 * pow(distance,3) + P2 * pow(distance,2) + P3 * distance + P4 ;
 }
-
+double Polynomial_4ExpectBallTotalTime(float distance){
+	return Polynomial_4ExpectBallFlyingTime(distance) + Polynomial_4ExpectBallIncarTime(distance);
+}
 
 
 //void Send_MessageToR1(void){

@@ -21,6 +21,7 @@ struct Interact{
 	}wrongcode;
 	struct {
 		char R1_shooted;
+		char dunk;
 	}flagof;
 	struct {
 		struct Point self;

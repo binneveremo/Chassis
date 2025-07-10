@@ -14,6 +14,9 @@ void Location_Type_Choose(void){
 	
 	Field2Car(&site.car.xfilter.accel,&site.car.yfilter.accel,&site.field.xfilter.accel,&site.field.yfilter.accel);
 	Field2Car(&site.car.xfilter.velocity,&site.car.yfilter.velocity,&site.field.xfilter.velocity,&site.field.yfilter.velocity);
+	
+	Copy(interact.pos.self,site.now);
+	Copy(interact.pos.shoot,shoot.receive.shoot_pos);
 }
 
 
