@@ -111,6 +111,8 @@ int main(void)
 
   /* Configure the system clock */
   SystemClock_Config();
+	//6008 1613
+	//1425 4710 756 1507
 
   /* Configure the peripherals common clocks */
   PeriphCommonClock_Config();

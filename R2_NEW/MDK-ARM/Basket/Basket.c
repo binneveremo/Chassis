@@ -24,8 +24,8 @@ struct Point self_basket_point = {
 void BasketPositionCal_AccordingVision(float dt)
 {
 	// 2ms计算一次 包括篮筐相对于自身坐标的获取 以及对定位进行插帧
-	basketlock.position.ladar2basketx = vision.visual.basket_visual.x - vision.visual.carzero_visualinterp.x;
-	basketlock.position.ladar2baskety = vision.visual.basket_visual.y - vision.visual.carzero_visualinterp.y;
+	basketlock.position.ladar2basketx = vision.visual.basket_visual.x - site.now.x;
+	basketlock.position.ladar2baskety = vision.visual.basket_visual.y - site.now.y;
 	basketlock.position.ladar2basketangle = atan2f(basketlock.position.ladar2baskety, basketlock.position.ladar2basketx);
 	basketlock.position.ladar2basketdis = hypot(basketlock.position.ladar2basketx, basketlock.position.ladar2baskety);
 	
@@ -33,7 +33,7 @@ void BasketPositionCal_AccordingVision(float dt)
 	basketlock.now.partial.y += site.field.vy_enc * dt;
 	basketlock.now.partial.r = site.gyro.r;
 	
-	Copy(basketlock.now.global,vision.visual.carzero_visualinterp);
+	Copy(basketlock.now.global,site.now);
 	
 	basketlock.position.percent = basketlock.position.ladar2basketdis / basketlock.parameter.basketdis * 100;
 }
@@ -48,8 +48,8 @@ void BasketPoint_Init(void){
 	Zero(basketlock.now.partial.x);
 	Zero(basketlock.now.partial.y);
 	
-	basketlock.target.partial.x = basketlock.target.global.x - vision.visual.carzero_visualinterp.x;
-	basketlock.target.partial.y = basketlock.target.global.y - vision.visual.carzero_visualinterp.y;
+	basketlock.target.partial.x = basketlock.target.global.x - site.now.x;
+	basketlock.target.partial.y = basketlock.target.global.y - site.now.y;
 	basketlock.target.partial.r = basketlock.target.global.r;                   
 }
 void BasketPosition_Lock(void){

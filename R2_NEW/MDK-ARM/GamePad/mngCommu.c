@@ -107,9 +107,9 @@ INFINITE_LOOP_START
 			break;
 		case 1:
 			debugData_pkg.debug_data[0] = Char2float("LADA");
-			debugData_pkg.debug_data[1] = vision.visual.carzero_visual.x;
-			debugData_pkg.debug_data[2] = vision.visual.carzero_visual.y;
-			debugData_pkg.debug_data[3] = vision.visual.carzero_visual.r;
+			debugData_pkg.debug_data[1] = vision.field.carcenter_fieldinterp.x;
+			debugData_pkg.debug_data[2] = vision.field.carcenter_fieldinterp.y;
+			debugData_pkg.debug_data[3] = vision.field.carcenter_fieldinterp.r;
 			debugData_pkg.debug_data[4] = vision.field.height;
 			break;
 		case 2:
@@ -117,22 +117,22 @@ INFINITE_LOOP_START
 			debugData_pkg.debug_data[1] = vision.basketlock.online_flag * 6.66;
 			debugData_pkg.debug_data[2] = vision.visual.basket_visual.x;
 			debugData_pkg.debug_data[3] = vision.visual.basket_visual.y;
-			debugData_pkg.debug_data[4] = 0;
+			debugData_pkg.debug_data[4] = basketlock.position.ladar2basketdis;
 			break;
 		case 3:
 			debugData_pkg.debug_data[0] = Char2float("DEBG");
-			debugData_pkg.debug_data[1] = send.R1_Exchange.ball_fly_time;
-			debugData_pkg.debug_data[2] = send.R1_Exchange.distance;
-			debugData_pkg.debug_data[3] = chassis.motor.drive[2].current;
-			debugData_pkg.debug_data[4] = chassis.motor.drive[3].current;
+			debugData_pkg.debug_data[1] = shoot.expect.ball_fly_time;
+			debugData_pkg.debug_data[2] = shoot.deal.distance;
+			debugData_pkg.debug_data[3] = shoot.receive.shoot_rpm;
+			debugData_pkg.debug_data[4] = shoot.expect.ball_incar_time;
 			
 			break;
 		case 4:
 			debugData_pkg.debug_data[0] = Char2float("SEND");
-			debugData_pkg.debug_data[1] = send.R1_Exchange.net.x;
-			debugData_pkg.debug_data[2] = send.R1_Exchange.net.y;
-			debugData_pkg.debug_data[3] = vision.field.carcenter_field.r;
-			debugData_pkg.debug_data[4] = 0;
+			debugData_pkg.debug_data[1] = site.now.x;
+			debugData_pkg.debug_data[2] = site.now.y;
+			debugData_pkg.debug_data[3] = shoot.send.target.x;
+			debugData_pkg.debug_data[4] = shoot.send.target.y;
 			break;
 		default:
 			break;

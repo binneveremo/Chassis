@@ -77,7 +77,7 @@ void GamePad_Velocity_Control(void)
 			rout = Rocker_GainR * rocker_r;
 		break;
 		case R1:
-			rout = Angle_Lock(site.now.r,send.R1_Exchange.pos.r,&cr_skill);
+			rout = Angle_Lock(site.now.r,shoot.deal.opposite_angle,&cr_skill);
 		break;
 		case self_basket:
 			rout = Angle_Lock(site.now.r,basketlock.protectselfbasket_angle,&cr_skill);

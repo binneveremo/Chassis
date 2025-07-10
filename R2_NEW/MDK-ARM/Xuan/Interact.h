@@ -3,6 +3,7 @@
 #include "HighTorque.h"
 #include "catchball.h"
 #include "Interact.h"
+#include "Global.h"
 
 struct Interact{
 	enum {
@@ -21,6 +22,12 @@ struct Interact{
 	struct {
 		char R1_shooted;
 	}flagof;
+	struct {
+		struct Point self;
+		struct Point shoot;
+	}pos;
+	
+
 	
 	
 };

@@ -35,7 +35,7 @@ void LossConnect_Check(void){
 	Wrong_Code.odom |= (!odometer.yenc_online << 1);
 	
 	Wrong_Code.gyro    |= (!yis506.online_flag << 0);
-	Wrong_Code.R1_loss |= (!send.R1_Exchange.get_dataflag << 0);
+	Wrong_Code.R1_loss |= (!shoot.deal.getdata_flag << 0);
 	
 	Wrong_Code.ladar |= (!vision.position.online_flag << 0);
 	Wrong_Code.basket_near |= (!vision.basketlock.online_flag << 0);
@@ -53,7 +53,7 @@ void LossConnect_Check(void){
 	
 	vision.position.online_flag = false;
 	vision.basketlock.online_flag = false;
-	send.R1_Exchange.get_dataflag = false;
+	shoot.deal.getdata_flag = false;
 }
 
 

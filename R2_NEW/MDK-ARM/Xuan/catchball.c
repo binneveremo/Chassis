@@ -1,7 +1,7 @@
 #include "catchball.h"
 #include "cmsis_os.h"
 #include "math.h" 
-#include "Television.h"
+
 
 // --- Global Variables and Parameters ---
 
@@ -78,7 +78,7 @@ float SelfCheck_Pos = 10;
 
 // Control Parameters for Position HOLDING (Mapped to Overall_States enum indices)
 // Indices:          {Initialize, CatchingBall, Defend, PreDunk, BackToFold, Test, MidCatch}
-float Kp_Hold[7] =   {0,          0.4,          0.55,   0.45,    0.023,      0.55, 0.45 }; 
+float Kp_Hold[7] =   {0,          0.4,          0.55,   0.45,    0.2,        0.55, 0.45 }; 
 float Kd_Hold[7] =   {0,          0.06,         0.05,   0.04,    0,          0.05, 0.04 };      
 float Trq_Hold[7]=   {0,          1.0,          3.0,    3.5,     0,          0,    1.0  };           
 float Pos_Target[7]= {1.219,      12.7,         122.94, 14.7,    1.219,      41,   20   };
@@ -129,9 +129,9 @@ bool CheckMoveTimeout(OverallState_t state)
 float TwoCar_Dis_Calc()
 {
 	float distance;
-	float net_x = vision.field.carcenter_fieldinterp.x / 1000 + net_to_center * cos(ang2rad(site.now.r));
-	float net_y = vision.field.carcenter_fieldinterp.y / 1000 + net_to_center * sin(ang2rad(site.now.r));
-	distance = hypot(fabsf(net_x - send.R1_Exchange.pos.x / 1000), fabsf(net_y - send.R1_Exchange.pos.y / 1000));
+	float net_x = interact.pos.self.x / 1000 + net_to_center * cos(ang2rad(interact.pos.self.r));
+	float net_y = interact.pos.self.y / 1000 + net_to_center * sin(ang2rad(interact.pos.self.r));
+	distance = hypot(fabsf(net_x - interact.pos.shoot.x / 1000), fabsf(net_y - interact.pos.shoot.y / 1000));
 	return distance;
 }
 

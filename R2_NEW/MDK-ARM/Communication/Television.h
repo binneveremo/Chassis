@@ -36,8 +36,6 @@ struct Vision{
 	struct {
 		struct Point basket_visual;
 		struct Point ladar_visual;
-		struct Point carzero_visual;
-		struct Point carzero_visualinterp;
 	}visual;
 	struct{
 		float basket_xoffset;

@@ -203,7 +203,7 @@
         <Ww>
           <count>8</count>
           <WinNumber>1</WinNumber>
-          <ItemText>send,0x10</ItemText>
+          <ItemText>send,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>9</count>
@@ -354,6 +354,11 @@
           <count>38</count>
           <WinNumber>1</WinNumber>
           <ItemText>Variance_Threshold</ItemText>
+        </Ww>
+        <Ww>
+          <count>39</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>shoot</ItemText>
         </Ww>
       </WatchWindow1>
       <WatchWindow2>

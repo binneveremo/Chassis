@@ -12,6 +12,7 @@
 #endif
 
 struct Send send;
+struct R1_t shoot;
 void Send_Float_Data(char num){
 	float total; 
 	for(unsigned char i = 0; i < num;i++)
@@ -23,82 +24,186 @@ void Send_Float_Data(char num){
 	//发送
 	HAL_UART_Transmit(&send_uart, (unsigned char*)send.Debug.send, (num + 1) * 4, HAL_MAX_DELAY);
 }
-
-
 /////////////////////////////////////////////无线网条所使用的程序////////////////////////////
 void Wireless_init(void){
 	//R1_Exchange_Usart.Init.BaudRate = R1_Exchange_Baudrate;
 	///////////////初始化R1发送的串口
 	HAL_UART_Init(&R1_Exchange_Usart);
 	__HAL_UART_ENABLE_IT(&R1_Exchange_Usart, UART_IT_IDLE);
-	HAL_UARTEx_ReceiveToIdle_DMA(&R1_Exchange_Usart, send.R1_Exchange.receive, sizeof(send.R1_Exchange.receive));
+	HAL_UARTEx_ReceiveToIdle_DMA(&R1_Exchange_Usart, shoot.receive.buffer, sizeof(shoot.receive.buffer));
 	__HAL_DMA_DISABLE_IT(R1_Exchange_Usart.hdmarx, DMA_IT_HT);  // 禁用传输过半中断
 }
 void R1ExchangeData_Decode(UART_HandleTypeDef *huart){
 	static int R1_Shooted_FlagLast;
-	if(huart->Instance == R1_Exchange_Usart.Instance){
-		send.R1_Exchange.get_dataflag = true;
-		HAL_UARTEx_ReceiveToIdle_DMA(&R1_Exchange_Usart, send.R1_Exchange.receive, sizeof(send.R1_Exchange.receive));
-		memcpy(send.convert.uint8_data,send.R1_Exchange.receive + 1, sizeof(send.R1_Exchange.receive) - 1);
-		send.R1_Exchange.pos.x = send.convert.float_data[0] * 1000;
-		send.R1_Exchange.pos.y = send.convert.float_data[1] * 1000;
-		send.R1_Exchange.shoot_rpm = send.convert.float_data[2] * 1000;
-		send.R1_Exchange.pos.r = rad2ang(atan2f(send.R1_Exchange.pos.y - site.now.y,send.R1_Exchange.pos.x - site.now.x)) + 180;
-		send.R1_Exchange.distance = hypot(send.R1_Exchange.pos.y - site.now.y,send.R1_Exchange.pos.x - site.now.x);
-		flow.flagof.R1_Shooted = (send.R1_Exchange.receive[13] == 1)?true:flow.flagof.R1_Shooted;
-		if((HAL_GetTick() - send.R1_Exchange.shoot_begin > 2000) && (flow.flagof.R1_Shooted == true))  send.R1_Exchange.shoot_begin = HAL_GetTick(),flow.flagof.R1_Shooted = false;
-		interact.flagof.R1_shooted = (send.R1_Exchange.receive[13] == 1)?true:interact.flagof.R1_shooted;
-	}
+	if(huart->Instance != R1_Exchange_Usart.Instance)
+		return;
+	shoot.deal.getdata_flag = true;
+	struct __attribute__((packed)) {
+		unsigned char header;
+		float positionx;
+		float positiony;
+		float shoot_rpm;
+		float ball_incar_time;
+		char shoot_flag;
+		unsigned char check;
+	}format;
+	memcpy((unsigned char *)&format,shoot.receive.buffer, sizeof(shoot.receive.buffer));
+	HAL_UARTEx_ReceiveToIdle_DMA(&R1_Exchange_Usart, shoot.receive.buffer, sizeof(shoot.receive.buffer));
+	
+	shoot.receive.shoot_pos.x = format.positionx * 1000;
+	shoot.receive.shoot_pos.y = format.positiony * 1000;
+	shoot.receive.shoot_rpm = format.shoot_rpm;
+	shoot.receive.shoot_incar_time = format.ball_incar_time * 1000;
+	shoot.receive.shoot_flag = format.shoot_flag;
+	//////////计算部分///////////////////
+	shoot.deal.opposite_angle = rad2ang(atan2f(shoot.receive.shoot_pos.y - site.now.y,shoot.receive.shoot_pos.x - site.now.x)) + 180;
+	shoot.deal.distance = hypot(shoot.receive.shoot_pos.y - site.now.y,shoot.receive.shoot_pos.x - site.now.x);
+	flow.flagof.R1_Shooted = (shoot.receive.shoot_flag)?true:flow.flagof.R1_Shooted;
+	/////////识别发射//////////////////////
+	if((HAL_GetTick() - shoot.deal.shoot_begin > 2000) && (flow.flagof.R1_Shooted == true))
+		shoot.deal.shoot_begin = HAL_GetTick(),BallTime_Cal();
+	interact.flagof.R1_shooted = (shoot.receive.shoot_flag)?true:flow.flagof.R1_Shooted;
 }
-unsigned char R1Data_Sum(void){
+unsigned char R1Data_Sum(unsigned char * data){
 	char sum = NONE;
-	for(unsigned char i=0;i < 10;i++)
-		sum += send.R1_Exchange.send[i];
+	for(unsigned char i=0;i < R1_Data_Num - 1;i++)
+		sum += data[i];
 	return sum;
 }
+
+void Set_SendMode(struct Point target,char * mode,bool request){
+	Copy(shoot.send.target,target);
+	shoot.send.mode = (strcmp(mode,"once") == 0)?send_once:shoot.send.mode;
+	shoot.send.mode = (strcmp(mode,"real") == 0)?send_real_time:shoot.send.mode;
+	shoot.send.flagof.request = request;
+}
+
 void Send_MessageToR1(void){
+	struct __attribute__((packed)) {
+		unsigned char header;
+		float net_x;
+		float net_y;
+		unsigned char flag;
+		unsigned char check;
+	}format;
 #define Request_Flag 2
 #define NetHigh_Flag 1
+#define Danger_Flag 3
 #define NetLow_Flag 0
 	char net_Status = (interact.defend_status == defend)?1:0;
 	int net_offset = (interact.defend_status == defend)?322:40;
 	float netx = net_offset * cos(ang2rad(site.now.r));
 	float nety = net_offset * sin(ang2rad(site.now.r));
+	format.header = 0xAA;
+	format.net_x = shoot.send.target.x + netx;
+	format.net_x = shoot.send.target.x + netx;
+	format.flag = (shoot.send.flagof.request == true)?Request_Flag:net_Status;
+	format.check = R1Data_Sum((unsigned char *)&format);
+	memcpy(shoot.send.buffer,(unsigned char *)&format,R1_Data_Num);
 	
-	send.R1_Exchange.send[0] = 0xAA;
-	if((chassis.Control_Status == Auto_Control) && (flow.type == skill_flow)){
-		send.R1_Exchange.net.x = skill.target.point[skill.success_time].x + netx;
-		send.R1_Exchange.net.y = skill.target.point[skill.success_time].y + nety;
-		send.R1_Exchange.send[9] = (send.R1_Exchange.request_flag == true)?Request_Flag:net_Status;
+	switch(shoot.send.mode){
+		case send_real_time:
+			HAL_UART_Transmit(&R1_Exchange_Usart, shoot.send.buffer, R1_Data_Num, HAL_MAX_DELAY);
+		break;
+		case send_once:
+			HAL_UART_Transmit(&R1_Exchange_Usart, shoot.send.buffer, R1_Data_Num, HAL_MAX_DELAY);
+			shoot.send.mode = send_none;
+		break;
+		default:
+		break;
 	}
-	else if((chassis.Control_Status == Auto_Control) && (flow.type == attack_flow)){
-		send.R1_Exchange.net.x = basketlock.target.global.x + netx;
-		send.R1_Exchange.net.y = basketlock.target.global.y + nety;
-		send.R1_Exchange.send[9] = (send.R1_Exchange.request_flag == true)?Request_Flag:net_Status;
-	}
-	else{
-		send.R1_Exchange.net.x = vision.field.carcenter_fieldinterp.x + netx;
-		send.R1_Exchange.net.y = vision.field.carcenter_fieldinterp.y + nety;
-		send.R1_Exchange.send[9] = net_Status;
-	}
-	send.convert.float_data[0] = send.R1_Exchange.net.x;
-	send.convert.float_data[1] = send.R1_Exchange.net.y;
-	memcpy(&send.R1_Exchange.send[1],send.convert.uint8_data,8);
-	send.R1_Exchange.send[10] = R1Data_Sum();
-	HAL_UART_Transmit(&R1_Exchange_Usart, send.R1_Exchange.send, R1_Data_Num, HAL_MAX_DELAY);
+}
+void BallTime_Cal(void){
+	shoot.expect.ball_fly_time = Polynomial_4ExpectBallFlyingTime(shoot.deal.distance);
+	shoot.expect.ball_incar_time= Polynomial_4ExpectBallIncarTime(shoot.deal.distance);
+	shoot.expect.ball_total_time = shoot.expect.ball_incar_time + shoot.expect.ball_fly_time - shoot.expect.ball_offset_time;
 }
 
-float Expect_BallFlyingTime(float distance){
-	double k = 0.093518;
-	double ratio = 0.010937;
-	float shoot_velocity = send.R1_Exchange.shoot_rpm * ratio;
+
+
+
+float Expect_BallFlyingTime(float distance,bool real){
+	double k = 0;
+	double ratio = 0.009788;
+	//计算曾曾拟合的期望速度
+	float shoot_velocity;
+	float dist_cm = distance / 10;
+	
+	if (dist_cm <= 275)
+		shoot_velocity = dist_cm + 325;
+	else if (dist_cm <= 350)
+      shoot_velocity = -0.0056000000000007155 * pow(dist_cm, 2) + 4.3800000000003365 * dist_cm -187.00000000003354;
+    else if (dist_cm <= 550)
+      shoot_velocity = 0.6 * dist_cm + 450;
+    else
+      shoot_velocity = 0.48 * dist_cm + 516;
+	//如果是实际的速度
+	if(real == true)
+		shoot_velocity = shoot.receive.shoot_rpm * ratio;
 	return (distance / (shoot_velocity * cos(ang2rad(65))) * (1 + (k * distance) / (pow(shoot_velocity,2))));
 }
+double Polynomial_4ExpectBallFlyingTime(float distance){
+#define P1 5.5411e-09
+#define P2 -7.8492e-05
+#define P3 0.5138
+#define P4 183.4338
+	return P1 * pow(distance,3) + P2 * pow(distance,2) + P3 * distance + P4 ;
+#undef P1 
+#undef P2 
+#undef P3 
+#undef P4 
+}
+double Polynomial_4ExpectBallIncarTime(float distance){
+#define P1 1.2169e-09
+#define P2 -9.1970e-06
+#define P3 -0.0191
+#define P4 404.6825
+	return P1 * pow(distance,3) + P2 * pow(distance,2) + P3 * distance + P4 ;
+}
 
 
 
-
-
+//void Send_MessageToR1(void){
+//#define Request_Flag 2
+//#define NetHigh_Flag 1
+//#define NetLow_Flag 0
+//	struct __attribute__((packed)){
+//		char header;
+//		float netx;
+//		float nety;
+//		float basketx;
+//		float baskety;
+//		char flag;
+//		unsigned char check;	
+//	}R1_Send;
+//	
+//	char net_Status = (interact.defend_status == defend)?1:0;
+//	int net_offset = (interact.defend_status == defend)?322:40;
+//	float netx = net_offset * cos(ang2rad(site.now.r));
+//	float nety = net_offset * sin(ang2rad(site.now.r));
+//	
+//	R1_Send.header = 0xAA;
+//	if((chassis.Control_Status == Auto_Control) && (flow.type == skill_flow)){
+//		R1_Send.netx = skill.target.point[skill.success_time].x + netx;
+//		R1_Send.nety = skill.target.point[skill.success_time].y + nety;
+//		R1_Send.flag = (send.R1_Exchange.request_flag == true)?Request_Flag:net_Status;
+//	}
+//	else if((chassis.Control_Status == Auto_Control) && (flow.type == attack_flow)){
+//		R1_Send.netx = basketlock.target.global.x + netx;
+//		R1_Send.nety = basketlock.target.global.y + nety;
+//		R1_Send.flag = (send.R1_Exchange.request_flag == true)?Request_Flag:net_Status;
+//	}
+//	else{
+//		R1_Send.netx = vision.field.carcenter_fieldinterp.x + netx;
+//		R1_Send.nety = vision.field.carcenter_fieldinterp.y + nety;
+//		R1_Send.flag = net_Status;
+//	}
+//	R1_Send.basketx = vision.visual.basket_visual.x;
+//	R1_Send.baskety = vision.visual.basket_visual.y;
+//	R1_Send.check = R1Data_Sum();
+//	memcpy(&send.R1_Exchange.send,(unsigned char *)&R1_Send,R1_Data_Num);
+//	HAL_UART_Transmit(&R1_Exchange_Usart, send.R1_Exchange.send, R1_Data_Num, HAL_MAX_DELAY);
+//}
 
 
 

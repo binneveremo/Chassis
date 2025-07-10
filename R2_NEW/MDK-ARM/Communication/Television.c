@@ -1,7 +1,7 @@
 #include "Television.h"
 #include "Gyro.h"
 
-SRAM struct Vision vision = {.param.basket_xoffset = 300,.param.ladar2siteangleoffset = -2.4};
+SRAM struct Vision vision = {.param.basket_xoffset = 20,.param.ladar2siteangleoffset = -2.4};
 #define OLD_COMMUNICATION false
 
 void Vision_DataDecode(void){	
@@ -18,12 +18,8 @@ void Vision_DataDecode(void){
 	vision.visual.ladar_visual.r = vision.convert.float_data[3] * rad2ang(1);
 
 	vision.field.carcenter_field.r = vision.convert.float_data[3] * rad2ang(1);
-	vision.field.carcenter_field.x = vision.convert.float_data[0] * 1000 - 275.22 * (sin(2 * PI * 0.16 * ang2rad(vision.visual.ladar_visual.r) + 1.63));
-	vision.field.carcenter_field.y = vision.convert.float_data[1] * 1000 - 275.17 * (sin(2 * PI * 0.16 * ang2rad(vision.visual.ladar_visual.r) + 0.06));
-	
-	vision.visual.carzero_visual.x = vision.convert.float_data[0] * 1000 - 275.22 * (sin(2 * PI * 0.16 * ang2rad(vision.field.carcenter_field.r) + 1.63) - sin(1.54));
-	vision.visual.carzero_visual.y = vision.convert.float_data[1] * 1000 - 275.17 * (sin(2 * PI * 0.16 * ang2rad(vision.field.carcenter_field.r) + 0.06) - sin(0.01));
-	vision.visual.carzero_visual.r = vision.convert.float_data[3] * rad2ang(1);
+	vision.field.carcenter_field.x = vision.convert.float_data[0] * 1000 - 242.00 * (sin(2 * PI * 0.16 * ang2rad(vision.visual.ladar_visual.r) + 1.66));
+	vision.field.carcenter_field.y = vision.convert.float_data[1] * 1000 - 244.98 * (sin(2 * PI * 0.16 * ang2rad(vision.visual.ladar_visual.r) + 0.08));
 	
 	if((vision.flagof.gyro_offset_angle_init == false) && (vision.header == position_id) && (vision.position.online_flag == true))
 		Gyro_AngleReset(vision.visual.ladar_visual.r),vision.flagof.gyro_offset_angle_init = true;
@@ -64,9 +60,6 @@ void Vision_Filed_Basket_XY_Cal(int dt){
 		dy += site.field.vy_enc * dt;
 		dr += site.gyro.omiga * dt / 1000;
 	}
-	vision.visual.carzero_visualinterp.x = vision.visual.carzero_visual.x + dx;
-	vision.visual.carzero_visualinterp.y = vision.visual.carzero_visual.y + dy;
-	vision.visual.carzero_visualinterp.r = NormalizeAng_Single(vision.visual.carzero_visual.r + dr);
 	
 	vision.field.carcenter_fieldinterp.x = vision.field.carcenter_field.x + dx;
 	vision.field.carcenter_fieldinterp.y = vision.field.carcenter_field.y + dy;

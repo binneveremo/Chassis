@@ -25,7 +25,8 @@ void Tell_Yao_Xuan(char *message){
     if(strcmp(message, "lift") == 0)
       FDCAN_Send(&Com_Can,lift_id_send,"STD",Basket_DisData,"FD",4,"OFF"),Predunk;
 		else if(strcmp(message, "jump") == 0)
-      FDCAN_Send(&Com_Can,jump_id_send,"STD",Basket_DisData,"FD",4,"OFF"),Predunk;
+      FDCAN_Send(&Com_Can,jump_id_send,"STD",Basket_DisData,"FD",4,"OFF"),
+			interact.defend_status = (interact.defend_status == fold) ? interact.defend_status:fold;
 		else if(strcmp(message, "polecheck") == 0)
 			FDCAN_Send(&Com_Can,polecheck_id_send,"STD",NULL,"FD",0,"OFF"),
 			interact.defend_status = defend;
@@ -37,7 +38,7 @@ void Car_State_Decode(int id,unsigned char * data){
 		flow.flagof.stick_ball = true;
 }
 void ChooseCatchBall_StatusAuto(void){
-	if(fabs(site.now.r - send.R1_Exchange.pos.r) < 15)
+	if(fabs(site.now.r - shoot.deal.opposite_angle) < 15)
 		Tell_Yao_Xuan("defend");
 	else 
 		Tell_Yao_Xuan("midcatch");

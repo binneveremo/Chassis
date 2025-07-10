@@ -20,6 +20,8 @@
 #include "Interact.h"
 #include "Basket.h"
 
+bool stable,threshold;
+
 void motor_control(void const * argument)
 {
    for(;;)
@@ -48,20 +50,19 @@ void motor_control(void const * argument)
 void communication(void const * argument)
 {
   for(;;)
-  {
-//		Send_Put_Data(0,site.car.xfilter.accel);
-//		Send_Put_Data(1,site.car.ax_gyro);
-//		Send_Put_Data(2,chassis.except_status.front_accel);
-//		Send_Float_Data(3);
-		
+  {	
 //		Send_Put_Data(0,chassis.except_status.front_velocity / 1000 * 6);
 //		Send_Put_Data(1,site.field.xfilter.velocity);
 //		Send_Put_Data(2,Easy_Filter(chassis.except_status.front_accel));
 //		Send_Put_Data(3,site.field.xfilter.accel);
 //		Send_Put_Data(4,chassis.except_status.rotate_velocity);
 //		Send_Put_Data(5,site.gyro.omiga);
+    Send_Put_Data(0,chassis.expect_status.front_accel);
+		Send_Put_Data(1,site.field.xfilter.accel);
+		Send_Float_Data(2);
+		
 		GamePad_Data_Cla();
-	  Send_MessageToR1();
+		Send_MessageToR1();
 		RGB_Show();
 		Send_BasketDis();
 		osDelay(10);
@@ -72,6 +73,8 @@ void location(void const * argument)
   for(;;)
   {
 		CarStatusExcept_AccordVectorWheel();
+		
+		stable = Variance_Check(chassis.expect_status.front_velocity,10,0.2,"check");
 		//加速度计算
 	  Gyro_AX_AY_Cal();
 		//识别加速度突变

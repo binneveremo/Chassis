@@ -52,12 +52,14 @@ void GamePad_Data_Cla(void){
 	//手柄控制相关标志位
 	chassis.flagof.gamepad.standard = GamePad_Data.witch[0];
 	chassis.flagof.gamepad.noheader = !chassis.flagof.gamepad.standard;
-	chassis.flagof.gamepad.accel  = GamePad_Data.key[2];
+	chassis.flagof.gamepad.accel  = GamePad_Data.key[3];
 	chassis.flagof.gamepad.shutdown  = GamePad_Data.key[1];
 	//通信方面
 	if(GamePad_Data.key[12] == 1)
  		Tell_Yao_Xuan("fold");
 	if(GamePad_Data.key[13] == 1)
+ 		Tell_Yao_Xuan("defend");
+	if(GamePad_Data.key[22] == 1)
  		Tell_Yao_Xuan("defend");
 	if(GamePad_Data.key[7] == 1)
  		Tell_Yao_Xuan("fold");
@@ -94,8 +96,6 @@ void GamePad_Data_Cla(void){
 	
 	if(GamePad_Data.key[23] == 1)
 		chassis.opposite = self_basket;
-	else if(GamePad_Data.key[22] == 1)
-		chassis.opposite = forward;
 	else
 		chassis.opposite = none;
 
