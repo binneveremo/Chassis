@@ -19,7 +19,6 @@
 
 #endif
 
-
 #define NONE 0
 #define PI 3.1415926f
 
@@ -28,6 +27,7 @@
 #define NormalizeAng_Single(ang)  ((ang > 180)?ang - 360:((ang < -180)?ang + 360:ang))
 #define Limit(x,y,z) ((x < y)?y:((x > z)?z:x))
 #define Point_Distance(a,b) (hypot(a.x - b.x,a.y - b.y))
+#define Point_Angle(a,b) (rad2ang(atan2f(b.y - a.y,b.x - a.x)))
 #define Point_InDistance(a,b,dis) (hypot(a.x - b.x,a.y - b.y) < dis)?1:0)
 #define Clear(x) (memset(&x,NONE,sizeof(x)))
 #define Larger(a,b) ((a > b)?a:b)
@@ -72,7 +72,9 @@ typedef union __attribute__((packed))
 	unsigned char uint8_data[32];
 } uint8_uint32_float_union;
 
-float char2float(unsigned char * data);
+
+float Average(float * array,int float_size);
+float Variance_Cal(float * buffer,float data,int float_size);
 struct Point Merge_Point(struct Point a,struct Point b);
 
 

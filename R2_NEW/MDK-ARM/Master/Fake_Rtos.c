@@ -20,7 +20,14 @@
 #include "Interact.h"
 #include "Basket.h"
 
-bool stable,threshold;
+
+struct Point end_point = {.x = 10000,.y = -4000};
+struct Point expect;
+float rpm = 2000;
+float v;
+float left,front,rotate;
+float buffer[10] = {1,2,3,4};
+
 
 void motor_control(void const * argument)
 {
@@ -35,8 +42,8 @@ void motor_control(void const * argument)
 				Auto_Flow();
 			break;
 			case Debug_Control:
-				GamePad_Velocity_Control(); 
-				Receive_BallCheck();
+				//Trap_Flow_Test(end_point,rpm,&expect);
+				Chassis_Velocity_Out(left,front,rotate);
 			break;  
 		}
 		//MPC_Calculate(last,next,ang2rad(site.now.r),0.5,&front,&left);
@@ -60,12 +67,15 @@ void communication(void const * argument)
 //    Send_Put_Data(0,chassis.expect_status.front_accel);
 //		Send_Put_Data(1,site.field.xfilter.accel);
 //		Send_Float_Data(2);
-		
+		//手柄数据解析
 		GamePad_Data_Cla();
-		Set_SendMode(site.now,"real",false);
+		//向R1发送的相关函数
 		Send_MessageToR1();
+		//RGB输出
 		RGB_Show();
+		//发送篮筐距离
 		Send_BasketDis();
+		//单纯为了好看的注释
 		osDelay(10);
 	}
 }
@@ -73,9 +83,8 @@ void location(void const * argument)
 {
   for(;;)
   {
+		//根据舵轮的数据回传进行计算
 		CarStatusExcept_AccordVectorWheel();
-		
-		stable = Variance_Check(chassis.expect_status.front_velocity,10,0.2,"check");
 		//加速度计算
 	  Gyro_AX_AY_Cal();
 		//识别加速度突变

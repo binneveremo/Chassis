@@ -53,6 +53,7 @@ struct dribble_t {
 		int xuan_stamp;
 		int wait;
 		int end;
+		int pole_uptime;
 	}time;
 	struct {
 		char prepared;
@@ -204,6 +205,7 @@ struct Trap_t {
 	enum{
 		trap_prepare,
 		trap_move,
+		trap_stable,
 		trap_end,
 	}status;
 	struct{
@@ -212,7 +214,7 @@ struct Trap_t {
 	}param;
 	struct {
 		float dir_ang;
-		
+		struct Point cusp;
 		
 	}process;
 	struct {	
@@ -243,8 +245,8 @@ struct Trap_t {
 
 
 
-
-
+void Trap_Flow_Test(struct Point end,float rpm,struct Point * expect);
+bool Expect_Position(struct Point start,struct Point end,float dir_ang,float rpm,struct Point * expect);
 float Variance_Check(float data,char num,float threshold,char * type);
 void ControlStatus_Detect(void);
 void Back_GamePadControl(void);

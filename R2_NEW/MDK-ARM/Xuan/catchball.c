@@ -81,7 +81,12 @@ float SelfCheck_Pos = 10;
 float Kp_Hold[7] =   {0,          0.4,          0.55,   0.45,    0.2,        0.55, 0.45 }; 
 float Kd_Hold[7] =   {0,          0.06,         0.05,   0.04,    0,          0.05, 0.04 };      
 float Trq_Hold[7]=   {0,          1.0,          3.0,    3.5,     0,          0,    1.0  };           
-float Pos_Target[7]= {1.219,      12.7,         122.94, 14.7,    1.219,      41,   20   };
+float Pos_Target[7]= {1.219,      12.7,         122.94, 17  ,    1.219,      41,   20   };
+
+//float Kp_Hold[7] =   {0,          0,         0,   0,    0,        0, 0 }; 
+//float Kd_Hold[7] =   {0,          0,         0,   0,    0,        0, 0 };      
+//float Trq_Hold[7]=   {0,          0,         0,   0,     0,       0, 0 };           
+//float Pos_Target[7]= {1.219,      0,         122.94, 14.7,    1.219,      41,   20   };
 
 // Control Parameters for Velocity MOVEMENT (Based on original SpdUp/SpdDown)
 float Spd_Move_Up = 130;

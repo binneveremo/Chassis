@@ -51,18 +51,21 @@ void Back_Flow(void){
 
 
 ///////////////////////////////////////////////////////////////////////运球流程//////////////////////////////////////////////////////////////////////////////
-struct dribble_t dribble = {.time.xuan_stamp = 1850,.time.wait = 650,.time.end = 2000,.parameter.dribble_front_velocity = 6800,.parameter.dribble_left_velocity = -80,};
+struct dribble_t dribble = {.time.xuan_stamp = 1850,.time.wait = 650,.time.end = 2000,.parameter.dribble_front_velocity = 5300,.parameter.dribble_left_velocity = -80,};
 void Dribble_Flow(void){
+	static int pole_up_begin;
 	int now = HAL_GetTick();
 	switch(dribble.status){
 		case prepare:
 			if(dribble.flagof.prepared == false){
+				pole_up_begin = now;
 				Tell_Yao_Xuan("dribble");
 				interact.defend_status = (interact.defend_status == catch_ball)?predunk:interact.defend_status;
 				interact.defend_status = ((interact.defend_status == initial) || (interact.defend_status == fold))?catch_ball:interact.defend_status;
 				dribble.flagof.prepared = true;
 			}
 			if(flow.flagof.pole_top == true){
+				dribble.time.pole_uptime = now - pole_up_begin;
 				dribble.time.begin = now;
 				dribble.status = dribble_begin;
 			}
@@ -72,7 +75,7 @@ void Dribble_Flow(void){
 				Chassis_Velocity_Out(dribble.parameter.dribble_left_velocity,dribble.parameter.dribble_front_velocity,0);
 			else
 				Self_Lock_Out("WaitDribble");
-			if(now - dribble.time.begin > dribble.time.xuan_stamp || now - dribble.time.begin < (dribble.time.wait + 500))
+			if(now - dribble.time.begin > dribble.time.xuan_stamp || now - dribble.time.begin < (dribble.time.wait + 700))
 				Tell_Yao_Xuan("catch");
 			else 
 				Tell_Yao_Xuan("fold");
@@ -117,7 +120,7 @@ struct skill_t skill = {
 	.target.point[4] = {.x = 4959,.y = -1991,.r = -28},
 	.target.point[5] = {.x = 3307,.y = -1923,.r = -23},
 	.target.point[6] = {.x = 2512,.y = -2693,.r = -42},
-	.target.point[7] = {.x = 2490,.y = -7000,.r = -61},
+	.target.point[7] = {.x = 2490,.y = -6000,.r = -61},
 
 	.param.catch_advanced_dis[0] = 200,
 	.param.catch_advanced_dis[1] = 200,
@@ -140,14 +143,14 @@ struct skill_t skill = {
 	.param.lock_dis = 100,
 	.param.lock_angle = 8,
 	
-	.param.spot[0] = {.param.p = 5.2,	.param.i = 0,	.param.istart = 6,	.param.iend = 400,	.param.ilimit = 1000,	.param.outlimit = 11000, .param.fade_start = 150, .param.fade_end = 100},
-	.param.spot[1] = {.param.p = 4.0,	.param.i = 0.3,	.param.istart = 6,	.param.iend = 400,	.param.ilimit = 1000,	.param.outlimit = 11000, .param.fade_start = 250, .param.fade_end = 100},
-	.param.spot[2] = {.param.p = 4.1,	.param.i = 0.3,	.param.istart = 6,	.param.iend = 400,	.param.ilimit = 1000,	.param.outlimit = 11000, .param.fade_start = 180, .param.fade_end = 100},
-	.param.spot[3] = {.param.p = 4.1,	.param.i = 0.5,	.param.istart = 6,	.param.iend = 400,	.param.ilimit = 1000,	.param.outlimit = 11000, .param.fade_start = 430, .param.fade_end = 100},
-	.param.spot[4] = {.param.p = 4.1,	.param.i = 1.0,	.param.istart = 6,	.param.iend = 400,	.param.ilimit = 1000,	.param.outlimit = 11000, .param.fade_start = 200, .param.fade_end = 100},
-	.param.spot[5] = {.param.p = 4.2,	.param.i = 1.3,	.param.istart = 6,	.param.iend = 400,	.param.ilimit = 1000,	.param.outlimit = 11000, .param.fade_start = 250, .param.fade_end = 100},
-	.param.spot[6] = {.param.p = 4.2,	.param.i = 1.0,	.param.istart = 6,	.param.iend = 400,	.param.ilimit = 1000,	.param.outlimit = 11000, .param.fade_start = 250, .param.fade_end = 100},
-	.param.spot[7] = {.param.p = 5.5, .param.i = 0, .param.istart = 6,	.param.iend = 400,	.param.ilimit = 1000,	.param.outlimit = 11000, .param.fade_start = 150, .param.fade_end = 100},
+	.param.spot[0] = {.param.p = 4.2,	.param.i = 0.5,	.param.istart = 6,	.param.iend = 400,	.param.ilimit = 1000,	.param.outlimit = 11000, .param.fade_start = 150, .param.fade_end = 100},
+	.param.spot[1] = {.param.p = 4.0,	.param.i = 0.3,	.param.istart = 6,	.param.iend = 400,	.param.ilimit = 1000,	.param.outlimit = 11000, .param.fade_start = 150, .param.fade_end = 80},
+	.param.spot[2] = {.param.p = 4.1,	.param.i = 0.3,	.param.istart = 6,	.param.iend = 400,	.param.ilimit = 1000,	.param.outlimit = 11000, .param.fade_start = 180, .param.fade_end = 80},
+	.param.spot[3] = {.param.p = 5  ,	.param.i = 0.5,	.param.istart = 6,	.param.iend = 400,	.param.ilimit = 1000,	.param.outlimit = 11000, .param.fade_start = 200, .param.fade_end = 80},
+	.param.spot[4] = {.param.p = 4.1,	.param.i = 1.0,	.param.istart = 6,	.param.iend = 400,	.param.ilimit = 1000,	.param.outlimit = 11000, .param.fade_start = 200, .param.fade_end = 80},
+	.param.spot[5] = {.param.p = 4.2,	.param.i = 1.3,	.param.istart = 6,	.param.iend = 400,	.param.ilimit = 1000,	.param.outlimit = 11000, .param.fade_start = 200, .param.fade_end = 80},
+	.param.spot[6] = {.param.p = 4.2,	.param.i = 1.0,	.param.istart = 6,	.param.iend = 400,	.param.ilimit = 1000,	.param.outlimit = 11000, .param.fade_start = 200, .param.fade_end = 80},
+	.param.spot[7] = {.param.p = 8  , .param.i = 0, 	.param.istart = 6,	.param.iend = 400,	.param.ilimit = 1000,	.param.outlimit = 11000, .param.fade_start = 150, .param.fade_end = 80},
 		
 	.param.catch_delay_time[0] = 500,
 	.param.catch_delay_time[1] = 500,
@@ -164,6 +167,7 @@ void Skill_Flow(void){
 	char index = skill.success_time % 8;      
 	switch(skill.status){
 		case begin:
+			Set_SendMode(&skill.target.point[index],"real",false);
 			PositionWithAngle_Lock(site.now,Merge_Point(skill.target.point[index],(struct Point){.r = shoot.deal.opposite_angle}),&skill.param.spot[index],&cr_skill);
 			if((Point_Distance(site.now,skill.target.point[index]) < skill.param.catch_advanced_dis[index]) && (skill.flagof.net_catched == false))
 				skill.flagof.net_catched = true,Tell_Yao_Xuan((index <= 7)?"catch":"defend");
@@ -218,11 +222,31 @@ struct Trap_t trap = {
 	.param.point[6] = {.x = 2470,.y = -2730,.r = -42},
 	
 };
-struct Point Expect_Position(float left_rpm,float front_rpm){
-	static struct Point expect;
-	expect.x = site.now.x + front_rpm / 1394.7 * shoot.expect.ball_total_time;
-	expect.y = site.now.y + left_rpm / 1394.7  * shoot.expect.ball_total_time;\
-	return expect;
+
+//////////////////舵轮与码盘的比例 1394.7
+bool Expect_Position(struct Point start,struct Point end,float dir_ang,float rpm,struct Point * expect){
+	float total_dis = Point_Distance(start,end);
+	/////////遍历所有点位
+	struct Point traverse;
+	bool find = false;
+	float shoot_distance,arrive_time,ball_time;	
+#define step 10
+#define threshold 20
+	for(float dis = 0; dis < total_dis;dis += step){
+		traverse.x = start.x + dis * cos(ang2rad(dir_ang));
+		traverse.y = start.y + dis * sin(ang2rad(dir_ang));
+		shoot_distance = Point_Distance(traverse,shoot.receive.shoot_pos);
+		ball_time = Polynomial_4ExpectBallTotalTime(shoot_distance);
+		arrive_time = dis / (rpm / 1394.7);
+		if(fabs(ball_time - arrive_time) < threshold){
+			expect->x = traverse.x;
+			expect->y = traverse.y;
+			find = true;
+			break;
+		}
+	}
+	return find;
+#undef threshold
 }
 bool Velocity_Stable(void){
 	
@@ -231,42 +255,51 @@ bool Velocity_Stable(void){
 
 
 void Trap_Flow(void){
+	static float velocity_history[10];
 	static float left_velocity_car,front_velocity_car,left_velocity_field,front_velocity_field;
+	float variance = Variance_Cal(velocity_history,hypot(chassis.expect_status.front_velocity,chassis.expect_status.left_velocity),sizeof(velocity_history) / sizeof(float));
 	switch(trap.status){
 		case trap_prepare:
-			trap.process.dir_ang = atan2f(trap.param.point[trap.success_time].y - site.now.y,trap.param.point[trap.success_time].x - site.now.x);
+			trap.process.dir_ang = rad2ang(atan2f(trap.param.point[trap.success_time].y - site.now.y,trap.param.point[trap.success_time].x - site.now.x));
 			left_velocity_field = trap.param.expect_velocity[trap.success_time] * sin(ang2rad(trap.process.dir_ang));
-			front_velocity_field = trap.param.expect_velocity[trap.success_time] * cos(ang2rad(trap.process.dir_ang));	
+			front_velocity_field = trap.param.expect_velocity[trap.success_time] * cos(ang2rad(trap.process.dir_ang));			
 			trap.status = trap_move;
 		break;
 		case trap_move:
 			//场地速度转化到车体速度
-			Field2Car(&front_velocity_car,&left_velocity_car,&front_velocity_field,&left_velocity_field);
-			Chassis_Velocity_Out(left_velocity_car,front_velocity_car,Angle_Lock(site.now.r,shoot.deal.opposite_angle,&cr_skill));
-			if(trap.flagof.velocity_stable == true) 
-				Set_SendMode(Expect_Position(left_velocity_field,front_velocity_field),"once",true);
+			if(variance <= 0.01)
+				trap.status = trap_stable;
+			goto move;
+		case trap_stable:
+			if(Expect_Position(site.now,trap.param.point[trap.success_time],trap.process.dir_ang,trap.param.expect_velocity[trap.success_time],&trap.process.cusp) == true)
+				Set_SendMode(&trap.process.cusp,"once",true);
+			goto move;
+			
+		
+		
+			
 			
 			
 			
 		break;
 		default:
 			break;
-	
-	
-	
-	
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
+move:
+	Field2Car(&front_velocity_car,&left_velocity_car,&front_velocity_field,&left_velocity_field);
+	Chassis_Velocity_Out(left_velocity_car,front_velocity_car,Angle_Lock(site.now.r,shoot.deal.opposite_angle,&cr_skill));
 }
-
+void Trap_Flow_Test(struct Point end,float rpm,struct Point * expect){
+	float angle_dir = atan2f(end.y - site.now.y,end.x - site.now.x);
+	float left_velocity_car,front_velocity_car,left_velocity_field,front_velocity_field;
+	left_velocity_field = rpm * sin(angle_dir);
+	front_velocity_field = rpm * cos(angle_dir);	
+	Field2Car(&front_velocity_car,&left_velocity_car,&front_velocity_field,&left_velocity_field);
+	
+	if(Expect_Position(site.now,end,Point_Angle(site.now,end),rpm,expect) == true)
+		Set_SendMode(expect,"once",true);
+	Chassis_Velocity_Out(left_velocity_car,front_velocity_car,Angle_Lock(site.now.r,shoot.deal.opposite_angle,&cr_skill));
+}
 
 
 
@@ -342,6 +375,8 @@ void Back_GamePadControl(void){
 	
 	//清除自动流程的枚举
 	chassis.Control_Status = GamePad_Control;
+	
+	Set_SendMode(&site.now,"real",false);
 }
 /// @brief 自动流程
 void Auto_Flow(void){
@@ -370,30 +405,18 @@ void Auto_Flow(void){
 #undef Rocker_Move
 }
 void ControlStatus_Detect(void){
-	if((vision.basketlock.online_flag == true) && (basketlock.position.ladar2basketdis < 1200) && (chassis.Control_Status == GamePad_Control) && (GamePad_Data.witch[7] == true))
-		chassis.Control_Status = Auto_Control,flow.type = dribble_flow; 
+	
+	
+	
+	
 }
-
-
-
-float Variance,Variance_Threshold = 0.1;
-int last_time;
 void Receive_BallCheck(void){
 #define NUM 4
-	Variance = 0;
+#define Variance_Threshold 0.1
+	static int last_time;
 	static float gyro_history[NUM];
-	for(unsigned char i = 0; i< NUM - 1; i++)
-		gyro_history[i] = gyro_history[i + 1];
-	gyro_history[NUM - 1] = site.car.xfilter.accel;
-	/////计算方差/////////////
-	float total = 0;
-	for(unsigned char i = 0; i < NUM ; i++)
-		total += gyro_history[i];
-	float mean = total / NUM;
-	for(unsigned char i = 0;i < NUM;i++)
-		Variance += pow(fabs(gyro_history[i] - mean),2);
-	Variance = Variance / NUM;
-	if((Variance > Variance_Threshold) && (HAL_GetTick() - last_time > 1500) && (chassis.lock.flag == true) && (flow.flagof.R1_Shooted == true))
+	float variance = Variance_Cal(gyro_history,site.car.xfilter.accel,NUM);
+	if((variance > Variance_Threshold) && (HAL_GetTick() - last_time > 1500) && (chassis.lock.flag == true) && (flow.flagof.R1_Shooted == true))
 		shoot.deal.ball_fly_time = HAL_GetTick() - shoot.deal.shoot_begin,last_time = HAL_GetTick(),flow.flagof.receive_ball_bygyro = true;
 }
 void Send_ReceiveBallMessage(void){
@@ -405,24 +428,6 @@ void Send_ReceiveBallMessage(void){
 		Send_Float_Data(4);
 		osDelay(10);
 	}
-}
-float Variance_Check(float data,char num,float threshold,char * type){
-	static float history[50];
-	for(unsigned char i = 0; i< num - 1; i++)
-		history[i] = history[i + 1];
-	history[NUM - 1] = data;
-	float total = 0,variance = 0;
-	for(unsigned char i = 0; i < NUM ; i++)
-		total += history[i];
-	float mean = total / NUM;
-	for(unsigned char i = 0;i < NUM;i++)
-		variance += pow(fabs(history[i] - mean),2);
-	variance = variance / NUM;
-	
-	if(strcmp(type,"check") == 0)
-		return (bool)((variance < threshold)?true:false);
-	else 
-		return variance;
 }
 
 

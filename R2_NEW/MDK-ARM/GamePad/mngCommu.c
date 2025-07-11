@@ -68,8 +68,8 @@ void Transmit_task(void)
 #ifdef USE_UART
 		debugData_pkg.rec_cnt = pkg_cnt_uart;
 		debugData_pkg.crc = crc8_generate((const uint8_t*)&debugData_pkg+2, sizeof(debugData_pkg)-2);		// 生成crc校验码
-//		HAL_UART_Transmit_DMA(commuUart.huart, (uint8_t *)&debugData_pkg, sizeof(debugData_pkg));
-		zigbee_transmit((uint8_t *)&debugData_pkg, sizeof(debugData_pkg), peer_addr);
+		HAL_UART_Transmit_DMA(commuUart.huart, (uint8_t *)&debugData_pkg, sizeof(debugData_pkg));
+//		zigbee_transmit((uint8_t *)&debugData_pkg, sizeof(debugData_pkg), peer_addr);
 		// 清除已回报的包
 		pkg_cnt_uart = 0;
 #endif
@@ -131,8 +131,8 @@ INFINITE_LOOP_START
 			debugData_pkg.debug_data[0] = Char2float("SEND");
 			debugData_pkg.debug_data[1] = site.now.x;
 			debugData_pkg.debug_data[2] = site.now.y;
-			debugData_pkg.debug_data[3] = shoot.send.target.x;
-			debugData_pkg.debug_data[4] = shoot.send.target.y;
+			debugData_pkg.debug_data[3] = shoot.send.target->x;
+			debugData_pkg.debug_data[4] = shoot.send.target->y;
 			break;
 		default:
 			break;
@@ -168,22 +168,22 @@ void Mng_RxData(uint8_t *pdata, uint16_t data_length)
 void ArrangeSerialList(void) {
 #define commuRxbuff		commuUart.Uart_RxBuff[commuUart.Uart_RxBuffIndex]
 #define commuRxCnt		commuUart.Uart_Rx_Cnt
-//	if(commuUart.Uart_RxFlag == 1) {
-//		Mng_RxData(commuRxbuff, commuRxCnt);
-//		pkg_cnt_uart++;
-//	}
-	if(commuUart.Uart_RxFlag) {
-		if(zigbee_decode(commuRxbuff, commuRxCnt) == MASTER_COMMU)
-		{
-			if(zigbee_state.source_addr == peer_addr)
-			{
-				Mng_RxData(zigbee_msg.RxData, zigbee_msg.datalen);
-				pkg_cnt_uart++;
-			}
-			
-			// 这里写与其它zigbee模块通信的接收数据处理
-		}
+	if(commuUart.Uart_RxFlag == 1) {
+		Mng_RxData(commuRxbuff, commuRxCnt);
+		pkg_cnt_uart++;
 	}
+//	if(commuUart.Uart_RxFlag) {
+//		if(zigbee_decode(commuRxbuff, commuRxCnt) == MASTER_COMMU)
+//		{
+//			if(zigbee_state.source_addr == peer_addr)
+//			{
+//				Mng_RxData(zigbee_msg.RxData, zigbee_msg.datalen);
+//				pkg_cnt_uart++;
+//			}
+//			
+//			// 这里写与其它zigbee模块通信的接收数据处理
+//		}
+//	}
 }
 #endif
 

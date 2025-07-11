@@ -13,7 +13,7 @@
 #define site_id  0x201
 #define vision_reset_id  0x202
 #define basket_id 0xA1
-#define position_id    0xA2
+#define position_id  0xA2
 #define online_id 0xA3
 
 #define Vision_Flag_Clear() {vision.basketlock.online_flag  = false,vision.position.online_flag = false;}

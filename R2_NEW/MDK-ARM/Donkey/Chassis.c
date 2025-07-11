@@ -275,7 +275,7 @@ struct VectorWheeel_Param_t{
 	float translation_ratio;
 	float rotate_ratio;
 };
-struct VectorWheeel_Param_t VectorWheeel_Param = {.translation_ratio = 1, .rotate_ratio = 1};
+struct VectorWheeel_Param_t VectorWheeel_Param = {.translation_ratio = 1 / 1394.7, .rotate_ratio = 1};
 
 void CarStatusExcept_AccordVectorWheel(void){
 #define Motor_Angle(index)    (ang2rad(chassis.motor.turn[index].angle_now))

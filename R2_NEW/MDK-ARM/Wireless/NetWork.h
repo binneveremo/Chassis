@@ -41,7 +41,7 @@ struct R1_t {
 		struct {
 			char request;
 		}flagof;
-		struct Point target;
+		struct Point * target;
 	}send;
 	struct {
 		float ball_offset_time;
@@ -52,6 +52,7 @@ struct R1_t {
 	struct {
 		float distance;
 		float opposite_angle;
+		struct Point shoot_pos;
 		char getdata_flag;
 		int shoot_begin;
 		int ball_fly_time;
@@ -68,7 +69,7 @@ void Send_MessageToR1(void);
 void Send_Float_Data(char num);
 
 void Exchange_With_R1(void);
-void Set_SendMode(struct Point target,char * mode,bool request);
+void Set_SendMode(struct Point * target,char * mode,bool request);
 void BallTime_Cal(void);
 
 

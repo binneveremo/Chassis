@@ -27,6 +27,12 @@ void Get_GamePad_Data(void){
 void GamePad_Data_Cla(void){ 
 	//拨码状态切换
 	Get_GamePad_Data();
+	if((GamePad_Data.witch[4] == 1) && (GamePad_Data.witch[6] == 1) && (GamePad_Data.witch[7] == 1))
+		chassis.Control_Status = Debug_Control;
+	else if(chassis.Control_Status == Debug_Control)
+		chassis.Control_Status = GamePad_Control;
+
+	
 #if MY_SELF
 
 #define Reuse_Witch GamePad_Data.witch[5] 

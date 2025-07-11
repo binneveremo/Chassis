@@ -65,9 +65,9 @@ extern struct Spot_t spot;
 #define right_drive_id 6
 #define behind_drive_id 8
 //左转 偏置变大
-#define front_offset -20
-#define left_offset 82
-#define right_offset -110
+#define front_offset -21
+#define left_offset 73
+#define right_offset -103
 #define behind_offset 77
 
 

@@ -100,7 +100,6 @@ int main(void)
 
   /* MPU Configuration--------------------------------------------------------*/
   MPU_Config();
-
   /* MCU Configuration--------------------------------------------------------*/
 
   /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
@@ -111,8 +110,6 @@ int main(void)
 
   /* Configure the system clock */
   SystemClock_Config();
-	//6008 1613
-	//1425 4710 756 1507
 
   /* Configure the peripherals common clocks */
   PeriphCommonClock_Config();
@@ -141,6 +138,8 @@ int main(void)
   MX_TIM16_Init();
   /* USER CODE BEGIN 2 */
 	Chassis_SelfLock(true);
+	//设置向R1发送数据的格式
+	Set_SendMode(&site.now,"real",false);
 	FDCAN4_Init();                                                                             
 	RGB_Init();
 	GamePad_Init();

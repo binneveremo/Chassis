@@ -57,12 +57,16 @@ void R1ExchangeData_Decode(UART_HandleTypeDef *huart){
 	shoot.receive.shoot_flag = format.shoot_flag;
 	//////////计算部分///////////////////
 	shoot.deal.opposite_angle = rad2ang(atan2f(shoot.receive.shoot_pos.y - site.now.y,shoot.receive.shoot_pos.x - site.now.x)) + 180;
+	shoot.receive.shoot_pos.r = shoot.deal.opposite_angle;
 	shoot.deal.distance = hypot(shoot.receive.shoot_pos.y - site.now.y,shoot.receive.shoot_pos.x - site.now.x);
 	flow.flagof.R1_Shooted = (shoot.receive.shoot_flag == 1)?true:flow.flagof.R1_Shooted;
 	/////////识别发射//////////////////////
 	if((HAL_GetTick() - shoot.deal.shoot_begin > 2000) && (flow.flagof.R1_Shooted == true))
 		shoot.deal.shoot_begin = HAL_GetTick(),BallTime_Cal();
 	interact.flagof.R1_shooted = (shoot.receive.shoot_flag == 1)?true:interact.flagof.R1_shooted;
+	shoot.expect.ball_incar_time = Polynomial_4ExpectBallIncarTime(shoot.deal.distance);
+	shoot.expect.ball_fly_time = Polynomial_4ExpectBallFlyingTime(shoot.deal.distance);
+	
 }
 unsigned char R1Data_Sum(unsigned char * data){
 	unsigned char sum = NONE;
@@ -71,8 +75,13 @@ unsigned char R1Data_Sum(unsigned char * data){
 	return sum;
 }
 
-void Set_SendMode(struct Point target,char * mode,bool request){
-	Copy(shoot.send.target,target);
+void Set_SendMode(struct Point * target,char * mode,bool request){
+	static struct Point * send;
+	send = target;
+	
+	shoot.send.target = target;
+	
+	
 	shoot.send.mode = (strcmp(mode,"once") == 0)?send_once:shoot.send.mode;
 	shoot.send.mode = (strcmp(mode,"real") == 0)?send_real_time:shoot.send.mode;
 	shoot.send.flagof.request = request;
@@ -93,12 +102,13 @@ void Send_MessageToR1(void){
 #define Danger_Flag 3
 #define NetLow_Flag 0
 	char net_Status = (interact.defend_status == defend)?1:0;
+	
 	int net_offset = (interact.defend_status == defend)?322:40;
 	float netx = net_offset * cos(ang2rad(site.now.r));
 	float nety = net_offset * sin(ang2rad(site.now.r));
 	format.header = 0xAA;
-	format.net_x = shoot.send.target.x + netx;
-	format.net_y = shoot.send.target.y + nety;
+	format.net_x = shoot.send.target->x + netx;
+	format.net_y = shoot.send.target->y + nety;
 	format.basket_x = vision.visual.basket_visual.x;
 	format.basket_y = vision.visual.basket_visual.y;
 	format.flag = (shoot.send.flagof.request == true)?Request_Flag:net_Status;
@@ -110,7 +120,7 @@ void Send_MessageToR1(void){
 			HAL_UART_Transmit(&R1_Exchange_Usart, shoot.send.buffer, R1_Data_Num, HAL_MAX_DELAY);
 		break;
 		case send_once:
-			HAL_UART_Transmit(&R1_Exchange_Usart, shoot.send.buffer, R1_Data_Num, HAL_MAX_DELAY);
+			for(unsigned char i = 0;i < 5; i++) HAL_UART_Transmit(&R1_Exchange_Usart, shoot.send.buffer, R1_Data_Num, HAL_MAX_DELAY);
 			shoot.send.mode = send_none;
 		break;
 		default:
@@ -167,6 +177,24 @@ double Polynomial_4ExpectBallIncarTime(float distance){
 double Polynomial_4ExpectBallTotalTime(float distance){
 	return Polynomial_4ExpectBallFlyingTime(distance) + Polynomial_4ExpectBallIncarTime(distance);
 }
+//void Set_SendModeAuto(void){
+//	if((chassis.Control_Status == Auto_Control) && (flow.type) )
+
+//}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
