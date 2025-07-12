@@ -47,7 +47,7 @@
 #include "NetWork.h"
 #include "Gyro.h" 
 #include "RGB.h"
-
+#include "Flash_Bsp.h"
 
 /* USER CODE END Includes */
 
@@ -137,12 +137,13 @@ int main(void)
   MX_TIM23_Init();
   MX_TIM16_Init();
   /* USER CODE BEGIN 2 */
+	FlashBsp_Init();
 	Chassis_SelfLock(true);
 	//设置向R1发送数据的格式
 	Set_SendMode(&site.now,"real",false);
 	FDCAN4_Init();                                                                             
 	RGB_Init();
-	GamePad_Init();
+	//GamePad_Init();
 	Encoder_Init();
 	TurnMotor_OffsetAngleInit();
 	Wireless_init();

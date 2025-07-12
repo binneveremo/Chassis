@@ -115,7 +115,7 @@ void Chassis_Basket_Noheader(void){
 
 
 
-
+                                                 
 
 bool TurnMotor_InPosition(void)
 {
@@ -139,7 +139,7 @@ bool TurnMotor_InTurnPosition(void)
 ///////////////角度与跑点PID
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////跑点相关///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////三种跑法：1.位置PID 2.速度PID 3.位置PID+速度PID////////////////////////////////////////////////////////////////////////////////////
-struct correct_angle_t cr_basket = {.p = 25, .d = 0.05, .i = 1, .ilimit = 700,  .istart = 2, .iend = 15, .outlimit = 6000, .accel_gain = 1.4, .velocity_gain = 0.2,.fade_max = 7, .fade_min = 2 ,.lock_angle = 3};
+struct correct_angle_t cr_basket = {.p = 25, .d = 0.05, .i = 1,   .ilimit = 700,  .istart = 2, .iend = 15, .outlimit = 6000, .accel_gain = 1.4, .velocity_gain = 0.2,.fade_max = 7, .fade_min = 2 ,.lock_angle = 3};
 struct correct_angle_t cr_skill  = {.p = 35, .d = 0.03, .i = 0.6, .ilimit = 1000, .istart = 6, .iend = 15, .outlimit = 6000, .accel_gain = 1.4, .velocity_gain = 0.2,.fade_max = 5, .fade_min = 1.5 ,.lock_angle = 8};
 float Angle_Lock(float now,float target,struct correct_angle_t * cr){
 	cr->error = NormalizeAng_Single(target - now);
@@ -152,8 +152,8 @@ float Angle_Lock(float now,float target,struct correct_angle_t * cr){
 	return Limit(dynamic_gain* fade_gain * p + cr->itotal + d, -cr->outlimit, cr->outlimit);
 }
 ///////////////////////////////////////新型PID 测试使用
-struct Spot_t spot_skill  = {.param.p = 3.8,	.param.i = 1,	.param.istart = 6,	.param.iend = 400,	.param.ilimit = 1000,	.param.outlimit = 11000, .param.fade_start = 430, .param.fade_end = 100, .param.lock_dis = 30};
-struct Spot_t spot_basket = {.param.p = 4.3,	.param.i = 3,	.param.istart = 6,	.param.iend = 700,	.param.ilimit = 1000,	.param.outlimit = 12000, .param.fade_start = 150, .param.fade_end = 50,  .param.lock_dis = 15};
+struct Spot_t spot_skill  = {.param.p = 3.8,	.param.i = 1,   .param.istart = 6,	.param.iend = 400,	.param.ilimit = 1000,	.param.outlimit = 11000, .param.fade_start = 430, .param.fade_end = 100, .param.lock_dis = 30};
+struct Spot_t spot_basket = {.param.p = 4.9,	.param.i = 0.5,	.param.istart = 15,	.param.iend = 700,	.param.ilimit = 1000,	.param.outlimit = 12000, .param.fade_start = 150, .param.fade_end = 50,  .param.lock_dis = 15};
 void PositionWithAngle_Lock(struct Point now,struct Point target,struct Spot_t * spot,struct correct_angle_t * cr){
 	float xerror = target.x - now.x;
 	float yerror = target.y - now.y;

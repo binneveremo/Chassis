@@ -341,7 +341,7 @@
               <MiscControls></MiscControls>
               <Define>USE_HAL_DRIVER,STM32H723xx,USE_PWR_LDO_SUPPLY</Define>
               <Undefine></Undefine>
-              <IncludePath>../Core/Inc;../Drivers/STM32H7xx_HAL_Driver/Inc;../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy;../Middlewares/Third_Party/FreeRTOS/Source/include;../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS;../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F;../Drivers/CMSIS/Device/ST/STM32H7xx/Include;../Drivers/CMSIS/Include;./Can;./Carrot;./Donkey;./GamePad;./Global;./Master;./CPU;./Position;./Communication;./Filter;./Correct;./Wireless;./RGB;./Guard;./Xuan;./Basket;./SPI_FDCAN;../lib/eigen;./Control</IncludePath>
+              <IncludePath>../Core/Inc;../Drivers/STM32H7xx_HAL_Driver/Inc;../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy;../Middlewares/Third_Party/FreeRTOS/Source/include;../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS;../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F;../Drivers/CMSIS/Device/ST/STM32H7xx/Include;../Drivers/CMSIS/Include;./Can;./Carrot;./Donkey;./GamePad;./Global;./Master;./CPU;./Position;./Communication;./Filter;./Correct;./Wireless;./RGB;./Guard;./Xuan;./Basket;./SPI_FDCAN;../lib/eigen;./Control;.\Flash</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -1684,6 +1684,21 @@
               <FileName>Control.hpp</FileName>
               <FileType>8</FileType>
               <FilePath>.\Control\Control.hpp</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>Flash</GroupName>
+          <Files>
+            <File>
+              <FileName>Flash_Bsp.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Flash\Flash_Bsp.c</FilePath>
+            </File>
+            <File>
+              <FileName>Flash_Bsp.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Flash\Flash_Bsp.h</FilePath>
             </File>
           </Files>
         </Group>

@@ -410,13 +410,16 @@ void ControlStatus_Detect(void){
 	
 	
 }
+
+float v_check;
+
 void Receive_BallCheck(void){
 #define NUM 4
 #define Variance_Threshold 0.1
 	static int last_time;
 	static float gyro_history[NUM];
-	float variance = Variance_Cal(gyro_history,site.car.xfilter.accel,NUM);
-	if((variance > Variance_Threshold) && (HAL_GetTick() - last_time > 1500) && (chassis.lock.flag == true) && (flow.flagof.R1_Shooted == true))
+	v_check = Variance_Cal(gyro_history,site.car.xfilter.accel,NUM);
+	if((v_check > Variance_Threshold) && (HAL_GetTick() - last_time > 1500) && (chassis.lock.flag == true) && (flow.flagof.R1_Shooted == true))
 		shoot.deal.ball_fly_time = HAL_GetTick() - shoot.deal.shoot_begin,last_time = HAL_GetTick(),flow.flagof.receive_ball_bygyro = true;
 }
 void Send_ReceiveBallMessage(void){
@@ -429,6 +432,7 @@ void Send_ReceiveBallMessage(void){
 		osDelay(10);
 	}
 }
+
 
 
 

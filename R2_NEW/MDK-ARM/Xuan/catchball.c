@@ -92,10 +92,10 @@ float Pos_Target[7]= {1.219,      12.7,         122.94, 17  ,    1.219,      41,
 float Spd_Move_Up = 130;
 float Spd_Move_Up_Defend = 150; 
 float Spd_Move_Up_Test = 30;
-float Spd_Move_Down = -150; 
+float Spd_Move_Down = -200; 
 float Kd_Move_Up = 3;
 float Kd_Move_Up_Test = 4;
-float Kd_Move_Down = 0.2; 
+float Kd_Move_Down = 0.8; 
 float Trq_Move_Up = 0;  
 float Trq_Move_Down = 0.5;
 
@@ -144,7 +144,8 @@ uint32_t CatchTimeCal()
 {
 	uint32_t catch_delay_time;
 //	catch_delay_time = sqrtf((2 * TwoCar_Dis_Calc() * tanf(ang2rad(65)) - height_diff) / gravity_accel);
-	catch_delay_time = -0.009572 * TwoCar_Dis_Calc() * TwoCar_Dis_Calc() + 0.2574 * TwoCar_Dis_Calc() + 0.4732;
+//	catch_delay_time = -0.009572 * TwoCar_Dis_Calc() * TwoCar_Dis_Calc() + 0.2574 * TwoCar_Dis_Calc() + 0.4732;
+	catch_delay_time = -0.008424 * TwoCar_Dis_Calc() * TwoCar_Dis_Calc() + 0.2535 * TwoCar_Dis_Calc() + 0.4824;
 	return catch_delay_time;
 }
 
