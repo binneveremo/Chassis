@@ -143,7 +143,7 @@ int main(void)
 	Set_SendMode(&site.now,"real",false);
 	FDCAN4_Init();                                                                             
 	RGB_Init();
-	//GamePad_Init();
+	GamePad_Init();
 	Encoder_Init();
 	TurnMotor_OffsetAngleInit();
 	Wireless_init();
