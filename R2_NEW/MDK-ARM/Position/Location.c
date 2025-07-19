@@ -18,7 +18,16 @@ void Location_Type_Choose(void){
 	Copy(interact.pos.self,site.now);
 	Copy(interact.pos.shoot,shoot.receive.shoot_pos);
 }
-
+float vx_wheel_field,vy_wheel_field;
+void WheelVelocity_Fuse_WithOdometer(void){
+	Car2Field(&vx_wheel_field,&vy_wheel_field,&chassis.expect_status.front_velocity,&chassis.expect_status.left_velocity);
+	static float wheel_total_velocity_history[5],odo_total_velocity_history[5];
+	float wheel_velocity_variance = Variance_Cal(wheel_total_velocity_history,hypot(chassis.expect_status.front_velocity,chassis.expect_status.left_velocity),sizeof(wheel_total_velocity_history) / sizeof(float));
+	float odo_velocity_variance   = Variance_Cal(odo_total_velocity_history,site.car.velocity_totalenc,sizeof(odo_total_velocity_history) / sizeof(float));
+	float k = wheel_velocity_variance / (wheel_velocity_variance + odo_velocity_variance + 1e-3);
+	site.field.vx_fuse = k * site.field.vx_enc + (1 - k) * vx_wheel_field;
+	site.field.vy_fuse = k * site.field.vy_enc + (1 - k) * vy_wheel_field;
+}
 
 
 

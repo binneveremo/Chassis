@@ -104,6 +104,7 @@ void HandleError(ErrorCode_t error_code);
 void ClearError(void);
 bool IsInErrorState(void);
 void RecoverFromError(void);
+bool CheckMoveTimeout(OverallState_t state);
 
 
 

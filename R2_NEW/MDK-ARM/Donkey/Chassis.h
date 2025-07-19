@@ -41,7 +41,7 @@ extern struct Spot_t spot;
 #define right_wheel 2
 #define behind_wheel 3
 
-#if	 true
+#define RePlace false
 //右 104 
 //左 103 7
 //后 102 8
@@ -61,46 +61,28 @@ extern struct Spot_t spot;
 #define behind_turn_receive_id 102
 //驱动轮 VESC的ID
 #define front_drive_id 9
-#define left_drive_id 7
+#define left_drive_id 8
 #define right_drive_id 6
-#define behind_drive_id 8
+#define behind_drive_id 7
 //左转 偏置变大
+#if !RePlace
+
+#define front_offset -96
+#define left_offset -6
+#define right_offset 120
+#define behind_offset 135
+
+#endif
+
+#if RePlace
+
 #define front_offset -21
 #define left_offset 73
 #define right_offset -103
 #define behind_offset 77
 
-
-#else
-
-//右 104 
-//左 103 7
-//后 102 8
-//前 101 9 
-
-
-//转向轮 发送的ID
-#define front_turn_send_id 4
-#define left_turn_send_id 3
-#define right_turn_send_id 1
-#define behind_turn_send_id 2
-//转向轮 回传的ID
-#define front_turn_receive_id 104
-#define left_turn_receive_id 103
-#define right_turn_receive_id 101
-#define behind_turn_receive_id 102
-//驱动轮 VESC的ID
-#define front_drive_id 9
-#define left_drive_id 7
-#define right_drive_id 6
-#define behind_drive_id 8
-//左转 偏置变大
-#define front_offset -13
-#define left_offset 72
-#define right_offset  100
-#define behind_offset  -69
-
 #endif
+
 enum opposite_t{
 	none,
 	R1,
@@ -200,7 +182,7 @@ void Chassis_Velocity_Out(float left,float front,float anticlock);
 void GamePad_Velocity_Control(void);
 void Self_Lock_Out(char * lock_reason);
 float Angle_Lock(float now,float target,struct correct_angle_t * cr);
-void PositionWithAngle_Lock(struct Point now,struct Point target,struct Spot_t * spot,struct correct_angle_t * cr);
+bool PositionWithAngle_Lock(struct Point now,struct Point target,struct Spot_t * spot,struct correct_angle_t * cr);
 
 bool TurnMotor_InTurnPosition(void);
 void Chassis_Basket_Noheader(void);

@@ -50,7 +50,7 @@ RetryTimeout 自动重发等待时间
 
 #ifdef USE_NRF
 #include "Nrf.h"
-#ifdef Carbon_Car
+#if true
 	#define NRF_INIT (Nrf_t) {                                                \
 			.hspi = &hspi4,                                                     \
 			.ce  = {.port = GPIOE, .pin = GPIO_PIN_15},                         \
@@ -65,7 +65,7 @@ RetryTimeout 自动重发等待时间
 			.rf_channel = 3,                                                    \
 			.nrf_rx_callback = NrfCommu_EXTI_Callback,                          \
 		}
-#else 
+#else
 	#define NRF_INIT (Nrf_t) {                                              \
 			.hspi = &hspi4,                                                     \
 			.ce  = {.port = GPIOE, .pin = GPIO_PIN_15},                         \

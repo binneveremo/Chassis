@@ -154,7 +154,8 @@ float Angle_Lock(float now,float target,struct correct_angle_t * cr){
 ///////////////////////////////////////新型PID 测试使用
 struct Spot_t spot_skill  = {.param.p = 3.8,	.param.i = 1,   .param.istart = 6,	.param.iend = 400,	.param.ilimit = 1000,	.param.outlimit = 11000, .param.fade_start = 430, .param.fade_end = 100, .param.lock_dis = 30};
 struct Spot_t spot_basket = {.param.p = 4.9,	.param.i = 0.5,	.param.istart = 15,	.param.iend = 700,	.param.ilimit = 1000,	.param.outlimit = 12000, .param.fade_start = 150, .param.fade_end = 50,  .param.lock_dis = 15};
-void PositionWithAngle_Lock(struct Point now,struct Point target,struct Spot_t * spot,struct correct_angle_t * cr){
+bool PositionWithAngle_Lock(struct Point now,struct Point target,struct Spot_t * spot,struct correct_angle_t * cr){
+	bool flag = false;
 	float xerror = target.x - now.x;
 	float yerror = target.y - now.y;
 	float dis = hypot(xerror,yerror);
@@ -175,7 +176,8 @@ void PositionWithAngle_Lock(struct Point now,struct Point target,struct Spot_t *
 	
 	Chassis_Velocity_Out(vnow * sin(angle), vnow * cos(angle), Angle_Lock(now.r,target.r,cr));
 	if((dis < spot->param.lock_dis) && (fabs(cr->error) < cr->lock_angle))
-		Self_Lock_Out("Near");
+		Self_Lock_Out("Near"),flag = true;
+	return flag;
 }
 
 
@@ -275,7 +277,7 @@ struct VectorWheeel_Param_t{
 	float translation_ratio;
 	float rotate_ratio;
 };
-struct VectorWheeel_Param_t VectorWheeel_Param = {.translation_ratio = 1 / 1394.7, .rotate_ratio = 1};
+struct VectorWheeel_Param_t VectorWheeel_Param = {.translation_ratio = 1 / 14139.5, .rotate_ratio = 1};
 
 void CarStatusExcept_AccordVectorWheel(void){
 #define Motor_Angle(index)    (ang2rad(chassis.motor.turn[index].angle_now))

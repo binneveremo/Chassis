@@ -268,7 +268,7 @@
         <Ww>
           <count>21</count>
           <WinNumber>1</WinNumber>
-          <ItemText>odometer</ItemText>
+          <ItemText>odometer,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>22</count>
@@ -328,7 +328,7 @@
         <Ww>
           <count>33</count>
           <WinNumber>1</WinNumber>
-          <ItemText>skill</ItemText>
+          <ItemText>skill,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>34</count>
@@ -338,7 +338,7 @@
         <Ww>
           <count>35</count>
           <WinNumber>1</WinNumber>
-          <ItemText>shoot,0x0A</ItemText>
+          <ItemText>shoot,0x10</ItemText>
         </Ww>
         <Ww>
           <count>36</count>
@@ -349,6 +349,16 @@
           <count>37</count>
           <WinNumber>1</WinNumber>
           <ItemText>v_check_flag</ItemText>
+        </Ww>
+        <Ww>
+          <count>38</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>signx</ItemText>
+        </Ww>
+        <Ww>
+          <count>39</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>signy</ItemText>
         </Ww>
       </WatchWindow1>
       <WatchWindow2>
@@ -634,7 +644,7 @@
 
   <Group>
     <GroupName>Drivers/STM32H7xx_HAL_Driver</GroupName>
-    <tvExp>1</tvExp>
+    <tvExp>0</tvExp>
     <tvExpOptDlg>0</tvExpOptDlg>
     <cbSel>0</cbSel>
     <RteFlg>0</RteFlg>

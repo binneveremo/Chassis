@@ -109,7 +109,7 @@ INFINITE_LOOP_START
 			debugData_pkg.debug_data[0] = Char2float("LADA");
 			debugData_pkg.debug_data[1] = vision.field.carcenter_fieldinterp.x;
 			debugData_pkg.debug_data[2] = vision.field.carcenter_fieldinterp.y;
-			debugData_pkg.debug_data[3] = vision.field.carcenter_fieldinterp.r;
+			debugData_pkg.debug_data[3] = vision.visual.ladar_visual.r;
 			debugData_pkg.debug_data[4] = vision.field.height;
 			break;
 		case 2:
@@ -121,10 +121,10 @@ INFINITE_LOOP_START
 			break;
 		case 3:
 			debugData_pkg.debug_data[0] = Char2float("DEBG");
-			debugData_pkg.debug_data[1] = shoot.expect.ball_fly_time;
+			debugData_pkg.debug_data[1] = shoot.deal.ball_fly_time;
 			debugData_pkg.debug_data[2] = shoot.deal.distance;
 			debugData_pkg.debug_data[3] = shoot.receive.shoot_rpm;
-			debugData_pkg.debug_data[4] = shoot.expect.ball_incar_time;
+			debugData_pkg.debug_data[4] = shoot.receive.shoot_incar_time;
 			
 			break;
 		case 4:

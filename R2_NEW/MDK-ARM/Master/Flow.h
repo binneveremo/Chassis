@@ -41,12 +41,14 @@ extern struct Flow flow;
 ////////////////////////////////////////////////////运球流程////////////////////////////////////////////////
 struct dribble_t {
 	enum{
-		prepare,
+		dribble_runp,
+		dribble_prepare,
 		dribble_begin,	
 	}status;
 	struct {
 		int dribble_front_velocity;
 		int dribble_left_velocity;
+		struct Point dribble_point[2];
 	}parameter;
 	struct {
 		int begin;
@@ -59,6 +61,7 @@ struct dribble_t {
 		char prepared;
 		char drrbbled;
 		char init;
+		char index;
 	}flagof;
 };
 extern struct dribble_t dribble;
@@ -122,6 +125,7 @@ struct attack_t {
 	enum{
 		attack_init,
 		attack_runp,
+		attack_lock,
 		attack_jump,
 	}status;
 	struct {
@@ -161,13 +165,16 @@ extern struct back_t back;
 ////////////////////////////////////////////////////静态技能赛流程////////////////////////////////////////////////
 struct skill_t {
 	enum{
-		begin,
+		skill_netc,
+		skill_runp,
 		clear,
 	}status;
 	struct {
 		int shoot_advanced_dis[8];
 		int catch_advanced_dis[8];
 		int catch_delay_time[8];
+		int net_defend_wait_time;
+		int net_hold_time;
 		float lock_dis;
 		float lock_angle;
 		struct Spot_t spot[8];
@@ -179,6 +186,8 @@ struct skill_t {
 	}target;
 	struct{
 		char net_catched;
+		char init;
+		char request_time;
 	}flagof;
 	unsigned char success_time;
 };

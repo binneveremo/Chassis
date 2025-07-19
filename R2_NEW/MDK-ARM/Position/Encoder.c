@@ -7,11 +7,11 @@
 //定义enc1为记录x轴方向的码盘，调节sign1使得向前的时候增量为正数
 //定义enc2为记录y轴方向的码盘，调节sign2使得向左的时候增量为正数
 #define odo_can hfdcan2
-#define circle_num 50
+#define circle_num 32
 
 
-#define signx 1
-#define signy -1
+float signx = 1;
+float signy = -1;
 #define encx_id 1
 #define ency_id 2
 #define ratio 25.321f
@@ -55,14 +55,16 @@ void Encoder_XY_VX_VY_Cal(int dt){
 	float dy_car = ( odometer.do1  * 0.70710678 - odometer.do2  * 0.70710678) / ratio;
 	float dx_car = (-odometer.do2  * 0.70710678 - odometer.do1  * 0.70710678) / ratio;
 	//计算车体坐标系的速度
-	odometer.dx_field = dx_car* cos(ang2rad(site.now.r)) - dy_car*sin(ang2rad(site.now.r));
-	odometer.dy_field = dx_car* sin(ang2rad(site.now.r)) + dy_car*cos(ang2rad(site.now.r));
+	odometer.dy_field = dx_car* cos(ang2rad(site.now.r)) - dy_car*sin(ang2rad(site.now.r));
+	odometer.dx_field = dx_car* sin(ang2rad(site.now.r)) + dy_car*cos(ang2rad(site.now.r));
 	//计算出场地坐标
 	odometer.enc_x_field = odometer.dx_field + odometer.enc_x_field;
 	odometer.enc_y_field = odometer.dy_field + odometer.enc_y_field;
 	//计算出车体中心的场地坐标
-	odometer.car_x_field = odometer.enc_x_field -  96.77 * (sin(2 * PI * 0.16 * theta + 1.54));
-	odometer.car_y_field = odometer.enc_y_field - 103.82 * (sin(2 * PI * 0.16 * theta -0.05));
+	//142.80, 频率: 0.16, 相位: -1.55, 偏移: -28.42 x轴
+	//140.95, 频率: 0.16, 相位: 0.01, 偏移: 226.87 y轴
+	odometer.car_x_field = odometer.enc_x_field - 142.80 * (sin(2 * PI * 0.16 * ang2rad(site.now.r) - 1.55));
+	odometer.car_y_field = odometer.enc_y_field - 140.95 * (sin(2 * PI * 0.16 * ang2rad(site.now.r) + 0.01));
 	//根据坐标中心计算出真实的场地速度
 	site.field.vx_enc = (odometer.car_x_field - car_x_field_last) / dt;
 	site.field.vy_enc = (odometer.car_y_field - car_y_field_last) / dt;

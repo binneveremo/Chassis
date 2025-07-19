@@ -61,12 +61,9 @@ void R1ExchangeData_Decode(UART_HandleTypeDef *huart){
 	shoot.deal.distance = hypot(shoot.receive.shoot_pos.y - site.now.y,shoot.receive.shoot_pos.x - site.now.x);
 	flow.flagof.R1_Shooted = (shoot.receive.shoot_flag == 1)?true:flow.flagof.R1_Shooted;
 	/////////识别发射//////////////////////
-	if((HAL_GetTick() - shoot.deal.shoot_begin > 2000) && (flow.flagof.R1_Shooted == true))
-		shoot.deal.shoot_begin = HAL_GetTick(),BallTime_Cal();
+	if((HAL_GetTick() - shoot.deal.shoot_begin > 1500) && (flow.flagof.R1_Shooted == true))
+		shoot.deal.shoot_begin = HAL_GetTick(),shoot.expect.ball_fly_time = Polynomial_4ExpectBallFlyingTime(shoot.deal.distance);
 	interact.flagof.R1_shooted = (shoot.receive.shoot_flag == 1)?true:interact.flagof.R1_shooted;
-	shoot.expect.ball_incar_time = Polynomial_4ExpectBallIncarTime(shoot.deal.distance);
-	shoot.expect.ball_fly_time = Polynomial_4ExpectBallFlyingTime(shoot.deal.distance);
-	
 }
 unsigned char R1Data_Sum(unsigned char * data){
 	unsigned char sum = NONE;
@@ -94,7 +91,8 @@ void Send_MessageToR1(void){
 		float net_y;
 		float basket_x;
 		float basket_y;
-		unsigned char flag;
+		unsigned char net_status:4;
+		unsigned char flag:4;
 		unsigned char check;
 	}format;
 #define Request_Flag 2
@@ -102,7 +100,6 @@ void Send_MessageToR1(void){
 #define Danger_Flag 3
 #define NetLow_Flag 0
 	char net_Status = (interact.defend_status == defend)?1:0;
-	
 	int net_offset = (interact.defend_status == defend)?322:40;
 	float netx = net_offset * cos(ang2rad(site.now.r));
 	float nety = net_offset * sin(ang2rad(site.now.r));
@@ -111,7 +108,8 @@ void Send_MessageToR1(void){
 	format.net_y = shoot.send.target->y + nety;
 	format.basket_x = vision.visual.basket_visual.x;
 	format.basket_y = vision.visual.basket_visual.y;
-	format.flag = (shoot.send.flagof.request == true)?Request_Flag:net_Status;
+	format.flag = shoot.send.flagof.request;
+	format.net_status = (flow.type == skill_flow)?0:net_Status;
 	format.check = R1Data_Sum((unsigned char *)&format);
 	memcpy(shoot.send.buffer,(unsigned char *)&format,R1_Data_Num);
 	

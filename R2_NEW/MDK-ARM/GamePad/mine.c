@@ -32,7 +32,7 @@ void GamePad_Data_Cla(void){
 	else if(chassis.Control_Status == Debug_Control)
 		chassis.Control_Status = GamePad_Control;
 
-	
+
 #if MY_SELF
 
 #define Reuse_Witch GamePad_Data.witch[5] 
@@ -45,12 +45,15 @@ void GamePad_Data_Cla(void){
 		flow_begin, flow.type = skill_flow;
 	else if(GamePadKey_FallingCheck(18) && (Reuse_Witch == 1) && (chassis.Control_Status == Auto_Control))
 		skill.success_time++;
+	else if(GamePadKey_FallingCheck(2) && (Reuse_Witch == 1) && (chassis.Control_Status == Auto_Control))
+		skill.success_time--;
 #undef Reuse_Witch
 	
 	if((chassis.Control_Status == Auto_Control) && (flow.type == skill_flow) && (GamePadKey_FallingCheck(20) == 1))
 		skill.success_time++;
-	if((GamePad_Data.key[2] == 1 || GamePad_Data.key[3] == 1 ) && (chassis.Control_Status == Auto_Control))
+	if((GamePad_Data.key[2] == 1 || GamePad_Data.key[0] == 1) && (chassis.Control_Status == Auto_Control))
 		Back_GamePadControl();
+	//更改Debug界面
 	static char debug_last;
 	if(GamePad_Data.witch[3] == !debug_last)
 		DebugPage_Change(1);
@@ -59,7 +62,7 @@ void GamePad_Data_Cla(void){
 	chassis.flagof.gamepad.standard = GamePad_Data.witch[0];
 	chassis.flagof.gamepad.noheader = !chassis.flagof.gamepad.standard;
 	chassis.flagof.gamepad.accel  = GamePad_Data.key[3];
-	chassis.flagof.gamepad.shutdown  = GamePad_Data.key[1];
+	chassis.flagof.gamepad.shutdown  = GamePad_Data.key[0];
 	//通信方面
 	if(GamePad_Data.key[12] == 1)
  		Tell_Yao_Xuan("fold");
@@ -88,16 +91,20 @@ void GamePad_Data_Cla(void){
  		Tell_Yao_Xuan("polecheck");
 	if(GamePad_Data.key[10] == 1)
  		Tell_Yao_Xuan("lift");
+	//
+	dribble.flagof.index = GamePad_Data.witch[3];
 	//更改Debug界面
 	DebugPage_Change(GamePadKey_FallingCheck(11));
 	//加速和减速相关
-#define Confirm (GamePad_Data.witch[2] == true)
+#define Confirm (GamePad_Data.witch[1] == true)
 	//自动旋转开关
 	if((GamePadKey_FallingCheck(21) == 1) && Confirm)
 		flow_begin, flow.type = dunk_flow;
 	if((GamePadKey_FallingCheck(20) == 1) && Confirm)
 		flow_begin, flow.type = attack_flow;
 	if((GamePad_Data.key[1] == 1) && Confirm)
+ 		Tell_Yao_Xuan("lift");
+	if((GamePad_Data.key[2] == 1) && Confirm)
  		Tell_Yao_Xuan("jump");
 	
 	if(GamePad_Data.key[23] == 1)

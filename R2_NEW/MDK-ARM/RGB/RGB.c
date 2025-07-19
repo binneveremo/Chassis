@@ -39,7 +39,7 @@ void RGB_OutPut(void){
 void RGB_Wave(int wavecolor,int backcolor){
 	static char last,dir;
 	RGB_Total(backcolor);
-	for(char i=0;i < 7;i++)
+	for(char i=0;i < 3;i++)
 		RGB_Cal_Color(led.flagof.wave.index_now + i,wavecolor);
 	led.flagof.wave.index_now += (dir == 0)?-1:dir;
 	if((led.flagof.wave.index_now == LED_NUM) || (led.flagof.wave.index_now == -1)) dir = !dir;
@@ -55,8 +55,13 @@ void RGB_BreathProcessingBar(float percent,unsigned int color){
 
 
 void RGB_Show(void){
-	RGB_Total(Black);
+#define Cycle 5
 #define Lock (chassis.lock.flag == true)
+	static int cnt;
+  cnt = (cnt > Cycle)?0:cnt+1;
+	if(cnt != 0)
+		return;
+	RGB_Total(Black);
 	switch(chassis.Control_Status){
 		case GamePad_Control:
 			RGB_Wave(Lock?RGB(9,18,45):RGB(45,4,2),Lock?RGB(7,37,10):RGB(27,10,12));

@@ -49,47 +49,27 @@ const uint32_t CATCH_TIMEOUT_MS = 2000;
 // Add communication timeout constant
 const uint32_t COMM_TIMEOUT_MS = 100; // 100ms timeout for communication loss
 
-float filtered_pos = 35;
-float filtered_trq = 0;
-float filtered_pos_2nd = 0;
-float filtered_trq_2nd = 0;
-float Compensation_trq = 0;
-
-float LowPassFilter(float input, float prev_output, float alpha)
-{
-	return alpha * input + (1 - alpha) * prev_output;
-}
-
-float LowPassFilter2nd(float input, float* prev_output, float* prev_output_2nd, float alpha)
-{
-	float first_stage = LowPassFilter(input, *prev_output, 0.02);
-	*prev_output = first_stage;
-	float second_stage = LowPassFilter(first_stage, *prev_output_2nd, alpha);
-	*prev_output_2nd = second_stage;
-	return second_stage;
-}
-
 // Target Positions
-float Init_Pos = 1.219;
-float CatchBall_Pos = 12.7;
-float Defend_Pos = 122.94;
-float PreDunk_Pos = 14.7;
-float SelfCheck_Pos = 10;
+float Init_Pos = 62.94;
+float CatchBall_Pos = 71.24;
+float Defend_Pos = 188.72;
+float PreDunk_Pos = 75.03;
+float SelfCheck_Pos = 80;
 
 // Control Parameters for Position HOLDING (Mapped to Overall_States enum indices)
 // Indices:          {Initialize, CatchingBall, Defend, PreDunk, BackToFold, Test, MidCatch}
 float Kp_Hold[7] =   {0,          0.4,          0.55,   0.45,    0.2,        0.55, 0.45 }; 
 float Kd_Hold[7] =   {0,          0.06,         0.05,   0.04,    0,          0.05, 0.04 };      
 float Trq_Hold[7]=   {0,          1.0,          3.0,    3.5,     0,          0,    1.0  };           
-float Pos_Target[7]= {1.219,      12.7,         122.94, 17  ,    1.219,      41,   20   };
+float Pos_Target[7]= {62.94,      75,           188.72, 78.53,   62.94,    	 80,   95   };
 
 //float Kp_Hold[7] =   {0,          0,         0,   0,    0,        0, 0 }; 
 //float Kd_Hold[7] =   {0,          0,         0,   0,    0,        0, 0 };      
 //float Trq_Hold[7]=   {0,          0,         0,   0,     0,       0, 0 };           
-//float Pos_Target[7]= {1.219,      0,         122.94, 14.7,    1.219,      41,   20   };
+//float Pos_Target[7]= {62.94,      71.24,        188.72, 74.03,   62.94,    	 80,   85   };
 
 // Control Parameters for Velocity MOVEMENT (Based on original SpdUp/SpdDown)
-float Spd_Move_Up = 130;
+float Spd_Move_Up = 170;
 float Spd_Move_Up_Defend = 150; 
 float Spd_Move_Up_Test = 30;
 float Spd_Move_Down = -200; 
@@ -99,7 +79,27 @@ float Kd_Move_Down = 0.8;
 float Trq_Move_Up = 0;  
 float Trq_Move_Down = 0.5;
 
+void HandleMovement(float target_pos, bool* in_move_flag, float move_up_speed, float move_down_speed,
+                    float move_up_kd, float move_down_kd, float move_up_trq, float move_down_trq)
+{
+    if(CheckMoveTimeout(catch_status.current_state)) return;
 
+    State_Kp = 0;
+    const float threshold = (catch_status.current_state == STATE_PRE_DUNK) ? POS_THRESHOLD_PREDUNK : POS_THRESHOLD_MOVE_DONE;
+
+    if(HighTorque[0].fdbk.pos > target_pos + threshold) {
+        State_Spd = move_down_speed;
+        State_Kd = move_down_kd;
+        State_Trq = move_down_trq;
+    } else if (HighTorque[0].fdbk.pos < target_pos - threshold) {
+        State_Spd = move_up_speed;
+        State_Kd = move_up_kd;
+        State_Trq = move_up_trq;
+    } else {
+        State_Spd = 0;
+        *in_move_flag = false;
+    }
+}
 
 bool IsAtTargetPositionSettled(float target_pos)
 {
@@ -137,15 +137,24 @@ float TwoCar_Dis_Calc()
 	float net_x = interact.pos.self.x / 1000 + net_to_center * cos(ang2rad(interact.pos.self.r));
 	float net_y = interact.pos.self.y / 1000 + net_to_center * sin(ang2rad(interact.pos.self.r));
 	distance = hypot(fabsf(net_x - interact.pos.shoot.x / 1000), fabsf(net_y - interact.pos.shoot.y / 1000));
-	return distance;
+	return distance * 1000;
 }
 
 uint32_t CatchTimeCal()
 {
 	uint32_t catch_delay_time;
+	float p1 = 12.7580;
+	float p2 = -26.4209;
+	float p3 = 173.6885;
+	float p4 = 1316.6;
+	float DIS_MEAN = 4051;
+	float DIS_STD = 1194;
+  float normalized_pos = (TwoCar_Dis_Calc() - DIS_MEAN) / DIS_STD;
+
+	catch_delay_time = p1 * pow(normalized_pos,3) + p2 * pow(normalized_pos,2) + p3 * normalized_pos + p4 - 250;
 //	catch_delay_time = sqrtf((2 * TwoCar_Dis_Calc() * tanf(ang2rad(65)) - height_diff) / gravity_accel);
 //	catch_delay_time = -0.009572 * TwoCar_Dis_Calc() * TwoCar_Dis_Calc() + 0.2574 * TwoCar_Dis_Calc() + 0.4732;
-	catch_delay_time = -0.008424 * TwoCar_Dis_Calc() * TwoCar_Dis_Calc() + 0.2535 * TwoCar_Dis_Calc() + 0.4824;
+//	catch_delay_time = -0.008424 * TwoCar_Dis_Calc() * TwoCar_Dis_Calc() + 0.2535 * TwoCar_Dis_Calc() + 0.4824;
 	return catch_delay_time;
 }
 
@@ -164,7 +173,7 @@ void HandleError(ErrorCode_t error_code) {
     catch_status.in_move_to_defend = false;
     catch_status.in_move_to_pre_dunk = false;
     catch_status.in_move_to_back_to_fold = false;
-		catch_status.in_move_to_midcatch = false;
+	catch_status.in_move_to_midcatch = false;
     
     // Reset control commands
     State_Pos = 0;
@@ -189,7 +198,7 @@ void RecoverFromError(void) {
     OverallState_t state_to_recover_to = catch_status.previous_state;
     
     ClearError();
-		catch_status.current_state = state_to_recover_to;
+	catch_status.current_state = state_to_recover_to;
     catch_status.move_start_time_ms = HAL_GetTick();
     catch_status.in_recovery_period = true;  // Set recovery period flag
 
@@ -208,8 +217,8 @@ void RecoverFromError(void) {
             catch_status.in_move_to_back_to_fold = true; 
             break;
 				case STATE_MIDCATCH:
-						catch_status.in_move_to_midcatch = true;
-						break;
+					catch_status.in_move_to_midcatch = true;
+					break;
         default: 
             break;
     }
@@ -231,15 +240,10 @@ void Single_Control()
     static float last_trq = 0.0f;
     static float last_temp = 0.0f;
 
-    if (HighTorque[0].fdbk.pos != last_pos ||
-        HighTorque[0].fdbk.spd != last_spd ||
-        HighTorque[0].fdbk.trq != last_trq ||
-        HighTorque[0].fdbk.temp != last_temp) {
+    static HighTorque_fdbk_t last_fdbk = {0};
+    if(memcmp(&HighTorque[0].fdbk, &last_fdbk, sizeof(HighTorque_fdbk_t)) != 0) {
         catch_status.last_feedback_time_ms = HAL_GetTick();
-        last_pos = HighTorque[0].fdbk.pos;
-        last_spd = HighTorque[0].fdbk.spd;
-        last_trq = HighTorque[0].fdbk.trq;
-        last_temp = HighTorque[0].fdbk.temp;
+        last_fdbk = HighTorque[0].fdbk;
     }
 
     // Check if feedback is too old
@@ -348,34 +352,13 @@ void Overall_Control()
             break; } 
 
         case STATE_CATCHING_BALL: {
-            float target_pos = Pos_Target[STATE_CATCHING_BALL];
-
+						float target_pos = Pos_Target[STATE_CATCHING_BALL];
             if (catch_status.in_move_to_catching_ball) {
-                if(CheckMoveTimeout(STATE_CATCHING_BALL)) {
-                    break; 
-                }
-                
-                State_Kp = 0; // Velocity control
-
-                // Determine movement direction and set parameters
-                if (HighTorque[0].fdbk.pos > target_pos + POS_THRESHOLD_MOVE_DONE)
-                {
-                    State_Spd = Spd_Move_Down;
-                    State_Kd = Kd_Move_Down;
-                    State_Trq = Trq_Move_Down; //
-                } 
-                else if (HighTorque[0].fdbk.pos < target_pos - POS_THRESHOLD_MOVE_DONE) 
-                {
-                    State_Spd = Spd_Move_Up;
-                    State_Kd = Kd_Move_Up;
-                    State_Trq = Trq_Move_Up; //
-                }
-
-                else 
-                {
-                    State_Spd = 0; // Stop velocity command
-                    catch_status.in_move_to_catching_ball = false;
-                }
+                HandleMovement(Pos_Target[STATE_CATCHING_BALL], 
+                               &catch_status.in_move_to_catching_ball, 
+                               Spd_Move_Up, Spd_Move_Down, 
+                               Kd_Move_Up, Kd_Move_Down, 
+                               Trq_Move_Up, Trq_Move_Down);
 
             } else {
                 State_Pos = target_pos;
@@ -388,30 +371,14 @@ void Overall_Control()
             }
             break; }
 
-        case STATE_DEFEND: { 
-            float target_pos = Pos_Target[STATE_DEFEND];
-
-            if (catch_status.in_move_to_defend) {
-                if(CheckMoveTimeout(STATE_DEFEND)) {
-                    break;
-                }
-                State_Kp = 0; // Velocity control
-
-                // Determine movement direction and set parameters
-                if (HighTorque[0].fdbk.pos > target_pos + POS_THRESHOLD_MOVE_DONE) {
-                    State_Spd = Spd_Move_Down;
-                    State_Kd = Kd_Move_Down;
-                    State_Trq = Trq_Move_Down;
-                } else if (HighTorque[0].fdbk.pos < target_pos - POS_THRESHOLD_MOVE_DONE) {
-                    State_Spd = Spd_Move_Up_Defend;
-                    State_Kd = Kd_Move_Up;
-                    State_Trq = Trq_Move_Up;
-                }
-
-                else {
-                    State_Spd = 0; // Stop velocity command
-                    catch_status.in_move_to_defend = false;
-                }
+        case STATE_DEFEND: {
+						float target_pos = Pos_Target[STATE_DEFEND];
+						if (catch_status.in_move_to_defend) {
+                HandleMovement(Pos_Target[STATE_DEFEND], 
+                               &catch_status.in_move_to_defend, 
+                               Spd_Move_Up_Defend, Spd_Move_Down, 
+                               Kd_Move_Up, Kd_Move_Down, 
+                               Trq_Move_Up, Trq_Move_Down);
 
             } else {
                 State_Pos = target_pos;
@@ -425,29 +392,13 @@ void Overall_Control()
             break; }
 
         case STATE_PRE_DUNK: { 
-            float target_pos = Pos_Target[STATE_PRE_DUNK]; 
-
+						float target_pos = Pos_Target[STATE_PRE_DUNK];
             if (catch_status.in_move_to_pre_dunk) {
-                if(CheckMoveTimeout(STATE_PRE_DUNK)) {
-                    break;
-                }
-                 State_Kp = 0; // Velocity control
-
-                // Determine movement direction and set parameters
-                 if (HighTorque[0].fdbk.pos > target_pos + POS_THRESHOLD_PREDUNK) {
-                    State_Spd = Spd_Move_Down;
-                    State_Kd = Kd_Move_Down;
-                    State_Trq = Trq_Move_Down;
-                } else if (HighTorque[0].fdbk.pos < target_pos - POS_THRESHOLD_PREDUNK) {
-                    State_Spd = Spd_Move_Up;
-                    State_Kd = Kd_Move_Up;
-                    State_Trq = Trq_Move_Up;
-                }
-                
-                else {
-                    State_Spd = 0; // Stop velocity command
-                    catch_status.in_move_to_pre_dunk = false; 
-                }
+                HandleMovement(Pos_Target[STATE_PRE_DUNK], 
+                               &catch_status.in_move_to_pre_dunk, 
+                               Spd_Move_Up, Spd_Move_Down, 
+                               Kd_Move_Up, Kd_Move_Down, 
+                               Trq_Move_Up, Trq_Move_Down);
 
             } else {
                 State_Pos = target_pos;
@@ -461,29 +412,13 @@ void Overall_Control()
             break; }
 
         case STATE_BACK_TO_FOLD: {
-            float target_pos = Pos_Target[STATE_BACK_TO_FOLD]; 
-
+						float target_pos = Pos_Target[STATE_BACK_TO_FOLD];
             if (catch_status.in_move_to_back_to_fold) {
-                if(CheckMoveTimeout(STATE_BACK_TO_FOLD)) {
-                    break;
-                }
-                 State_Kp = 0; // Velocity control
-
-                // Determine movement direction and set parameters
-                 if (HighTorque[0].fdbk.pos > target_pos + POS_THRESHOLD_MOVE_DONE) {
-                    State_Spd = Spd_Move_Down;
-                    State_Kd = Kd_Move_Down;
-                    State_Trq = Trq_Move_Down;
-                } else if (HighTorque[0].fdbk.pos < target_pos - POS_THRESHOLD_MOVE_DONE) {
-                    State_Spd = Spd_Move_Up;
-                    State_Kd = Kd_Move_Up;
-                    State_Trq = Trq_Move_Up;
-                }
-
-                else {
-                    State_Spd = 0; // Stop velocity command
-                    catch_status.in_move_to_back_to_fold = false; 
-                }
+                HandleMovement(Pos_Target[STATE_BACK_TO_FOLD], 
+                               &catch_status.in_move_to_back_to_fold, 
+                               Spd_Move_Up, Spd_Move_Down, 
+                               Kd_Move_Up, Kd_Move_Down, 
+                               Trq_Move_Up, Trq_Move_Down);
 
             } else {
                 State_Pos = target_pos;
@@ -497,35 +432,14 @@ void Overall_Control()
             break; }
 
 				
-				case STATE_MIDCATCH: {
-					float target_pos = Pos_Target[STATE_MIDCATCH];
-
-            if (catch_status.in_move_to_midcatch) {
-                if(CheckMoveTimeout(STATE_MIDCATCH)) {
-                    break; 
-                }
-                
-                State_Kp = 0; // Velocity control
-
-                // Determine movement direction and set parameters
-                if (HighTorque[0].fdbk.pos > target_pos + POS_THRESHOLD_MOVE_DONE)
-                {
-                    State_Spd = Spd_Move_Down;
-                    State_Kd = Kd_Move_Down;
-                    State_Trq = Trq_Move_Down; //
-                } 
-                else if (HighTorque[0].fdbk.pos < target_pos - POS_THRESHOLD_MOVE_DONE) 
-                {
-                    State_Spd = Spd_Move_Up;
-                    State_Kd = Kd_Move_Up;
-                    State_Trq = Trq_Move_Up; //
-                }
-
-                else 
-                {
-                    State_Spd = 0; // Stop velocity command
-                    catch_status.in_move_to_midcatch = false;
-                }
+		case STATE_MIDCATCH: {
+				 float target_pos = Pos_Target[STATE_MIDCATCH];
+				 if(catch_status.in_move_to_midcatch){
+            HandleMovement(Pos_Target[STATE_MIDCATCH], 
+                           &catch_status.in_move_to_midcatch, 
+                           Spd_Move_Up, Spd_Move_Down, 
+                           Kd_Move_Up, Kd_Move_Down, 
+                           Trq_Move_Up, Trq_Move_Down);
 
             } else {
                 State_Pos = target_pos;
@@ -643,6 +557,16 @@ void Overall_Control()
     }
 }
 
+const OverallState_t DefendStateMap[] = {
+    [initial]    = STATE_INITIALIZE,     // 0
+    [fold]       = STATE_BACK_TO_FOLD,   // 1
+    [catch_ball] = STATE_CATCHING_BALL,  // 2
+    [defend]     = STATE_DEFEND,         // 3
+    [predunk]    = STATE_PRE_DUNK,       // 4
+    [test]       = STATE_TEST,           // 5
+    [midcatch]   = STATE_MIDCATCH,       // 6
+    [oscillate]  = STATE_OSCILLATE       // 7
+};
 
 void Loop_Judgement()
 {
@@ -655,7 +579,7 @@ void Loop_Judgement()
     if (interact.flagof.R1_shooted) {
         if (shoot_start_time == 0) {
             shoot_start_time = HAL_GetTick();  // Start timing when flag is set
-        } else if (HAL_GetTick() - shoot_start_time >= CatchTimeCal() * 1000) {  // Convert seconds to milliseconds
+        } else if (HAL_GetTick() - shoot_start_time >= CatchTimeCal()) {  // Convert seconds to milliseconds
             interact.defend_status = catch_ball;  // Switch to catch state
 						interact.flagof.R1_shooted = false;
             shoot_start_time = 0;  // Reset timer
@@ -693,44 +617,13 @@ void Loop_Judgement()
 
     if(next_state != STATE_ERROR)
     {
-        // --- State Transition Logic ---
-        switch(interact.defend_status)
-        {
-            case initial:
-                next_state = STATE_INITIALIZE;
-                break;
-
-            case fold:
-                next_state = STATE_BACK_TO_FOLD;
-                break;
-
-            case catch_ball:
-                next_state = STATE_CATCHING_BALL;
-                break;
-
-            case defend:
-                next_state = STATE_DEFEND;
-                break;
-
-            case predunk:
-                next_state = STATE_PRE_DUNK;
-                break;
-            
-            case test:
-                next_state = STATE_TEST;
-                break;
-						
-						case midcatch:
-							  next_state = STATE_MIDCATCH;
-								break;
-						
-						case oscillate:
-								next_state = STATE_OSCILLATE;
-								break;
-                        
-            default:
-                HandleError(ERROR_CODE_INVALID_STATE);
-                break;
+        const uint8_t status_index = (uint8_t)interact.defend_status;
+        const size_t state_count = sizeof(DefendStateMap) / sizeof(DefendStateMap[0]);
+        if (status_index < state_count) {
+            next_state = DefendStateMap[status_index];
+        } else {
+            HandleError(ERROR_CODE_INVALID_STATE);
+            next_state = STATE_ERROR;
         }
     }
     // --- Apply the determined next state and Handle State Entry ---

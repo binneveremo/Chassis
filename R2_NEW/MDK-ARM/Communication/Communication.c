@@ -21,7 +21,7 @@ void Tell_Yao_Xuan(char *message){
 		else if(strcmp(message, "down") == 0) 
       FDCAN_Send(&Com_Can,poledown_id_send,"STD",NULL,"FD",0,"OFF");
 		else if(strcmp(message, "dribble") == 0)
-      FDCAN_Send(&Com_Can,dribble_id_send,"STD",NULL,"FD",0,"OFF");
+      FDCAN_Send(&Com_Can,dribble_id_send,"STD",NULL,"FD",0,"OFF"),Predunk;
     if(strcmp(message, "lift") == 0)
       FDCAN_Send(&Com_Can,lift_id_send,"STD",Basket_DisData,"FD",4,"OFF"),Predunk;
 		else if(strcmp(message, "jump") == 0)

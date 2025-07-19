@@ -3,7 +3,7 @@
 
 #include "tim.h"
 
-#define  LED_NUM 82
+#define  LED_NUM 15
 #define  main_frequency 275000000
 #define  prescaler  0
 #define  period  (int)(main_frequency / 800000)
