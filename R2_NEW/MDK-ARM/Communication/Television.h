@@ -12,12 +12,20 @@
 
 #define site_id  0x201
 #define vision_reset_id  0x202
+#define vision_move_id   0x201
+
 #define basket_id 0xA1
 #define position_id  0xA2
 #define online_id 0xA3
 
 #define Vision_Flag_Clear() {vision.basketlock.online_flag  = false,vision.position.online_flag = false;}
 #define Vision_Reset() {FDCAN_Send(&hfdcan4,vision_reset_id,"STD",NULL,"FD",4,"OFF");}
+
+#define Send_VisionMove() {                																				  \
+	float flag = chassis.lock.flag;            																				\
+	FDCAN_Send(&hfdcan4,vision_move_id,"STD",(unsigned char*)&flag,"FD",4,"OFF");     \
+} 
+
 
 struct Vision{
 	struct {

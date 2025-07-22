@@ -81,7 +81,7 @@ void RGB_Show(void){
 			}
 		break;
 		case Debug_Control:
-			
+			                
 		break;
 	}
 	if(GamePad_Data.witch[1] && (flow.flagof.receive_ball_bygyro == true))

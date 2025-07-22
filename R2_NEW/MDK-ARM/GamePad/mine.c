@@ -51,7 +51,7 @@ void GamePad_Data_Cla(void){
 	
 	if((chassis.Control_Status == Auto_Control) && (flow.type == skill_flow) && (GamePadKey_FallingCheck(20) == 1))
 		skill.success_time++;
-	if((GamePad_Data.key[2] == 1 || GamePad_Data.key[0] == 1) && (chassis.Control_Status == Auto_Control))
+	if((GamePad_Data.key[3] == 1 || GamePad_Data.key[0] == 1) && (chassis.Control_Status == Auto_Control))
 		Back_GamePadControl();
 	//更改Debug界面
 	static char debug_last;
@@ -69,7 +69,7 @@ void GamePad_Data_Cla(void){
 	if(GamePad_Data.key[13] == 1)
  		Tell_Yao_Xuan("defend");
 	if(GamePad_Data.key[22] == 1)
- 		Tell_Yao_Xuan("defend");
+ 		Tell_Yao_Xuan((chassis.Control_Status == GamePad_Control)?"defend":"midcatch");
 	if(GamePad_Data.key[7] == 1)
  		Tell_Yao_Xuan("fold");
 	if(GamePad_Data.key[6] == 1)
@@ -165,6 +165,7 @@ void GamePad_Data_Cla(void){
 float Char2float(char str[4]){
 	float data;
 	memcpy(&data,str,sizeof(float));
+	// return *(float )
 	return data;
 }
 

@@ -188,6 +188,7 @@ struct skill_t {
 		char net_catched;
 		char init;
 		char request_time;
+		char change_flag;
 	}flagof;
 	unsigned char success_time;
 };

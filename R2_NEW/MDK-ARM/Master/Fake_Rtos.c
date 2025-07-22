@@ -21,12 +21,6 @@
 #include "Basket.h"
 
 
-struct Point end_point = {.x = 10000,.y = -4000};
-struct Point expect;
-float rpm = 2000;
-float v;
-float left,front,rotate;
-float buffer[10] = {1,2,3,4};
 
 
 void motor_control(void const * argument)
@@ -42,10 +36,9 @@ void motor_control(void const * argument)
 				Auto_Flow();
 			break;
 			case Debug_Control:
-				Chassis_Velocity_Out(left,front,rotate);
+				
 			break;  
 		}
-		//MPC_Calculate(last,next,ang2rad(site.now.r),0.5,&front,&left);
 		ControlStatus_Detect();
 	  VectorWheel_SetAngle();
 		VectorWheel_SetSpeed();
@@ -57,6 +50,14 @@ void communication(void const * argument)
 {
   for(;;) 
   {	
+#if true
+		Send_Put_Data(0,vision.visual.basket_visual.x);
+		Send_Put_Data(1,vision.visual.basket_visual.y);
+		Send_Put_Data(2,site.now.x);
+		Send_Put_Data(3,site.now.y);
+		Send_Put_Data(4,site.now.r);
+		Send_Float_Data(5);
+#endif
 		//手柄数据解析
 		GamePad_Data_Cla();
 		//向R1发送的相关函数
@@ -65,6 +66,8 @@ void communication(void const * argument)
 		RGB_Show();
 		//发送篮筐距离
 		Send_BasketDis();
+		//发送底盘是否移动
+		//Send_VisionMove();
 		//单纯为了好看的注释
 		osDelay(10);
 	}
@@ -101,7 +104,7 @@ void Detect(void const * argument)
   {
 		LossConnect_Check();
 		Can_Detect();
-    osDelay(100);
+    osDelay(150);
   }
 }
 ////////////////////////////////////////////////////////////璇老师的进程//////////////////////////////

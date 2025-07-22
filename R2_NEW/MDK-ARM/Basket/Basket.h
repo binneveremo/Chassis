@@ -30,6 +30,9 @@ struct Basket_Lock_t{
 		float ladar2basketangle;
 		float percent;
 	} position;
+	struct {
+		char dunk_position;
+	}flagof;
 	float protectselfbasket_angle;
 };
 

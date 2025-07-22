@@ -91,14 +91,11 @@ void Send_MessageToR1(void){
 		float net_y;
 		float basket_x;
 		float basket_y;
-		unsigned char net_status:4;
-		unsigned char flag:4;
+		unsigned char arrive_dunkpoint:2;
+		unsigned char net_status:2;
+		unsigned char request_flag:4;
 		unsigned char check;
 	}format;
-#define Request_Flag 2
-#define NetHigh_Flag 1
-#define Danger_Flag 3
-#define NetLow_Flag 0
 	char net_Status = (interact.defend_status == defend)?1:0;
 	int net_offset = (interact.defend_status == defend)?322:40;
 	float netx = net_offset * cos(ang2rad(site.now.r));
@@ -108,7 +105,8 @@ void Send_MessageToR1(void){
 	format.net_y = shoot.send.target->y + nety;
 	format.basket_x = vision.visual.basket_visual.x;
 	format.basket_y = vision.visual.basket_visual.y;
-	format.flag = shoot.send.flagof.request;
+	format.arrive_dunkpoint = (chassis.Control_Status == Auto_Control)?skill.flagof.change_flag:basketlock.flagof.dunk_position;
+	format.request_flag = shoot.send.flagof.request;
 	format.net_status = (flow.type == skill_flow)?0:net_Status;
 	format.check = R1Data_Sum((unsigned char *)&format);
 	memcpy(shoot.send.buffer,(unsigned char *)&format,R1_Data_Num);

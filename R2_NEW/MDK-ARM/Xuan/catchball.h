@@ -56,6 +56,7 @@ typedef struct
     // Error Handling
     ErrorCode_t error_code;
     bool in_recovery_period;       // Flag to indicate if system is in recovery period
+		uint8_t recovery_count;
 
     // Flags for specific operational phases or conditions
     bool needs_self_check;          // True if Initialize state should perform self-check routine

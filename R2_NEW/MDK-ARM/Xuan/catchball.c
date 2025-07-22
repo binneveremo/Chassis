@@ -58,9 +58,9 @@ float SelfCheck_Pos = 80;
 
 // Control Parameters for Position HOLDING (Mapped to Overall_States enum indices)
 // Indices:          {Initialize, CatchingBall, Defend, PreDunk, BackToFold, Test, MidCatch}
-float Kp_Hold[7] =   {0,          0.4,          0.55,   0.45,    0.2,        0.55, 0.45 }; 
+float Kp_Hold[7] =   {0,          0.4,          0.55,   0.45,    0.2,        0.55, 0.65 }; 
 float Kd_Hold[7] =   {0,          0.06,         0.05,   0.04,    0,          0.05, 0.04 };      
-float Trq_Hold[7]=   {0,          1.0,          3.0,    3.5,     0,          0,    1.0  };           
+float Trq_Hold[7]=   {0,          1.0,          3.0,    3.5,     0,          0,    3.0  };           
 float Pos_Target[7]= {62.94,      75,           188.72, 78.53,   62.94,    	 80,   95   };
 
 //float Kp_Hold[7] =   {0,          0,         0,   0,    0,        0, 0 }; 
@@ -164,6 +164,7 @@ void HandleError(ErrorCode_t error_code) {
 		if(catch_status.current_state != STATE_ERROR)
 		{
 			catch_status.previous_state = catch_status.current_state;
+			catch_status.recovery_count = 0;
 		}
     catch_status.current_state = STATE_ERROR;
     catch_status.error_code = error_code;
@@ -195,6 +196,7 @@ bool IsInErrorState(void) {
 void RecoverFromError(void) {
     if (!IsInErrorState()) return;
     
+		catch_status.recovery_count++;
     OverallState_t state_to_recover_to = catch_status.previous_state;
     
     ClearError();
@@ -255,7 +257,7 @@ void Single_Control()
 			}}
 
     // Check for critical errors
-		if(HighTorque[0].fdbk.temp > 50.0f)
+		if(HighTorque[0].fdbk.trq >= 40.0 || HighTorque[0].fdbk.temp > 50.0f)
 		{
 				interact.wrongcode.HT_Error = 1;
         HandleError(ERROR_CODE_OVER_LOAD);
@@ -287,7 +289,7 @@ void Overall_Control()
             error_start = HAL_GetTick();
         }
         
-        if (HAL_GetTick() - error_start > 3000) {
+        if (catch_status.recovery_count == 0 && HAL_GetTick() - error_start > 3000) {
             RecoverFromError();
             error_start = 0;
         }
@@ -617,6 +619,7 @@ void Loop_Judgement()
 
     if(next_state != STATE_ERROR)
     {
+				catch_status.recovery_count = 0;
         const uint8_t status_index = (uint8_t)interact.defend_status;
         const size_t state_count = sizeof(DefendStateMap) / sizeof(DefendStateMap[0]);
         if (status_index < state_count) {

@@ -3,7 +3,7 @@
 
 struct Basket_Lock_t basketlock = {
 	.parameter.basketdis = 870,
-	.parameter.anglebetween_ladarandpole = -2,
+	.parameter.anglebetween_ladarandpole = 5,
 	.parameter.limitzoneanglimit = 160,
 };
 struct Point opposite_basket_point = {
@@ -36,6 +36,11 @@ void BasketPositionCal_AccordingVision(float dt)
 	Copy(basketlock.now.global,site.now);
 	
 	basketlock.position.percent = basketlock.position.ladar2basketdis / basketlock.parameter.basketdis * 100;
+	
+	if((basketlock.position.ladar2basketdis > 700) && (basketlock.position.ladar2basketdis < 1100) && (fabs(rad2ang(basketlock.position.ladar2basketangle) - site.now.r) < 5))
+		basketlock.flagof.dunk_position = true;
+	else 
+		basketlock.flagof.dunk_position = false;
 }
 ///////////////////////返回的是锁篮筐角度PID的输出
 void BasketPoint_Init(void){

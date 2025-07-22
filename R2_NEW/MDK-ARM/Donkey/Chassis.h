@@ -101,6 +101,7 @@ struct Chassis{
 		struct VESC  drive[VESC_NUM];
 		struct HO7213 turn[TURN_NUM];
 	}motor;
+	struct VectorWheel_Status_t output_status;
 	struct VectorWheel_Status_t expect_status;
 	struct{
 		struct{
@@ -155,7 +156,7 @@ struct correct_angle_t{
 	chassis.motor.turn[left_wheel].offset_angle   = left_offset;		\
 	chassis.motor.turn[behind_wheel].offset_angle = behind_offset;	\
 	for(int i = 0; i < TURN_NUM;i++)																\
-		chassis.motor.turn[i].param.p = 155,chassis.motor.turn[i].param.d = 55;\
+		chassis.motor.turn[i].param.p = 130,chassis.motor.turn[i].param.d = 55;\
 }
 
 

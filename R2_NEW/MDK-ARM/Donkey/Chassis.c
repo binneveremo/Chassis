@@ -15,15 +15,15 @@ void VectorWheel_SetSpeed(void){
 }
 void VectorWheel_SetAngle(void){
 	// Motor_Control_byFDCN(id,力矩, 速度 , 位置, 模式 , 使能, p, d, )
-	Motor_Control_byFDCN(front_turn_send_id, 2.5, 30, chassis.motor.turn[front_wheel].target_angle + chassis.motor.turn[front_wheel].offset_angle, 2, 1, chassis.motor.turn[front_wheel].param.p, chassis.motor.turn[front_wheel].param.d, &hfdcan1);
-	Motor_Control_byFDCN(left_turn_send_id, 2.5, 30,  chassis.motor.turn[left_wheel].target_angle + chassis.motor.turn[left_wheel].offset_angle, 2, 1, chassis.motor.turn[left_wheel].param.p, chassis.motor.turn[left_wheel].param.d, &hfdcan1);
-	Motor_Control_byFDCN(right_turn_send_id, 2.5, 30, chassis.motor.turn[right_wheel].target_angle + chassis.motor.turn[right_wheel].offset_angle, 2, 1, chassis.motor.turn[right_wheel].param.p, chassis.motor.turn[right_wheel].param.d, &hfdcan1);
-	Motor_Control_byFDCN(behind_turn_send_id, 2.5, 30, chassis.motor.turn[behind_wheel].target_angle + chassis.motor.turn[behind_wheel].offset_angle, 2, 1, chassis.motor.turn[behind_wheel].param.p, chassis.motor.turn[behind_wheel].param.d, &hfdcan1);
+	Motor_Control_byFDCN(front_turn_send_id, 2.5, 20, chassis.motor.turn[front_wheel].target_angle + chassis.motor.turn[front_wheel].offset_angle, 2, 1, chassis.motor.turn[front_wheel].param.p, chassis.motor.turn[front_wheel].param.d, &hfdcan1);
+	Motor_Control_byFDCN(left_turn_send_id, 2.5, 20,  chassis.motor.turn[left_wheel].target_angle + chassis.motor.turn[left_wheel].offset_angle, 2, 1, chassis.motor.turn[left_wheel].param.p, chassis.motor.turn[left_wheel].param.d, &hfdcan1);
+	Motor_Control_byFDCN(right_turn_send_id, 2.5, 20, chassis.motor.turn[right_wheel].target_angle + chassis.motor.turn[right_wheel].offset_angle, 2, 1, chassis.motor.turn[right_wheel].param.p, chassis.motor.turn[right_wheel].param.d, &hfdcan1);
+	Motor_Control_byFDCN(behind_turn_send_id, 2.5, 20, chassis.motor.turn[behind_wheel].target_angle + chassis.motor.turn[behind_wheel].offset_angle, 2, 1, chassis.motor.turn[behind_wheel].param.p, chassis.motor.turn[behind_wheel].param.d, &hfdcan1);
 }
 void Min_Angle_Cal(struct HO7213 *turn, struct VESC *drive, float target){
 	float delta = turn->angle_now - target;
 	int k = (int)floor((delta + 100.00) / 180.0f);
-	float target_temp = target + 180.0f * k;
+	float target_temp = target + 180.0f * k;                                                    
 	int cycles = (int)(fabs(target_temp - target) / 180.0f);
 	drive->dir = (cycles % 2 == 1) ? -1 : 1;
 	turn->target_angle = target_temp;
@@ -31,6 +31,9 @@ void Min_Angle_Cal(struct HO7213 *turn, struct VESC *drive, float target){
 // 只是计算出来每个电机期望的速度，并还没有输出
 void Chassis_Velocity_Out(float left, float front, float anticlock)
 {
+	chassis.output_status.front_velocity = front;
+	chassis.output_status.left_velocity = left;
+	
 	// 请记住 默认Y轴正方向为0度 也就是atan计算出来的角度是 相对于y轴的角度
 	// vx是left vy是front
 	chassis.motor.drive[front_wheel].front = front;
