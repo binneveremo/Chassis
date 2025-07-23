@@ -2,8 +2,8 @@
 #include "Flow.h"
 
 struct Basket_Lock_t basketlock = {
-	.parameter.basketdis = 870,
-	.parameter.anglebetween_ladarandpole = 5,
+	.parameter.basketdis = 1000,
+	.parameter.anglebetween_ladarandpole = 2.9,
 	.parameter.limitzoneanglimit = 160,
 };
 struct Point opposite_basket_point = {

@@ -15,11 +15,11 @@ void Vision_DataDecode(void){
 	memcpy(vision.convert.uint8_data, vision.position.data,16);
 	vision.visual.ladar_visual.x = vision.convert.float_data[0] * 1000;
 	vision.visual.ladar_visual.y = vision.convert.float_data[1] * 1000;
-	vision.visual.ladar_visual.r = vision.convert.float_data[3] * rad2ang(1) - 0.7;
+	vision.visual.ladar_visual.r = vision.convert.float_data[3] * rad2ang(1);
 	//幅值: 258.22, 频率: 0.16, 相位: 1.58, 偏移: 4267.08
 	//幅值：262.35, 频率: 0.16, 相位: 0.02, 偏移: -4016.10
-	vision.field.carcenter_field.x = vision.visual.ladar_visual.x - 258.22 * (sin(2 * PI * 0.16 * ang2rad(site.now.r) + 1.58));
-	vision.field.carcenter_field.y = vision.visual.ladar_visual.y - 262.35 * (sin(2 * PI * 0.16 * ang2rad(site.now.r) + 0.02));
+	vision.field.carcenter_field.x = vision.visual.ladar_visual.x - 284.7760 * (sin(2 * PI * 0.1594 * ang2rad(site.now.r) + 1.7190) - sin(1.7190)) - 284.7760;
+	vision.field.carcenter_field.y = vision.visual.ladar_visual.y - 283.4232 * (sin(2 * PI * 0.1591 * ang2rad(site.now.r) + 0.1377) - sin(0.1377));
 	vision.field.carcenter_field.r = vision.visual.ladar_visual.r;
 	
 	if((vision.flagof.gyro_offset_angle_init == false) && (vision.header == position_id) && (vision.position.online_flag == true))

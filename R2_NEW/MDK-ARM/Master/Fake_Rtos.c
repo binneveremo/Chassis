@@ -50,14 +50,12 @@ void communication(void const * argument)
 {
   for(;;) 
   {	
-#if true
-		Send_Put_Data(0,vision.visual.basket_visual.x);
-		Send_Put_Data(1,vision.visual.basket_visual.y);
-		Send_Put_Data(2,site.now.x);
-		Send_Put_Data(3,site.now.y);
-		Send_Put_Data(4,site.now.r);
-		Send_Float_Data(5);
-#endif
+
+		Send_Put_Data(0,vision.visual.ladar_visual.x);
+		Send_Put_Data(1,vision.visual.ladar_visual.y);
+		Send_Put_Data(2,ang2rad(site.now.r));
+		Send_Float_Data(3);
+
 		//手柄数据解析
 		GamePad_Data_Cla();
 		//向R1发送的相关函数
@@ -67,7 +65,7 @@ void communication(void const * argument)
 		//发送篮筐距离
 		Send_BasketDis();
 		//发送底盘是否移动
-		//Send_VisionMove();
+		Send_VisionMove();
 		//单纯为了好看的注释
 		osDelay(10);
 	}

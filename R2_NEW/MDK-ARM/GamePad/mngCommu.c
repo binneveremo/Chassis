@@ -96,47 +96,55 @@ void Transmit_task(void)
 // 定时任务,freertos执行
 void StartTransmit_task(void const * argument) {
 	osDelay(200);
+	
+#define Sting(x) memcpy(debugData_pkg.string,(x),sizeof(debugData_pkg.string));
 INFINITE_LOOP_START
 	// 处理要发送的数据
-	switch(GamePad_Data.Debug_Page){
-		case 0:
-			debugData_pkg.debug_data[0] = Char2float("ODOM");
-			debugData_pkg.debug_data[2] = site.field.x_enc;
-			debugData_pkg.debug_data[3] = site.field.y_enc;
-			debugData_pkg.debug_data[4] = site.gyro.r;
-			break;
-		case 1:
-			debugData_pkg.debug_data[0] = Char2float("LADA");
-			debugData_pkg.debug_data[1] = vision.field.carcenter_fieldinterp.x;
-			debugData_pkg.debug_data[2] = vision.field.carcenter_fieldinterp.y;
-			debugData_pkg.debug_data[3] = vision.visual.ladar_visual.r;
-			debugData_pkg.debug_data[4] = vision.field.height;
-			break;
-		case 2:
-			debugData_pkg.debug_data[0] = Char2float("BASK");
-			debugData_pkg.debug_data[1] = vision.basketlock.online_flag * 6.66;
-			debugData_pkg.debug_data[2] = vision.visual.basket_visual.x;
-			debugData_pkg.debug_data[3] = vision.visual.basket_visual.y;
-			debugData_pkg.debug_data[4] = basketlock.position.ladar2basketdis;
-			break;
-		case 3:
-			debugData_pkg.debug_data[0] = Char2float("DEBG");
-			debugData_pkg.debug_data[1] = shoot.deal.ball_fly_time;
-			debugData_pkg.debug_data[2] = shoot.deal.distance;
-			debugData_pkg.debug_data[3] = shoot.receive.shoot_rpm;
-			debugData_pkg.debug_data[4] = shoot.receive.shoot_incar_time;
-			
-			break;
-		case 4:
-			debugData_pkg.debug_data[0] = Char2float("SEND");
-			debugData_pkg.debug_data[1] = site.now.x;
-			debugData_pkg.debug_data[2] = site.now.y;
-			debugData_pkg.debug_data[3] = shoot.send.target->x;
-			debugData_pkg.debug_data[4] = shoot.send.target->y;
-			break;
-		default:
-			break;
+	switch(chassis.Control_Status){
+		case GamePad_Control:
+			Sting("GamePad");
+		break;
+		case Auto_Control:
+			switch(flow.type){
+				case dribble_flow:
+					Sting("Dribble");
+				break;
+				case dunk_flow:
+					Sting("Dunk   ");
+				break;
+				case attack_flow:
+					Sting("Attack ");
+				break;
+				case back_flow:
+					Sting("Back   ");
+				break;
+				case skill_flow:
+					Sting("SKILL  ");
+				break;
+				default:
+				break;
+			}
+		break;
+		case Debug_Control:
+			Sting("Debug  ");
+		break;
 	}
+#define F2S(x) ((signed short)(x))
+
+
+	debugData_pkg.lidar_pos[0] = F2S(vision.visual.ladar_visual.x);
+	debugData_pkg.lidar_pos[1] = F2S(vision.visual.ladar_visual.y);
+	debugData_pkg.lidar_pos[2] = F2S(vision.visual.ladar_visual.r);
+	
+	debugData_pkg.car_pos[0] = F2S(site.now.x);
+	debugData_pkg.car_pos[1] = F2S(site.now.y);
+	debugData_pkg.car_pos[2] = F2S(site.now.r);
+	
+	debugData_pkg.basket_pos[0] = F2S(vision.visual.basket_visual.x);
+	debugData_pkg.basket_pos[1] = F2S(vision.visual.basket_visual.y);
+	debugData_pkg.basket_dis = F2S(basketlock.position.ladar2basketdis);
+	
+
 	memcpy(&debugData_pkg.Chassis_err,&Wrong_Code,sizeof(Wrong_Code));
 	
 	osDelay(10);

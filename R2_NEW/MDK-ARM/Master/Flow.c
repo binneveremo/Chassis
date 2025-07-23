@@ -48,7 +48,7 @@ void Back_Flow(void){
 ///////////////////////////////////////////////////////////////////////运球流程//////////////////////////////////////////////////////////////////////////////
 #define DRIBBLE_RUNPOINT true
 struct Spot_t spot_dribble  = {.param.p = 5,.param.i = 1, .param.istart = 30,	.param.iend = 400,	.param.ilimit = 1000,	.param.outlimit = 12000, .param.fade_start = 280, .param.fade_end = 80, .param.lock_dis = 50};
-struct dribble_t dribble = {.time.xuan_stamp = 1850,.time.wait = 650,.time.end = 2000,.parameter.dribble_front_velocity = 6000,.parameter.dribble_left_velocity = 300};
+struct dribble_t dribble = {.time.xuan_stamp = 1850,.time.wait = 650,.time.end = 2000,.parameter.dribble_front_velocity = 6100,.parameter.dribble_left_velocity = 300};
 void Dribble_PointInit(void){
 	dribble.parameter.dribble_point[0].x =  966;
 	dribble.parameter.dribble_point[0].y = -2752;
@@ -124,23 +124,23 @@ struct skill_t skill = {
 	.param.shoot_advanced_dis[0] = 600,
 	.param.shoot_advanced_dis[1] = 2000,
 	.param.shoot_advanced_dis[2] = 1500,
-	.param.shoot_advanced_dis[3] = 1500,
+	.param.shoot_advanced_dis[3] = 1350,
 	.param.shoot_advanced_dis[4] = 1600,
 	.param.shoot_advanced_dis[5] = 1600,
 	.param.shoot_advanced_dis[6] = 1600,
 	.param.shoot_advanced_dis[7] = 1600,
 
-	.param.lock_dis = 100,
+	.param.lock_dis = 70,
 	.param.lock_angle = 8,
 	.param.net_defend_wait_time = 500,
 	
-	.param.spot[0] = {.param.p = 5.5,	.param.i = 0.5,	.param.istart = 6,	.param.iend = 300,	.param.ilimit = 1000,	.param.outlimit = 11800, .param.fade_start = 150, .param.fade_end = 100},
-	.param.spot[1] = {.param.p = 6.2,	.param.i = 0.3,	.param.istart = 6,	.param.iend = 300,	.param.ilimit = 1000,	.param.outlimit = 11800, .param.fade_start = 150, .param.fade_end = 80},
-	.param.spot[2] = {.param.p = 8.2,	.param.i = 1.0,	.param.istart = 6,	.param.iend = 300,	.param.ilimit = 1000,	.param.outlimit = 11800, .param.fade_start = 100, .param.fade_end = 80},
-	.param.spot[3] = {.param.p = 6.2,	.param.i = 1.3,	.param.istart = 6,	.param.iend = 300,	.param.ilimit = 1000,	.param.outlimit = 11800, .param.fade_start = 150, .param.fade_end = 80},
-	.param.spot[4] = {.param.p = 6.2,	.param.i = 1.1,	.param.istart = 6,	.param.iend = 300,	.param.ilimit = 1000,	.param.outlimit = 11800, .param.fade_start = 200, .param.fade_end = 80},
-	.param.spot[5] = {.param.p = 6.2,	.param.i = 1.5,	.param.istart = 6,	.param.iend = 300,	.param.ilimit = 1000,	.param.outlimit = 11800, .param.fade_start = 200, .param.fade_end = 80},
-	.param.spot[6] = {.param.p = 6.3,	.param.i = 1.2,	.param.istart = 6,	.param.iend = 300,	.param.ilimit = 1000,	.param.outlimit = 11800, .param.fade_start = 200, .param.fade_end = 80},
+	.param.spot[0] = {.param.p = 5.5,	.param.i = 0.5,	.param.istart = 6,	.param.iend = 300,	.param.ilimit = 1000,	.param.outlimit = 12300, .param.fade_start = 150, .param.fade_end = 100},
+	.param.spot[1] = {.param.p = 6.2,	.param.i = 0.3,	.param.istart = 6,	.param.iend = 300,	.param.ilimit = 1000,	.param.outlimit = 12300, .param.fade_start = 150, .param.fade_end = 80},
+	.param.spot[2] = {.param.p = 8.2,	.param.i = 1.0,	.param.istart = 6,	.param.iend = 300,	.param.ilimit = 1000,	.param.outlimit = 12800, .param.fade_start = 100, .param.fade_end = 80},
+	.param.spot[3] = {.param.p = 6.2,	.param.i = 1.3,	.param.istart = 6,	.param.iend = 300,	.param.ilimit = 1000,	.param.outlimit = 12800, .param.fade_start = 150, .param.fade_end = 80},
+	.param.spot[4] = {.param.p = 6.2,	.param.i = 1.1,	.param.istart = 6,	.param.iend = 300,	.param.ilimit = 1000,	.param.outlimit = 12800, .param.fade_start = 200, .param.fade_end = 80},
+	.param.spot[5] = {.param.p = 6.2,	.param.i = 1.5,	.param.istart = 6,	.param.iend = 300,	.param.ilimit = 1000,	.param.outlimit = 12300, .param.fade_start = 200, .param.fade_end = 80},
+	.param.spot[6] = {.param.p = 6.3,	.param.i = 1.2,	.param.istart = 6,	.param.iend = 300,	.param.ilimit = 1000,	.param.outlimit = 12300, .param.fade_start = 200, .param.fade_end = 80},
 	.param.spot[7] = {.param.p = 8.7 ,  .param.i = 0, 	.param.istart = 6,	.param.iend = 300,	.param.ilimit = 1000,	.param.outlimit = 12500, .param.fade_start = 120, .param.fade_end = 80 ,.param.lock_dis = 600},
 		
 	.param.catch_delay_time[0] = 500,

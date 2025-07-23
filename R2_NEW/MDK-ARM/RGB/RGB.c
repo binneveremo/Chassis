@@ -37,9 +37,10 @@ void RGB_OutPut(void){
 	HAL_TIM_PWM_Start_DMA(&ws2812_tim, ws2812_channel, (unsigned int *)send_buff, (LED_NUM+1)*24); 	
 }
 void RGB_Wave(int wavecolor,int backcolor){
+#define Move_Num 7
 	static char last,dir;
 	RGB_Total(backcolor);
-	for(char i=0;i < 3;i++)
+	for(char i=0;i < Move_Num;i++)
 		RGB_Cal_Color(led.flagof.wave.index_now + i,wavecolor);
 	led.flagof.wave.index_now += (dir == 0)?-1:dir;
 	if((led.flagof.wave.index_now == LED_NUM) || (led.flagof.wave.index_now == -1)) dir = !dir;
@@ -54,8 +55,91 @@ void RGB_BreathProcessingBar(float percent,unsigned int color){
 }
 
 
+
+
+
+
+
+/////////////////////////////////////////////////////////////////彩虹灯带////////////////////////////////////////////
+
+
+unsigned int HSV_To_RGB(unsigned short h) {
+	h %= 1530;  // 360°×4.25 ≈ 1530 (0-360范围)
+	unsigned char region = h / 255;
+	unsigned char val = h % 255;
+	switch(region) {
+			case 0: return (255 << 16) | (val << 8);        // 红→黄
+			case 1: return ((255 - val) << 16) | (255 << 8); // 黄→绿
+			case 2: return (255 << 8) | (val);               // 绿→青
+			case 3: return (255 << 16) | val | (255 - val) << 8; // 青→蓝
+			case 4: return (val << 16) | (255 << 0);        // 蓝→紫
+			default: return (255 << 16) | (val << 0);       // 紫→红
+	}
+}
+void RainBow_Effect_Cal(void) {
+    unsigned short SPEED = 8; // 速度控制
+    static unsigned short hue_offset;
+    for(unsigned char i = 0; i < 4; i++) {
+        for(unsigned short j = 0; j < 20; j++) {  // 修正：j++而不是i++
+            // 计算每个LED在整个80个LED中的位置
+            unsigned char pos = i * 20 + j;
+            // 在整个灯带（80个LED）上均匀分布色相值
+            unsigned short hue = (pos * 1530) / 80 + hue_offset;
+            hue %= 1530;  // 确保在0-1529范围内
+            unsigned int RGB_Color = HSV_To_RGB(hue);
+            RGB_Cal_Color(pos, RGB_Color);
+        }
+    }
+    // 更新全局偏移量
+    hue_offset = (hue_offset + SPEED) % 1530;
+}
+void RainBow_Percent(float percent){
+	RainBow_Effect_Cal();
+	percent = Limit(percent,0,1);
+	short num = percent * LED_NUM / 2;
+	for(int i = 0; i < LED_NUM; i++){
+		if(fabs((float)i - LED_NUM / 2) > num) 
+			RGB_Cal_Color(i,Black);
+	}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 void RGB_Show(void){
-#define Cycle 5
+#define Cycle 0
 #define Lock (chassis.lock.flag == true)
 	static int cnt;
   cnt = (cnt > Cycle)?0:cnt+1;
@@ -73,9 +157,12 @@ void RGB_Show(void){
 				break;
 				case attack_flow:
 				case dunk_flow:					
-					basketlock.position.percent>100?RGB_BreathProcessingBar(200 - basketlock.position.percent,RGB(45,34,2)):RGB_BreathProcessingBar(basketlock.position.percent,RGB(34,23,45));
-					//if((basketlock.position.percent < 83) || (basketlock.position.percent > 125)) RGB_Total(RGB(30,8,6));
+					//basketlock.position.percent>100?RGB_BreathProcessingBar(200 - basketlock.position.percent,RGB(45,34,2)):RGB_BreathProcessingBar(basketlock.position.percent,RGB(34,23,45));
+					//basketlock.position.percent>100?RGB_BreathProcessingBar(200 - basketlock.position.percent,RGB(45,34,2)):RGB_BreathProcessingBar(basketlock.position.percent,RGB(34,23,45));
+				  RainBow_Percent(basketlock.position.percent/100);
 				break;
+				case skill_flow:
+					RainBow_Percent((float)skill.success_time/7.0f);
 				default:
 				break;
 			}

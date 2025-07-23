@@ -89,11 +89,16 @@ struct transmit_package_struct
 	uint8_t lenth;						//1 总长度-2
 	//以下部分使用crc校验
 	uint8_t rec_cnt;				//2 接收包的编号
-										//3+
-	float debug_data[5];				// 任意回传数据
+	
+	char string[7];
 	struct{
 		unsigned char data[2];
 	}Chassis_err;
+	short lidar_pos[3];
+	short car_pos[3];
+	short basket_pos[2];
+	short basket_dis;
+	unsigned char vibration:1;
 } __attribute__((packed));	// 对齐设置,强制不进行补位操作
 extern struct transmit_package_struct debugData_pkg;
 
