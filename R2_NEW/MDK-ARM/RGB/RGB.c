@@ -64,17 +64,17 @@ void RGB_BreathProcessingBar(float percent,unsigned int color){
 
 
 unsigned int HSV_To_RGB(unsigned short h) {
-	h %= 1530;  // 360°×4.25 ≈ 1530 (0-360范围)
-	unsigned char region = h / 255;
-	unsigned char val = h % 255;
-	switch(region) {
-			case 0: return (255 << 16) | (val << 8);        // 红→黄
-			case 1: return ((255 - val) << 16) | (255 << 8); // 黄→绿
-			case 2: return (255 << 8) | (val);               // 绿→青
-			case 3: return (255 << 16) | val | (255 - val) << 8; // 青→蓝
-			case 4: return (val << 16) | (255 << 0);        // 蓝→紫
-			default: return (255 << 16) | (val << 0);       // 紫→红
-	}
+    h %= 1530; 
+    unsigned char region = h / 255;  
+    unsigned char val = h % 255;    
+    switch(region) {
+        case 0: return (255 << 16) | (val << 8);          // 红→黄: (255, val, 0)
+        case 1: return ((255 - val) << 16) | (255 << 8);  // 黄→绿: (255-val, 255, 0)
+        case 2: return (255 << 8) | val;                  // 绿→青: (0, 255, val)
+        case 3: return ((255 - val) << 8) | 255;          // 青→蓝: (0, 255-val, 255) 
+        case 4: return (val << 16) | 255;                 // 蓝→紫: (val, 0, 255)
+        default: return (255 << 16) | (255 - val);        // 紫→红: (255, 0, 255-val)
+    }
 }
 void RainBow_Effect_Cal(void) {
     unsigned short SPEED = 8; // 速度控制
@@ -158,8 +158,8 @@ void RGB_Show(void){
 				case attack_flow:
 				case dunk_flow:					
 					//basketlock.position.percent>100?RGB_BreathProcessingBar(200 - basketlock.position.percent,RGB(45,34,2)):RGB_BreathProcessingBar(basketlock.position.percent,RGB(34,23,45));
-					//basketlock.position.percent>100?RGB_BreathProcessingBar(200 - basketlock.position.percent,RGB(45,34,2)):RGB_BreathProcessingBar(basketlock.position.percent,RGB(34,23,45));
-				  RainBow_Percent(basketlock.position.percent/100);
+					basketlock.position.percent>100?RGB_BreathProcessingBar(200 - basketlock.position.percent,RGB(45,34,2)):RGB_BreathProcessingBar(basketlock.position.percent,RGB(34,23,45));
+				  //RainBow_Percent(basketlock.position.percent/100);
 				break;
 				case skill_flow:
 					RainBow_Percent((float)skill.success_time/7.0f);
@@ -171,8 +171,8 @@ void RGB_Show(void){
 			                
 		break;
 	}
-	if(GamePad_Data.witch[1] && (flow.flagof.receive_ball_bygyro == true))
-		RGB_Total(RGB(34,8,2));
+//	if(GamePad_Data.witch[1] && (flow.flagof.receive_ball_bygyro == true))
+//		RGB_Total(RGB(34,8,2));
 	RGB_OutPut();
 }
 void RGB_Test(char index,unsigned int color){
@@ -211,134 +211,24 @@ void RGB_Test(char index,unsigned int color){
 
 
 
-int Faded_Color(int colora,int colorb,float a){
-	float percent = a / 100;
-	unsigned char R = (unsigned char)(((float)(colora>>0x10)*percent) + ((float)(colorb>>0x10)*(1 - percent))) / 2 * 2;
-	unsigned char G = (unsigned char)(((float)(colora>>0x08)*percent) + ((float)(colorb>>0x08)*(1 - percent))) / 2 * 2;
-	unsigned char B = (unsigned char)(((float)(colora>>0x00)*percent) + ((float)(colorb>>0x00)*(1 - percent))) / 2 * 2;
-	return (int)(R << 0x10) + (G << 0x08) + (B << 0x00);
-}
-unsigned int Light_Color(unsigned char color,int bright){
-	float R = (color>>0x10);
-	float G = (color>>0x08);
-	float B = (color>>0x00);
-	return RGB(R / 255 * bright,G / 255 * bright / 100,B / 255 * bright / 100);
-}
-unsigned char RGB_Change_Color(){
-	static int index;
-	const int colors[] = {Green, Blue, Red, Purple, Pink};
-	index = (index >= 5)?0:index;
-	return colors[index];
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-//void Check_Reset(void){
-//	char bright = 12;
-//	if(yis506.reset_flag == 1) 					
-//		RGB_Line_Cal(0,Faded_Color(Green,White,60),bright);
-//	if(odometer.reset_flag == 1) 					
-//		RGB_Line_Cal(1,Faded_Color(Green,White,80),bright);
-//	if(vision.position.online_flag == 1) 					
-//		RGB_Line_Cal(2,Faded_Color(Green,White,80),bright);
-//	if(vision.basketlock.online_flag == 1) 			
-//		RGB_Line_Cal(3,Faded_Color(Green,White,100),bright);
-//	if(send.R1_Exchange.get_dataflag == 1)					
-//		RGB_Line_Cal(4,Faded_Color(Green,White,100),bright);
+//int Faded_Color(int colora,int colorb,float a){
+//	float percent = a / 100;
+//	unsigned char R = (unsigned char)(((float)(colora>>0x10)*percent) + ((float)(colorb>>0x10)*(1 - percent))) / 2 * 2;
+//	unsigned char G = (unsigned char)(((float)(colora>>0x08)*percent) + ((float)(colorb>>0x08)*(1 - percent))) / 2 * 2;
+//	unsigned char B = (unsigned char)(((float)(colora>>0x00)*percent) + ((float)(colorb>>0x00)*(1 - percent))) / 2 * 2;
+//	return (int)(R << 0x10) + (G << 0x08) + (B << 0x00);
 //}
-//void RGB_Wave(int color){
-//	static int cnt;
-//	char bright[5] = {5,7,9,11,13};
-//	cnt++;
-//	RGB_Line_Cal(0,color,bright[(cnt) % 5]);
-//	RGB_Line_Cal(1,color,bright[(cnt + 1) % 5]);
-//	RGB_Line_Cal(2,color,bright[(cnt + 2) % 5]);
-//	RGB_Line_Cal(3,color,bright[(cnt + 3) % 5]);
-//	RGB_Line_Cal(4,color,bright[(cnt + 4) % 5]);
+//unsigned int Light_Color(unsigned char color,int bright){
+//	float R = (color>>0x10);
+//	float G = (color>>0x08);
+//	float B = (color>>0x00);
+//	return RGB(R / 255 * bright,G / 255 * bright / 100,B / 255 * bright / 100);
 //}
-//char RGB_ON;
-
-//void RGB_Show_Msg(void){
-//	//清空显示
-//	RGB_Clear_Cal();
-//	SwitchRGBShowMsg();
-//	switch(panel.display){
-//		case init_msg:
-//			Check_Reset();
-//		break;
-//		case press_msg:
-//			RGB_Color_All(Purple,30);
-//			panel.display = init_msg;
-//		break;
-//		case flow_msg:
-//			switch(flow.type){
-//				case dribble_flow:
-//					RGB_Wave(0xFF0000);
-//				break;
-//				case dunk_flow:
-//					RGB_Wave(0x00FF00);
-//				break;
-//				case back_flow:
-//					RGB_Wave(0x0000FF);
-//				break;
-//				case skill_flow:
-//					RGB_Wave(0x00FFFF);
-//				break;
-//			}
-//		break;
-//	}	
-//	RGB_OutPut();
-//}
-
-//void RGB_Total_Cal(int color,int bright){
-//	for(int i = 0; i< LED_NUM; i++){
-//		RGB_Cal_Color(i,color);
-//	}
-//}
-
-
-
-//void RGB_Test(int index,int color){
-//	RGB_Total_Cal(color,0);
-//	RGB_OutPut();
+//unsigned char RGB_Change_Color(){
+//	static int index;
+//	const int colors[] = {Green, Blue, Red, Purple, Pink};
+//	index = (index >= 5)?0:index;
+//	return colors[index];
 //}
 
 
@@ -348,189 +238,4 @@ unsigned char RGB_Change_Color(){
 
 
 
-
-
-
-
-//char RGB_Inner_Count(char count_index,int dt){
-//	int now = HAL_GetTick();
-//	static int last[5];
-//	if(count_index == 0){
-//		if(now - last[0] > dt){
-//			last[0] = now;
-//			return 1;
-//		}
-//	}
-//	else if(count_index == 1){
-//		if(now - last[1] > dt){
-//			last[1] = now;
-//			return 1;
-//		}
-//	}
-//	else if(count_index == 2){
-//		if(now - last[2] > dt){
-//			last[2] = now;
-//			return 1;
-//		}
-//	}
-//	else if(count_index == 3){
-//		if(now - last[3] > dt){
-//			last[3] = now;
-//			return 1;
-//		}
-//	}
-//	else if(count_index == 4){
-//		if(now - last[4] > dt){
-//			last[4] = now;
-//			return 1;
-//		}
-//	}
-//	return 0;
-//}
-//void RGB_Show_Velocity(void){
-//	RGB_Clear_Cal();
-//	float v = hypot(site.car.vx_gyro,site.car.vy_gyro);
-//	if(v > 0.2)
-//		RGB_Line_Cal(0,0xFF3F3F,2);
-//	if(v > 1)
-//		RGB_Line_Cal(1,0xFF2c2c,6);
-//	if(v > 1.5)
-//		RGB_Line_Cal(2,0xFF0000,10);
-//	if(v > 2)
-//		RGB_Line_Cal(3,0x8B0000,20);
-//	if(v > 2.4)
-//		RGB_Line_Cal(4,0x4B0000,40);
-//	RGB_OutPut();
-//}
-//////////////////////////////////////////////////////////////////////一定要记住 先考虑line 在考虑list 对于我们的RGB来说 也就是先考虑堆叠 在考虑侧向 也就是 char * letter[5][3]
-//char RGB_Order_Convert(char order){
-//	 return 14 - (order / 3) - (order % 3) * 5;
-//}
-///*
-//14 9 4
-//13 8 3
-//12 7 2
-//11 6 1
-//10 5 0
-//*/
-//char * Letter_Walk(char * input,int begin){
-//	//从倒数第二个开始
-//	static char letter[15];
-//	for(int i = 0; i <5; i++){
-//	   for(int j = 0; j < 3; j++){
-//			 if((j + begin > 4) || (j + begin < 0)){
-//				 letter[3*i + j] = 0;
-//				 continue;
-//			 }
-//		   letter[3*i + j] = input[5*i + j + begin];
-//		 }
-//	}
-//	return letter;
-//}
-//void sring_walk(char*a,char*b){
-//	static int cnt;
-//	
-
-
-//}
-
-//void RGB_Letter_Cal(void){
-//	
-
-//}
-//void RGB_Show_Letter(char * letter,int color,int bright){
-//	for(int i = 0; i< 15 ; i++)
-//	  RGB_Cal_Color(RGB_Order_Convert(i), color*letter[i]);
-//}
-
-
-////////////////////////////////////////////////////////////////freeRtos里面调用的函数///////////////////////////////
-//void RGB_Show_Warning(void){
-//	static int flag;
-//	static unsigned char pos[15];
-//	if(hypot(site.car.vx_enc,site.car.vy_enc) > 0.3){
-//		if(flag == 1)
-//		  RGB_Total_Cal(Red,3);
-//		else if(flag == 0)
-//		  RGB_Total_Cal(Red,40);
-//		flag =! flag;
-//	}
-//}
-//int RGB_Change_Color(int color){
-//	if(color == Green)
-//		return Blue;
-//	if(color == Blue)
-//		return Red;
-//	if(color == Red)
-//		return Purple;
-//	if(color == Purple)
-//		return Pink;
-//  if(color == Pink)
-//		return Green;
-//	if(color == 0)
-//	  return Green;
-//	return White;
-//}
-//void RGB_Breath(int bright_max,int dt){
-//	static int color;
-//	static char bright;
-//	static char flag;
-//	if(flag == 0){
-//		flag = 1;
-//		color = Green;
-//	}
-//	if(RGB_Inner_Count(0,dt) == 1){
-//		if(bright >= bright_max)
-//			flag = -1;
-//		else if(bright <= 0)
-//			flag = 1;
-//		bright += flag;
-//		if(bright == 0)
-//		  color = RGB_Change_Color(color);
-//	}
-//	RGB_Total_Cal((int)color,bright);
-//}
-//int RGB_Flow(int bright,char dt,char clear_flag){
-//	static int cnt;
-//	static int color;
-//	static int pos;
-//	static char flag; 
-//	if(flag == 0){
-//		flag = 1;
-//		color = Green;
-//	}
-//	if(RGB_Inner_Count(0,dt) == 1){
-//		if(pos >= LED_NUM){
-//			flag = -1;
-//			color = Light_Color(RGB_Change_Color(color),20);
-//		}
-//		else if(pos < 0){
-//			flag = 1;
-//			color = Light_Color(RGB_Change_Color(color),20);
-//			cnt++;
-//		}
-//		pos += flag;
-//	}
-//	if(clear_flag == 1)
-//		RGB_Clear_Cal();
-//	RGB_Cal_Color(pos,color);
-//	RGB_Cal_Color(pos + 1,color);
-//	RGB_Cal_Color(pos + 2,color);
-//	RGB_Cal_Color(pos + 3,color);
-//	RGB_Cal_Color(pos + 4,color);
-//	return cnt;
-//}
-//void RGB_Flow_Circle(void){
-//	
-
-//}
-//void RGB_Show_Test(int dt){
-////	if(RGB_Inner_Count(1,5) == 1){
-//		//RGB_Breath(50,dt);
-////	  RGB_Flow(40,dt,1);
-//  if(RGB_Inner_Count(1,10) == 1){
-//		RGB_Flow(30,30,0);
-//		RGB_OutPut();
-//	}
-//}
 

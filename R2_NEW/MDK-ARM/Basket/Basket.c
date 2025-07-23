@@ -2,7 +2,7 @@
 #include "Flow.h"
 
 struct Basket_Lock_t basketlock = {
-	.parameter.basketdis = 1000,
+	.parameter.basketdis = 1010,
 	.parameter.anglebetween_ladarandpole = 2.9,
 	.parameter.limitzoneanglimit = 160,
 };

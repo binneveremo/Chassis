@@ -138,7 +138,6 @@ float Expect_BallFlyingTime(float distance,bool real){
 	//计算曾曾拟合的期望速度
 	float shoot_velocity;
 	float dist_cm = distance / 10;
-	
 	if (dist_cm <= 275)
 		shoot_velocity = dist_cm + 325;
 	else if (dist_cm <= 350)
@@ -147,7 +146,6 @@ float Expect_BallFlyingTime(float distance,bool real){
       shoot_velocity = 0.6 * dist_cm + 450;
     else
       shoot_velocity = 0.48 * dist_cm + 516;
-	//如果是实际的速度
 	if(real == true)
 		shoot_velocity = shoot.receive.shoot_rpm * ratio;
 	return (distance / (shoot_velocity * cos(ang2rad(65))) * (1 + (k * distance) / (pow(shoot_velocity,2))));

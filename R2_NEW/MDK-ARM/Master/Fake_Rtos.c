@@ -51,10 +51,12 @@ void communication(void const * argument)
   for(;;) 
   {	
 
-		Send_Put_Data(0,vision.visual.ladar_visual.x);
-		Send_Put_Data(1,vision.visual.ladar_visual.y);
-		Send_Put_Data(2,ang2rad(site.now.r));
-		Send_Float_Data(3);
+		Send_Put_Data(0,site.now.x);
+		Send_Put_Data(1,site.now.y);
+		Send_Put_Data(2,site.now.r);
+		Send_Put_Data(3,vision.visual.basket_visual.x);
+		Send_Put_Data(4,vision.visual.basket_visual.y);
+		Send_Float_Data(5);
 
 		//手柄数据解析
 		GamePad_Data_Cla();

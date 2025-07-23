@@ -36,7 +36,7 @@ void Kalman_Init(void){
     // 初始协方差
     kalmanx.P_last = Eigen::Matrix3f::Identity() * 0.1f;
     // 过程噪声 (根据系统特性调整)
-    kalmanx.Q << 0.0001, 0, 0,
+    kalmanx.Q << 0.01, 0, 0,
 									0, 0.1, 0,
 									0, 0, 0.02;
     // 观测噪声 (根据传感器精度调整)
@@ -52,7 +52,7 @@ void Kalman_Init(void){
     // 初始协方差
     kalmany.P_last = Eigen::Matrix3f::Identity() * 0.5f;
     // 过程噪声 (根据系统特性调整)
-    kalmany.Q << 0.0001, 0, 0,
+    kalmany.Q << 0.01, 0, 0,
 								 0, 0.1, 0,
 							   0, 0, 0.02;
     // 观测噪声 (根据传感器精度调整)
