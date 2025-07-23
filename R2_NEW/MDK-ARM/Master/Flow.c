@@ -17,8 +17,8 @@ void Dunk_Flow(void){
 	if(dunk.flagof.confirm == true){
 		if(dunk.flagof.net_ok == false)
 			 ChooseCatchBall_StatusAuto(),dunk.flagof.net_ok = true;
-		if(flow.flagof.R1_Shooted == true)
-			Tell_Yao_Xuan("jump"),dunk.flagof.confirm = false,Flow_End();
+//		if(flow.flagof.R1_Shooted == true)
+//			Tell_Yao_Xuan("jump"),dunk.flagof.confirm = false,Flow_End();
 	}
 }
 
@@ -46,7 +46,7 @@ void Back_Flow(void){
 
 
 ///////////////////////////////////////////////////////////////////////运球流程//////////////////////////////////////////////////////////////////////////////
-#define DRIBBLE_RUNPOINT true
+#define DRIBBLE_RUNPOINT false
 struct Spot_t spot_dribble  = {.param.p = 5,.param.i = 1, .param.istart = 30,	.param.iend = 400,	.param.ilimit = 1000,	.param.outlimit = 12000, .param.fade_start = 280, .param.fade_end = 80, .param.lock_dis = 50};
 struct dribble_t dribble = {.time.xuan_stamp = 1850,.time.wait = 650,.time.end = 2000,.parameter.dribble_front_velocity = 6300,.parameter.dribble_left_velocity = 300};
 void Dribble_PointInit(void){
@@ -64,8 +64,9 @@ void Dribble_Flow(void){
 	int now = HAL_GetTick();
 	switch(dribble.status){
 		case dribble_runp:
-			if(DRIBBLE_RUNPOINT == false)
-				dribble.status = dribble_prepare;
+#if (!DRIBBLE_RUNPOINT)
+			dribble.status = dribble_prepare;
+#endif
 			if(dribble.flagof.init == false)
 				Dribble_PointInit(),dribble.flagof.init = true;
 			if(PositionWithAngle_Lock(site.now,dribble.parameter.dribble_point[dribble.flagof.index],&spot_dribble,&cr_skill) == true)
@@ -126,9 +127,9 @@ struct skill_t skill = {
 	.param.shoot_advanced_dis[2] = 1500,
 	.param.shoot_advanced_dis[3] = 1350,
 	.param.shoot_advanced_dis[4] = 1600,
-	.param.shoot_advanced_dis[5] = 1600,
-	.param.shoot_advanced_dis[6] = 1600,
-	.param.shoot_advanced_dis[7] = 1600,
+	.param.shoot_advanced_dis[5] = 1700,
+	.param.shoot_advanced_dis[6] = 2000,
+	.param.shoot_advanced_dis[7] = 2000,
 
 	.param.lock_dis = 70,
 	.param.lock_angle = 8,
@@ -365,7 +366,7 @@ void Attack_Flow(void){
 				attack.status = attack_jump,Shoot_Clear();
 		break;
 		case attack_jump:
-			Tell_Yao_Xuan("lift");
+			//Tell_Yao_Xuan("lift");
 			Flow_End();
 		break;
 	}

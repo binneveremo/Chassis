@@ -49,14 +49,13 @@ void Set_ZeroPoint(unsigned char ID){
 }
 void Encoder_XY_VX_VY_Cal(int dt){
 	static float car_x_field_last,car_y_field_last;
-
   Diff_Odometer();
 	//计算车体码盘                          
-	float dy_car = ( odometer.do1  * 0.70710678 - odometer.do2  * 0.70710678) / ratio;
-	float dx_car = (-odometer.do2  * 0.70710678 - odometer.do1  * 0.70710678) / ratio;
+	float dx_car = ( odometer.do1  * 0.70710678 - odometer.do2  * 0.70710678) / ratio;
+	float dy_car = (-odometer.do2  * 0.70710678 - odometer.do1  * 0.70710678) / ratio;
 	//计算车体坐标系的速度
-	odometer.dy_field = dx_car* cos(ang2rad(site.now.r)) - dy_car*sin(ang2rad(site.now.r));
-	odometer.dx_field = dx_car* sin(ang2rad(site.now.r)) + dy_car*cos(ang2rad(site.now.r));
+	odometer.dx_field = dx_car* cos(ang2rad(site.now.r)) - dy_car*sin(ang2rad(site.now.r));
+	odometer.dy_field = dx_car* sin(ang2rad(site.now.r)) + dy_car*cos(ang2rad(site.now.r));
 	//计算出场地坐标
 	odometer.enc_x_field = odometer.dx_field + odometer.enc_x_field;
 	odometer.enc_y_field = odometer.dy_field + odometer.enc_y_field;
