@@ -17,6 +17,7 @@
 #define shooter_to_center 0.24
 #define net_to_center 0.3223
 
+#define NONFOLD_TIMEOUT_MS 120000
 // --- Enums ---
 
 // Overall state machine states
@@ -71,6 +72,7 @@ typedef struct
     // Timing
     uint32_t move_start_time_ms;    // Timestamp for the start of a movement phase (for timeouts)
     uint32_t last_feedback_time_ms; // Timestamp of the last valid feedback update
+		uint32_t nonfold_start_time;    // Timestamp of entering not-fold state
 
 } CatchControlStatus_t;
 extern CatchControlStatus_t catch_status;

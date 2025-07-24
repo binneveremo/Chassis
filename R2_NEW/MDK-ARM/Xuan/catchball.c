@@ -21,7 +21,8 @@ CatchControlStatus_t catch_status = {
 		.in_move_to_midcatch = false,
 		.in_oscillate = false,
     .move_start_time_ms = 0,
-    .last_feedback_time_ms = 0
+    .last_feedback_time_ms = 0,
+		.nonfold_start_time = 0,
 }; 
 
 
@@ -577,6 +578,7 @@ void Loop_Judgement()
     OverallState_t next_state = current_state; // Assume stay in current state by default
 	  static uint32_t dunk_begin;
 
+//------------------------------------------------------------------------------------------//
     // Check for R1_Shooted timing
     if (interact.flagof.R1_shooted) {
         if (shoot_start_time == 0) {
@@ -589,7 +591,8 @@ void Loop_Judgement()
     } else {
         shoot_start_time = 0;  // Reset timer if flag is cleared
     }
-		
+
+//------------------------------------------------------------------------------------------//	
 		if(interact.flagof.dunk){
 			interact.defend_status = fold;
 			if(dunk_begin == 0){
@@ -605,6 +608,26 @@ void Loop_Judgement()
 			dunk_begin = 0;
 		}
 
+//-----------------------------------------------------------------------------------------//
+		bool is_nonfold_state = (catch_status.current_state != STATE_BACK_TO_FOLD) &&
+														(catch_status.current_state != STATE_ERROR) &&
+														(catch_status.current_state != STATE_INITIALIZE);
+		if(is_nonfold_state){
+			if(catch_status.nonfold_start_time == 0){
+				catch_status.nonfold_start_time = HAL_GetTick();
+			}
+			
+			if(HAL_GetTick() - catch_status.nonfold_start_time > NONFOLD_TIMEOUT_MS){
+				interact.defend_status = fold;
+				catch_status.nonfold_start_time = 0;
+			}
+		}
+		else{
+			catch_status.nonfold_start_time = 0;
+		}
+
+//-----------------------------------------------------------------------------------------//
+		
     // If in recovery period, check if we should end it
     if (catch_status.in_recovery_period) {
         // End recovery period if we've been in the current state for more than 2 seconds
