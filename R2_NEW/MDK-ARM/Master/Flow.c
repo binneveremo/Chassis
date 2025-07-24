@@ -46,7 +46,7 @@ void Back_Flow(void){
 
 
 ///////////////////////////////////////////////////////////////////////运球流程//////////////////////////////////////////////////////////////////////////////
-#define DRIBBLE_RUNPOINT false
+#define DRIBBLE_RUNPOINT true
 struct Spot_t spot_dribble  = {.param.p = 5,.param.i = 1, .param.istart = 30,	.param.iend = 400,	.param.ilimit = 1000,	.param.outlimit = 12000, .param.fade_start = 280, .param.fade_end = 80, .param.lock_dis = 50};
 struct dribble_t dribble = {.time.xuan_stamp = 1850,.time.wait = 650,.time.end = 2000,.parameter.dribble_front_velocity = 6300,.parameter.dribble_left_velocity = 300};
 void Dribble_PointInit(void){
