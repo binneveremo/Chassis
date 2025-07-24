@@ -142,7 +142,7 @@ struct skill_t skill = {
 	.param.spot[4] = {.param.p = 6.2,	.param.i = 1.1,	.param.istart = 6,	.param.iend = 300,	.param.ilimit = 1000,	.param.outlimit = 12800, .param.fade_start = 200, .param.fade_end = 80},
 	.param.spot[5] = {.param.p = 6.2,	.param.i = 1.5,	.param.istart = 6,	.param.iend = 300,	.param.ilimit = 1000,	.param.outlimit = 12300, .param.fade_start = 200, .param.fade_end = 80},
 	.param.spot[6] = {.param.p = 6.3,	.param.i = 1.2,	.param.istart = 6,	.param.iend = 300,	.param.ilimit = 1000,	.param.outlimit = 12300, .param.fade_start = 200, .param.fade_end = 80},
-	.param.spot[7] = {.param.p = 8.7 ,  .param.i = 0, 	.param.istart = 6,	.param.iend = 300,	.param.ilimit = 1000,	.param.outlimit = 12500, .param.fade_start = 120, .param.fade_end = 80 ,.param.lock_dis = 600},
+	.param.spot[7] = {.param.p = 8.7, .param.i = 0, 	.param.istart = 6,	.param.iend = 300,	.param.ilimit = 1000,	.param.outlimit = 12500, .param.fade_start = 120, .param.fade_end = 80 ,.param.lock_dis = 600},
 		
 	.param.catch_delay_time[0] = 500,
 	.param.catch_delay_time[1] = 500,
@@ -370,6 +370,7 @@ void Attack_Flow(void){
 			Flow_End();
 		break;
 	}
+	Set_SendMode(&basketlock.target.global,"once",true);
 }
 
 
